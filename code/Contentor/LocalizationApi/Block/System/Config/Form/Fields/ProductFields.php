@@ -91,22 +91,22 @@ class ProductFields extends \Magento\Config\Block\System\Config\Form\Field\Field
 	 * @return void
 	 */
 	protected function _prepareToRender() {
-		$this->addColumn('productattribute', [
+		$this->addColumn('attribute', [
 						'label' 	=> __('Product attribute'),
 						'renderer' 	=> $this->getProductAttributeRenderer(),
 				]);
 		
-		$this->addColumn('source', [
+		$this->addColumn('store', [
 						'label' 	=> __('Source Store View'),
 						'renderer' 	=> $this->getScourceRenderer(),
 				]);
 		
-		$this->addColumn('fieldtype', [ 
+		$this->addColumn('type', [ 
 						'label' 	=> __('Field Type'),
 						'renderer'	=> $this->getFieldTypeRenderer(),						
 				]);
 		
-		$this->addColumn('fielddatatype', [
+		$this->addColumn('data', [
 						'label' 	=> __('Field Data Type'),
 						'renderer'	=> $this->getFieldDataTypeRenderer(),
 				]);
@@ -121,10 +121,10 @@ class ProductFields extends \Magento\Config\Block\System\Config\Form\Field\Field
 	}
 	
 	protected function _prepareArrayRow(\Magento\Framework\DataObject $row) {
-		$productAttribute = $row->getData('productattribute');
-		$source = $row->getData('source');
-		$fieldType = $row->getData('fieldtype');
-		$fieldDatatype = $row->getData('fielddatatype');
+		$productAttribute = $row->getData('attribute');
+		$source = $row->getData('store');
+		$fieldType = $row->getData('type');
+		$fieldDatatype = $row->getData('data');
 		$required = $row->getData('required');
 		
 		$options = [];
@@ -160,10 +160,6 @@ class ProductFields extends \Magento\Config\Block\System\Config\Form\Field\Field
 	 */
 	public function renderCellTemplate($columnName)
 	{
-		if ($columnName == "target") {
-			$this->_columns[$columnName]['class'] = 'input-text required-entry validate-number';
-			$this->_columns[$columnName]['style'] = 'width:50px';
-		}
 
 		return parent::renderCellTemplate($columnName);
 	}

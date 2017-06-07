@@ -1,13 +1,13 @@
 <?php
 /**
- * Copyright © 2015 Magento. All rights reserved.
+ * Copyright ï¿½ 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
-use \Magento\Framework\View\Element\Context;
-use \Magento\Store\Model\StoreRepository;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\View\Element\Context;
+use Magento\Store\Model\StoreRepository;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class SourceRenderer extends \Magento\Framework\View\Element\Html\Select {
 	/**
@@ -48,7 +48,7 @@ class SourceRenderer extends \Magento\Framework\View\Element\Html\Select {
 			foreach ($stores as $store) {
 				if($store->getId()) {
 					$locale = $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getStoreId());
-					$this->addOption($store->getId(), $store->getName() . ' (' . $locale . ')');
+					$this->addOption($store->getId(), $store->getName());
 				}
 			}
 		}

@@ -4,17 +4,27 @@ namespace Contentor\LocalizationApi\Helper;
 
 class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 {
+
+	public function __construct(
+			\Magento\Framework\App\Helper\Context $context,
+			\Contentor\LocalizationApi\Helper\Data $helper,
+			array $data = []
+			) {
+				$this->_helper = $helper;
+				parent::__construct($context, $data);
+	}
 	
 	public function getTestText($id) {
 		return 'Test text ' . $id;
 	}
 	
-	public static function getFieldData($entity, $entityType, $extraField=false) {
+	public function getFieldData($entity, $entityType, $extraField=false) {
 		$messages = array();
 		if($entityType == 'product') {
 			$sku = $entity->getSku();
 			$productID = $entity->getId();
-			$fieldArray = unserialize(Mage::getStoreConfig('contentor_options/contentor_fields/contentor_fields_input', Mage::app()->getStore()));
+			$fieldArray = unserialize($this->_helper->getConfig('contentor_options/fieldDetails/productFieldDetails'));
+
 			if(is_array($fieldArray)) {
 				$fields[] = array('id' => 'auto_sku',
 						'type' => 'internal',
@@ -31,71 +41,40 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				}
 	
 				foreach($fieldArray as $field) {
-					$textLocale = 	Mage::getStoreConfig('general/locale/code', $field['store']);
-					$attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', $field['attribute']);
-					$attributeType = $attribute->getFrontendInput();
+					$textLocale = $this->scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $field['store']);
 					
-					if($attributeType == 'gallery') {
-						// Get value
-						$imageProduct = Mage::getModel('catalog/product')->setStoreId($field['store'])->load($productID);
-						$images = $imageProduct->getData('media_gallery');
-						foreach($images['images'] as $image) {
-							$imageFile = $image['file'];
-							$value = $image['label'];
-							$name = 'Image label [' . $textLocale . ']';
-							if(!isset($n[$field['attribute']])) {
-								$n[$field['attribute']] = 1;
-							} else {
-								$n[$field['attribute']]++;
-							}
-							$id = 'image_' . $imageFile . '_' . sprintf("%03d", $n[$field['attribute']]);
-							if($value != '') {
-								$fields[] = array('id'=>$id,
-										'name'=>$name,
-										'type'=>$field['type'],
-										'data'=>$field['data'],
-										'value'=>$value);
-							} else {
-								if(isset($fields['required'])) {
-									$messages[] = 'Required field: [' . $field['attribute'] . '] empty';
-								}
-							}
-					
-						}
+					if($field['attribute'] == 'productURL') {
+						$value = $entity->setStoreId($field['store'])->getUrlInStore();
+						$name = 'Product URL';
 					} else {
-					
-						if($field['attribute'] == 'productURL') {
-							$value = $entity->getProductUrl();
-							$name = 'Product URL';
-						} else {
-							$value 		=	Mage::getResourceModel('catalog/product')->getAttributeRawValue($productID, $field['attribute'], $field['store']);
-							$name 		=	$entity->getResource()->getAttribute($field['attribute'])->getFrontendLabel();
-							$name		.=	' [' . $textLocale . ']';
-						}
-		
-						if(!isset($n[$field['attribute']])) {
-							$n[$field['attribute']] = 1;
-						} else {
-							$n[$field['attribute']]++;
-						}
-						$id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
-					
-						if($value != '') {
-							$fields[] = array('id'=>$id,
-									'name'=>$name,
-									'type'=>$field['type'],
-									'data'=>$field['data'],
-									'value'=>$value);
-						} else {
-							if(isset($fields['required'])) {
-								$messages[] = 'Required field: [' . $field['attribute'] . '] empty';
-							}
+						$attribute	= $entity->getResource()->getAttribute($field['attribute']);
+						$value 		=	$entity->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
+						$name 		=	$attribute->getFrontendLabel();
+					}
+
+					if(!isset($n[$field['attribute']])) {
+						$n[$field['attribute']] = 1;
+					} else {
+						$n[$field['attribute']]++;
+					}
+					$id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
+
+					if($value != '') {
+						$fields[] = array('id'=>$id,
+								'name'=>$name,
+								'type'=>$field['type'],
+								'data'=>$field['data'],
+								'value'=>$value);
+					} else {
+						if(isset($fields['required'])) {
+							$messages[] = 'Required field: [' . $field['attribute'] . '] empty';
 						}
 					}
 				}
 			} else {
 				$messages[] = 'No settings found';
 			}
+			
 		} else if ($entityType == 'category') {
 			$categoryID = $entity->getId();
 			$fieldArray = unserialize(Mage::getStoreConfig('contentor_options/contentor_fields/contentor_category_fields_input', Mage::app()->getStore()));
@@ -775,10 +754,10 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$writeConnection->query($query, $binds);
 	}
 	
-	public static function testAuth($token=false) {
-		$url = ContentorAPI::getURL(true);
+	public function testAuth($token=false) {
+		$url = $this->getURL() . 'auth';
 		if(!$token) {
-			$token = ContentorAPI::getToken();
+			$token = $this->getToken();
 		}
 		
 		$ch = curl_init();
@@ -787,14 +766,15 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+		$debug = curl_getinfo($ch);
 		curl_close($ch);
 		$info = json_decode($response);
 		
 		if(isset($info->companyName)) {
 			return $info->companyName;
 		} else {
-			Mage::log($info, null, 'contentor.log');
-			return false;
+			//Mage::log($info, null, 'contentor.log');
+			return 'false';
 		}
 	}
 
@@ -815,25 +795,17 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		return $return;
 	}
 
-	protected static function getURL($auth=false) {
-		$dev = self::getDEV();
+	protected function getURL() {
+		$dev = $this->getDEV();
 		if($dev) {
-			if($auth) {
-				return 'http://api.dev.contentor.com:8080/v1/auth';
-			} else {
-				return 'http://api.dev.contentor.com:8080/v1/content';
-			}
-		} else {
-			if($auth) {
-				return 'https://api.contentor.com/v1/auth';
-			} else {
-				return 'https://api.contentor.com/v1/content';
-			}
+			return 'http://api.dev.contentor.com:8080/v1/';
+		} else {			
+			return 'https://api.contentor.com/v1/';
 		}
 	}
 	
-	protected static function getToken() {
-		return Mage::getStoreConfig('contentor_options/contentor_token/contentor_token_input');
+	protected function getToken() {
+		return $this->_helper->getConfig('contentor_options/token/apitoken');
 	}
 
 	protected static function getRequestStatus($id) {
@@ -886,7 +858,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 	
-	private static function getDEV() {
+	private function getDEV() {
 		return true;
 	}
 }

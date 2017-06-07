@@ -1,14 +1,112 @@
 <?php 
-$product = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/token/apitoken');
+// $product = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/token/apitoken');
+// $myTestText = $this->helper('Contentor\LocalizationApi\Helper\ContentorAPI')->getTestText(12);
 
-$myTestText = $this->helper('Contentor\LocalizationApi\Helper\ContentorAPI')->getTestText(12);
-
-print $product;
-print '<br><br>';
-
-print $myTestText;
-print '<br><br>';
-
+print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">klick</a>';
 ?>
+<p>
+	<h2>Source store locale</h2>
+	<select name="source">
+		<option value="">Choose source language</option>
+			<?php
+			$configLocale = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/source/sourcelocale');
+			$localeList = $this->getLocales();
+			foreach($localeList as $lang) {
+				print '<option value="' . $lang['value'] . '"';
+				if($lang['value'] == $configLocale) {
+					print ' SELECTED';
+				}
+				print '>' . $lang['label'] . '</option>';
+			}
+			?>
+	</select>
+</p>
+<br>
+<p>
+	<h2>Target store view(s)</h2>
+			<?php
 
-This is demo tab content.
+			// Get stores if sent before
+			
+			// Else get default stores
+			$defaultstores = explode(',',$this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/targets/targetviews'));
+			$storesStructure = $this->getStoreViews();
+			
+			foreach($storesStructure as $website) {
+				print "<b>";
+				print $website['label'];
+				print "</b><br>";
+				foreach($website['children'] as $store) {
+					print "&nbsp;&nbsp;&nbsp;<b><i>";
+					print $store['label'];
+					print "</i></b><br>";
+					foreach($store['children'] as $storeview) {
+						$id = $storeview['value'];
+						$name = $storeview['label'];
+						$locale = 'sv'; 
+						//str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
+						if(in_array($id, $defaultstores)) {
+							$checked = 'checked';
+						} else {
+							$checked = '';
+						}
+						print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" name="targets[]" value="' . $id . '" id="store_' . $id . '" ' . $checked . '> ' . $name . ' (' . $locale .')</label><br>';
+					}
+				}
+			}
+
+			?>
+</p>
+<br>
+<p>
+	<!-- Data to send here! -->
+	<h2>Data to send</h2>
+	<?php
+		$data = $this->helper('Contentor\LocalizationApi\Helper\ContentorAPI')->getFieldData($this->getProduct(), 'product');
+		foreach($data as $value) {
+			if($value['id'] != 'auto_sku') {
+				print '<b>' . $value['name'] . '</b><br>';
+				print $value['value'] . '<br>';
+			}
+		}
+	
+	
+	?>
+</p>
+
+<p>
+	<!-- Extra context! -->
+
+</p>
+
+<p>
+ <input type="submit" value="Send for localization" name="submitme">
+</p>
+
+<p>
+	<h2>Request status</h2>
+
+</p>
+
+<script type="text/javascript">
+//<![CDATA[
+	function fetchSingle(id, type) {
+		new Ajax.Request('', {
+			method:     'GET',
+			parameters: { id, type },
+			onSuccess: function(transport) {
+				if(transport.responseText) {
+				// If response was that changes was found, reload page if user wants to!
+					if(confirm('Changes was found, reload page?')) {
+							location.reload();
+					} else {
+						return false;
+					}
+				} else {
+					alert('No state changes was found');
+				}
+			}
+		});
+	}
+//]]>
+</script>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2015 Magento. All rights reserved.
+ * Copyright ï¿½ 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
@@ -31,6 +31,7 @@ class ProductAttributeRenderer extends \Magento\Framework\View\Element\Html\Sele
 				$allowed = array('text', 'textarea');
 				$attributeInfo = $this->_attributeFactory->getCollection();
 				$this->addOption('', '');
+				$this->addOption('productURL', 'Product URL (url)');
 				foreach ($attributeInfo as $attribute) {
 					$label = $attribute->getData('frontend_label');
 					$type = $attribute->getFrontendInput();
