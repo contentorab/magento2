@@ -8,9 +8,15 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 	public function __construct(
 			\Magento\Framework\App\Helper\Context $context,
 			\Contentor\LocalizationApi\Helper\Data $helper,
+			\Magento\Catalog\Model\ProductFactory $productFactory,
+			\Magento\Framework\App\ResourceConnection $resource,
+			\Psr\Log\LoggerInterface $logger,
 			array $data = []
 			) {
 				$this->_helper = $helper;
+				$this->_productFactory = $productFactory;
+				$this->_resource = $resource;
+				$this->_logger = $logger;
 				parent::__construct($context, $data);
 	}
 	
@@ -189,9 +195,9 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		} 
 	}
 	
-	public static function createRequest($sourceLocale, $targetLocale, $fields, $type, $previd=false) {
-		$data['language']['source'] = $sourceLocale;
-		$data['language']['target'] = $targetLocale;
+	public function createRequest($sourceLocale, $targetLocale, $fields, $type, $previd=false) {
+		$data['language']['source'] = str_replace('_', '-', $sourceLocale);
+		$data['language']['target'] = str_replace('_', '-', $targetLocale);
 		$data['type'] = $type;
 		if($previd && $type == 'update') {
 			$data['previous'] = $previd;
@@ -200,11 +206,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		return $data;
 	}
 	
-	public static function logSent($contentorID, $sku, $sourceLocale, $targetLocale, $targetID, $product, $type) {
-		$resource = Mage::getSingleton('core/resource') or die('No recource');
+	public function logSent($contentorID, $sku, $sourceLocale, $targetLocale, $targetID, $product, $type) {
+		$connection = $this->_resource->getConnection('core_write');
 		
-		$writeConnection = $resource->getConnection('core_write');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_products";
+		$table = $this->_resource->getTableName('contentor_products');
+		
 		$query = "INSERT INTO " . $table . "
 						  (contentor_id, sku, source_locale, target_locale, target_store, sent_time, state, type)
 						  VALUES
@@ -217,38 +223,29 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				'target_store'  => $targetID,
 				'type'			=> $type,
 		);
-		if(!$writeConnection->query($query, $binds)) {
-			Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing product to DB'));
-			return false;
-		} else {
-			$typeTable = Mage::getConfig()->getTablePrefix()."contentor_type";
-			$typeQuery = "INSERT INTO `" . $typeTable . "` (`contentor_id`, `type`) VALUES (:contentor_id, 'product')";
-			$typeBinds = array('contentor_id' => $contentorID);
-			$writeConnection->query($typeQuery, $typeBinds);
-			
-			$table = Mage::getConfig()->getTablePrefix()."contentor_status";
-			$query = "INSERT INTO " . $table . "
-								(contentor_id, status, status_time)
-								VALUES
-								(:contentor_id, :status, NOW())";
-			$binds = array(
-				'contentor_id'	=> $contentorID,
-				'status'		=> 'Sent for localisation to: ' . $targetLocale,
-			);
-			if(!$writeConnection->query($query, $binds)) {
-				Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing status to DB'));
-			} else {
-				// Unflag the product
-				$productID = $product->getId();
-				$attribute = 'contentor_localize_me';
-				if(Mage::getResourceModel('catalog/product')->getAttributeRawValue($productID, $attribute, $targetID)) {
-					Mage::app()->setCurrentStore($targetID);
-					$product->setData($attribute, 0);
-					$product->getResource()->saveAttribute($product, $attribute);
-				}
-				return true;
-			}
-		}
+
+		$connection->query($query, $binds);
+
+		
+		$typeTable = $this->_resource->getTableName('contentor_type');
+		$typeQuery = "INSERT INTO `" . $typeTable . "` (`contentor_id`, `type`) VALUES (:contentor_id, 'product')";
+		$typeBinds = array('contentor_id' => $contentorID);
+		
+		$connection->query($typeQuery, $typeBinds);
+
+		
+		$statusTable = $this->_resource->getTableName('contentor_status');
+		$statusQuery = "INSERT INTO " . $statusTable . "
+							(contentor_id, status, status_time)
+							VALUES
+							(:contentor_id, :status, NOW())";
+		
+		$statusBinds = array(
+			'contentor_id'	=> $contentorID,
+			'status'		=> 'Sent for localisation to: ' . $targetLocale,
+		);
+		
+		$connection->query($statusQuery, $statusBinds);
 	}
 	
 	public static function logSentCategory($contentorID, $cat_id, $sourceLocale, $targetLocale, $targetID, $type) {
@@ -339,11 +336,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 
-	public static function send($request) {
-		$token = self::getToken();
-		$url = self::getURL();
+	public function send($request) {
+		$token = $this->getToken();
+		$url = $this->getURL() . 'content';
 		
-		$request = Mage::getModel('Contentor_LocalizationApi/Hooks')->beforeSend($request);
+		//$request = Mage::getModel('Contentor_LocalizationApi/Hooks')->beforeSend($request);
 		// Curl the object and get result
 		$entry = json_encode($request);
 
@@ -357,52 +354,59 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		if($response = curl_exec($ch)) {
 			$response = json_decode($response, true);
 			if(!isset($response['id'])) {
-				Mage::log($response, null, 'contentor.log');
+				// No ID returned
+				$contentorID = 'No ID returned';
+			} else {
+				$contentorID = $response['id'];
 			}
-			$contentorID = $response['id'];
 			curl_close($ch);
 			return $contentorID;
 		} else {
-			Mage::log(curl_getinfo($ch), null, 'contentor.log');
+			//Mage::log(curl_getinfo($ch), null, 'contentor.log');
 			curl_close($ch);
-			return false;
+			return 'Curl failed';
 		}
 
 	}
 
-	public static function receive($date) {
-		$token = self::getToken();
-		$url = self::getURL();
+	public function receive($date) {
+		$token = $this->getToken();
+		$url = $this->getURL() . 'content';
 		// New url with new uery for modified!
 		$args = array('criteria'=>array(array('type'=>'modified','criteria'=>array('from'=>$date,'to'=>'tomorrow'))),'sortBy'=>array('created:desc'));
 		$query = array('query' => json_encode($args));
 		$queryParams = http_build_query($query);
 		$url .= '?' . $queryParams;
 		// Result
-		$result = self::getCurl($token, $url);
+		$result = $this->getCurl($token, $url);
+		
 		if($result->total > 0) {
 			// Process results from page 1
 			foreach($result->requests as $request) {
 				// This is a request, so fint out what happend with it, pending, confirmed, canceled or completed
 				$requestId = $request->id;
 				$newState = $request->state;
-				$currentStatus = self::getRequestStatus($request->id);
+				$currentStatus = $this->getRequestStatus($request->id);
+
 				if($currentStatus['state'] != $newState && $currentStatus['state']) {
 					// OK, I have to do stuff!
 					if($newState == 'completed') {
 						// Put product
 						if($currentStatus['type'] == 'product') {
-							self::putProduct($request);
+							$this->_logger->addDebug('Product Ready');
+							$this->putProduct($request);
 						} else if($currentStatus['type'] == 'category') {
-							self::putCategory($request);
+							$this->_logger->addDebug('Category Ready');
+							//self::putCategory($request);
 						} else if($currentStatus['type'] == 'cmspage') {
-							self::putCmspage($request);
+							$this->_logger->addDebug('CMS Page Ready');
+							//self::putCmspage($request);
 						} else {
-							Mage::log($id . ' had no type to be found.', null, 'contentor.log');
+							$this->_logger->addDebug($id . ' had no type to be found.');
 						}
 					} else {
 						// The state changed, so I have to log it!
-						self::logStateChange($request, $currentStatus['type']);						
+						//self::logStateChange($request, $currentStatus['type']);						
 					}
 				}
 			}
@@ -421,17 +425,20 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 							if($newState == 'completed') {
 								// Put product
 								if($currentStatus['type'] == 'product') {
-									self::putProduct($request);
+									$this->_logger->addDebug('Product Ready');
+									//self::putProduct($request);
 								} else if($currentStatus['type'] == 'category') {
-									self::putCategory($request);
+									$this->_logger->addDebug('Product Ready');
+									//self::putCategory($request);
 								} else if($currentStatus['type'] == 'cmspage') {
-									self::putCmspage($request);
+									$this->_logger->addDebug('Product Ready');
+									//self::putCmspage($request);
 								} else {
-									Mage::log($id . ' had no type to be found.', null, 'contentor.log');
+									$this->_logger->addDebug($id . ' had no type to be found.');
 								}
 							} else {
 								// The state changed, so I have to log it!
-								self::logStateChange($request, $currentStatus['type']);
+								//self::logStateChange($request, $currentStatus['type']);
 							}
 						}
 					}
@@ -544,66 +551,56 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$writeConnection->query($query, $binds);
 	}
 
-	protected static function putProduct($object) {
+	protected function putProduct($object) {
 		// Get sku and target store from Magento DB
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_products";
+		
+		$connection = $this->_resource->getConnection('core_read');
+		$table = $this->_resource->getTableName('contentor_products');
+		
 		$query = "SELECT sku, target_store FROM `" . $table . "` WHERE `contentor_id` = :contentor_id AND completed_time IS NULL";
 		$binds = array('contentor_id' => $object->id);
-		if($productInfo = $readConnection->fetchRow($query, $binds)) {
+		
+		if($productInfo = $connection->fetchRow($query, $binds)) {
 
-			$product = Mage::getModel('catalog/product')->setStoreId($productInfo['target_store'])->loadByAttribute('sku',$productInfo['sku']);
+			$this->_logger->addDebug($productInfo['sku']);
+			
+			$product = $this->_productFactory->create()->setStoreId($productInfo['target_store'])->loadByAttribute('sku',$productInfo['sku']);
+			
 			if($product) {
 				// setData on product depending on licalizationsfields received on the right store
-				Mage::app()->setCurrentStore($productInfo['target_store']);
-				if(!Mage::getModel('Contentor_LocalizationApi/Hooks')->beforeSave($object, 'product', $product)) {
-					return false;
-					exit;
-				}
-				$images = array();
+				$this->_logger->addDebug($product->getId());
+				
 				foreach($object->fields as $field) {
 					if($field->type == 'localizable') {
 						// Update
 						$attribute = substr($field->id, 0, -4);
-						if(substr($attribute,0,6) == 'image_') {
-							// This is image lable
-							$newValue = str_replace(array('\n','\r'), '', $field->value);
-							$newValue = htmlspecialchars($newValue, ENT_QUOTES, 'UTF-8');
-							$file = substr($attribute, 6);
-							$images[$file] = $newValue;
-						} else {
-							if($attribute == 'name' && Mage::getStoreConfig('contentor_options/contentor_automation/contentor_autourlgenerate')) {
-								$urlKey = Mage::getModel('catalog/product_url')->formatUrlKey($field->value);
-								$product->setUrlKey($urlKey);
-								$product->getResource()->saveAttribute($product, 'url_key');
-							} else if($attribute == 'url_key') {
-								$urlKey = true;
-							}
-							$product->setData($attribute, $field->value);
-							$product->getResource()->saveAttribute($product, $attribute);
+						if($attribute == 'name' && false) {
+							$urlKey = Mage::getModel('catalog/product_url')->formatUrlKey($field->value);
+							$product->setUrlKey($urlKey);
+							$product->getResource()->saveAttribute($product, 'url_key');
+						} else if($attribute == 'url_key') {
+							$urlKey = true;
 						}
+						$product->setData($attribute, $field->value);
+						
 					}
 				}
+				
+				// Set anabled if in settings
+				/*
 				if(Mage::getStoreConfig('contentor_options/contentor_automation/contentor_import_status')) {
 					// Set product enabled
 					$product->setStatus(1);
 				}
-				if(count($images)) {
-					// I have images to update!
-					$product = Mage::getModel('catalog/product')->load($product->getId());
-					$gallery = $product->getTypeInstance(true)->getSetAttributes($product);
-					$mediaGalleryBackendModel = $gallery['media_gallery']->getBackend();
-					foreach($images as $imageFile => $imageLable) {
-						$mediaGalleryBackendModel->updateImage($product, $imageFile, array('label' => $imageLable));
-					}
-				}
+			
 				if(!$urlKey) {
 					$product->setUrlKey(false);
 				}
+				*/
 				$product->save();
 				
 				// Write notice in Magento DB, set completed date in DB
+				/*
 				$resource = Mage::getSingleton('core/resource');
 				$writeConnection = $resource->getConnection('core_write');
 				$table = Mage::getConfig()->getTablePrefix()."contentor_products";
@@ -627,9 +624,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 						'status'		=> 'Received as completed for ' . $object->language->target . ', completion time: ' . date("Y-m-d H:i:s", strtotime($object->completed)),
 				);
 				$writeConnection->query($query, $binds);
+				*/
 			}
 		} else {
 			// Not waiting for a product with this id
+			$this->_logger->addDebug('no products');
 			return false;
 		}
 	}
@@ -778,7 +777,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 
-	protected static function getCurl($token, $url) {
+	protected function getCurl($token, $url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Authorization: Bearer '.$token, 'Accept: application/json'));
@@ -787,11 +786,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$response = curl_exec($ch);
 		// If error log curl_getinfo();
 		if(!$response) {
-			Mage::log(curl_getinfo($ch), null, 'contentor.log');
+			$this->_logger->addDebug(curl_getinfo($ch));
 		}
 		curl_close($ch);
-		$response =  json_decode($response);
-		$return = Mage::getModel('Contentor_LocalizationApi/Hooks')->afterReceive($response);
+		$return =  json_decode($response);
+		
 		return $return;
 	}
 
@@ -808,8 +807,9 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		return $this->_helper->getConfig('contentor_options/token/apitoken');
 	}
 
-	protected static function getRequestStatus($id) {
-		$return['type'] = self::getType($id);
+	protected function getRequestStatus($id) {
+		$return['type'] = $this->getType($id);
+		
 		if($return['type'] == 'product') {
 			$tableName = 'contentor_products';
 		} else if($return['type'] == 'category') {
@@ -819,42 +819,26 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		} else {
 			return false;
 		}
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$table = Mage::getConfig()->getTablePrefix() . $tableName;
-		$query = "SELECT `state`, `completed_time` FROM `" . $table . "` WHERE `contentor_id` = :contentor_id";
+		
+		$connection = $this->_resource->getConnection('core_read');
+		$typeTable = $this->_resource->getTableName($tableName);
+		$query = "SELECT `state` FROM `" . $typeTable . "` WHERE `contentor_id` = :contentor_id";
 		$binds = array('contentor_id' => $id);
-		$requestInfo = $readConnection->fetchAll($query, $binds);
-		if($requestInfo[0]['state'] != null) {
-			$return['state'] = $requestInfo[0]['state'];
-			return $return;
-		} else {
-			if($requestInfo[0]['completed_time'] != null) {
-				$return['state'] = 'completed'; 
-				return $return;
-			} else {
-				$return['state'] = 'pending'; 
-				return $return;
-			}
-		}
+		$requestInfo = $connection->fetchAll($query, $binds);
+		$return['state'] = $requestInfo[0]['state'];
+
+		return $return;
 	}
 
-	protected static function getType($id) {
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$typeTable = Mage::getConfig()->getTablePrefix()."contentor_type";
+	protected function getType($id) {
+		$connection = $this->_resource->getConnection('core_read');
+		$typeTable = $this->_resource->getTableName('contentor_type');
 		$query = "SELECT `type` FROM `" . $typeTable . "` WHERE `contentor_id` = :contentor_id";
 		$binds = array('contentor_id' => $id);
-		if($return = $readConnection->fetchOne($query, $binds)) {
-			return $return;
+		if($type = $connection->fetchOne($query, $binds)) {
+			return $type;
 		} else {
-			// Check the old way!
-			$producttable = Mage::getConfig()->getTablePrefix()."contentor_products";
-			$categorytable = Mage::getConfig()->getTablePrefix()."contentor_categories";
-			$query = "SELECT CASE WHEN (EXISTS (SELECT `contentor_id` FROM `" . $producttable . "` WHERE `contentor_id` = :contentor_id)) THEN 'product' WHEN (EXISTS (SELECT `contentor_id` FROM `" . $categorytable . "` WHERE `contentor_id` = :contentor_id)) THEN 'category' ELSE 'nope' END AS 'type'";
-			$binds = array('contentor_id' => $id);
-			$return = $readConnection->fetchOne($query, $binds);
-			return $return;
+			return false;
 		}
 	}
 	

@@ -5,6 +5,10 @@
 print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">klick</a>';
 ?>
 <p>
+	<form method="post" action="<?php print $this->getUrl("contentor/administration/postproduct/"); ?>" name="contentorproducts">
+	<input type="hidden" name="returnurl" value ="<?php print $this->getProduct()->getProductUrl(); ?>">
+	<input type="hidden" name="productid" value ="<?php print $this->getProduct()->getId(); ?>">
+
 	<h2>Source store locale</h2>
 	<select name="source">
 		<option value="">Choose source language</option>
@@ -43,14 +47,14 @@ print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">k
 					foreach($store['children'] as $storeview) {
 						$id = $storeview['value'];
 						$name = $storeview['label'];
-						$locale = 'sv'; 
+						$locale = $this->getStoreLocale($id);
 						//str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
 						if(in_array($id, $defaultstores)) {
 							$checked = 'checked';
 						} else {
 							$checked = '';
 						}
-						print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" name="targets[]" value="' . $id . '" id="store_' . $id . '" ' . $checked . '> ' . $name . ' (' . $locale .')</label><br>';
+						print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" name="targets[]" value="' . $id . ':' . $locale . '" id="store_' . $id . '" ' . $checked . '> ' . $name . ' (' . $locale .')</label><br>';
 					}
 				}
 			}
@@ -59,6 +63,7 @@ print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">k
 </p>
 <br>
 <p>
+	<fieldset>
 	<!-- Data to send here! -->
 	<h2>Data to send</h2>
 	<?php
@@ -66,25 +71,92 @@ print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">k
 		foreach($data as $value) {
 			if($value['id'] != 'auto_sku') {
 				print '<b>' . $value['name'] . '</b><br>';
-				print $value['value'] . '<br>';
+				print $value['value'] . '<br><br>';
 			}
 		}
 	
 	
 	?>
+	</fieldset>
 </p>
-
+<br>
 <p>
 	<!-- Extra context! -->
 
 </p>
-
+<br>
 <p>
  <input type="submit" value="Send for localization" name="submitme">
+ </form>
 </p>
-
+<br>
 <p>
 	<h2>Request status</h2>
+			<?php 
+			// Get and print log for this product
+			$messages = $this->getRequestStatus($this->getProduct()->getSku());
+			$lastId = '';
+			if(count($messages)) {
+				// I have content
+				print '<ul class="messages">';
+				foreach($messages as $message) {
+					if($message['contentor_id'] != $lastId) {
+
+						// If not for the first time ever print the end of prev.
+						if($lastId) {
+							print '</ul>';
+							print '</li>';
+						}
+						
+						// New request, print header and button if needed
+						if($message['state'] == 'canceled') {
+							// Product canceled
+							print '<li class="error-msg">';
+							print '<h4>Canceled</h4>';
+						} else if($message['state'] == 'confirmed') {
+							print '<li class="notice-msg">';
+							print '<h4 style="float:left">Confirmed</h4>';
+							print '<div class="form-buttons"></div>';
+							print '<div style="clear:both"></div>';
+							
+						} else if($message['state'] == 'completed' || $message['completed_time'] != null) {
+							// Product completed
+							print '<li class="success-msg">';
+							print '<h4>Completed ' . $message['completed_time'] . '</h4>';
+						} else {
+							print '<li class="notice-msg">';
+							print '<h4 style="float:left">Sent ' . $message['sent_time'] . '</h4>';
+							print '<div class="form-buttons"></div>';
+							print '<div style="clear:both"></div>';
+							
+						}
+						
+						print '<p>Target store: ' . $message['target_store'] . '<br>';
+						if(!empty($message['type'])) {
+							$type = $message['type'];
+						} else {
+							$type = 'standard';
+						}
+						print 'Request type: ' . $type . '</p>';
+
+						// Print the status rows
+						$lastId = $message['contentor_id'];
+						print '<hr>';
+						print '<p><h5>Log messages</h5>';
+						print '<ul>';
+					}
+					
+					// This happens every iteration
+					print '<li><i>' . $message['status_time'] . '</i> - ' . $message['status'] . '</li>';
+					
+				}
+				print '</ul></p>';
+				print '</li>';
+				print '</ul>';
+			} else {
+				print "<i>(No events to show)</i>";
+			}
+			?>
 
 </p>
 
