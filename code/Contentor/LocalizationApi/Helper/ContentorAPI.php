@@ -583,12 +583,12 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 					}
 				}
 				
-				/*
+				
 				if($this->_helper->getConfig('contentor_options/automation/import')) {
 					// Set product enabled
 					$product->setStatus(1);
 				}
-			
+				/*
 				if(!$urlKey) {
 					$product->setUrlKey(false);
 				}
