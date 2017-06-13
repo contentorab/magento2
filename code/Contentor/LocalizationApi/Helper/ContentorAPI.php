@@ -10,12 +10,14 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			\Contentor\LocalizationApi\Helper\Data $helper,
 			\Magento\Catalog\Model\ProductFactory $productFactory,
 			\Magento\Framework\App\ResourceConnection $resource,
+			\Magento\Store\Model\StoreManagerInterface $storeManager,
 			\Psr\Log\LoggerInterface $logger,
 			array $data = []
 			) {
 				$this->_helper = $helper;
 				$this->_productFactory = $productFactory;
 				$this->_resource = $resource;
+				$this->_storeManager = $storeManager;
 				$this->_logger = $logger;
 				parent::__construct($context, $data);
 	}
@@ -406,7 +408,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 						}
 					} else {
 						// The state changed, so I have to log it!
-						//self::logStateChange($request, $currentStatus['type']);						
+						//$this->logStateChange($request, $currentStatus['type']);						
 					}
 				}
 			}
@@ -426,7 +428,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 								// Put product
 								if($currentStatus['type'] == 'product') {
 									$this->_logger->addDebug('Product Ready');
-									//self::putProduct($request);
+									$this->putProduct($request);
 								} else if($currentStatus['type'] == 'category') {
 									$this->_logger->addDebug('Product Ready');
 									//self::putCategory($request);
@@ -562,33 +564,27 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		
 		if($productInfo = $connection->fetchRow($query, $binds)) {
 
-			$this->_logger->addDebug($productInfo['sku']);
+			$this->_logger->addDebug('Product: ' . $productInfo['sku'] . ' Store: ' . $productInfo['target_store']);
 			
 			$product = $this->_productFactory->create()->setStoreId($productInfo['target_store'])->loadByAttribute('sku',$productInfo['sku']);
 			
 			if($product) {
 				// setData on product depending on licalizationsfields received on the right store
+				$this->_storeManager->setCurrentStore($productInfo['target_store']);
+				
 				$this->_logger->addDebug($product->getId());
 				
 				foreach($object->fields as $field) {
 					if($field->type == 'localizable') {
 						// Update
 						$attribute = substr($field->id, 0, -4);
-						if($attribute == 'name' && false) {
-							$urlKey = Mage::getModel('catalog/product_url')->formatUrlKey($field->value);
-							$product->setUrlKey($urlKey);
-							$product->getResource()->saveAttribute($product, 'url_key');
-						} else if($attribute == 'url_key') {
-							$urlKey = true;
-						}
 						$product->setData($attribute, $field->value);
 						
 					}
 				}
 				
-				// Set anabled if in settings
 				/*
-				if(Mage::getStoreConfig('contentor_options/contentor_automation/contentor_import_status')) {
+				if($this->_helper->getConfig('contentor_options/automation/import')) {
 					// Set product enabled
 					$product->setStatus(1);
 				}
@@ -599,32 +595,33 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				*/
 				$product->save();
 				
-				// Write notice in Magento DB, set completed date in DB
-				/*
-				$resource = Mage::getSingleton('core/resource');
-				$writeConnection = $resource->getConnection('core_write');
-				$table = Mage::getConfig()->getTablePrefix()."contentor_products";
+				// Log this
+				$connection = $this->_resource->getConnection('core_write');
+				$table = $this->_resource->getTableName('contentor_products');
+				
+				$query = "SELECT sku, target_store FROM `" . $table . "` WHERE `contentor_id` = :contentor_id AND completed_time IS NULL";
+				$binds = array('contentor_id' => $object->id);
+				
 				$query = "UPDATE " . $table . " SET `completed_time` = :completed_time, `state` = 'completed' WHERE `contentor_id` = :contentor_id";
 				$binds = array(
 						'completed_time'	=> $object->completed,
 						'contentor_id'		=> $object->id,
 				);
-				if(!$writeConnection->query($query, $binds)) {
-					// Set notice that something didn't work!
+				if(!$connection->query($query, $binds)) {
+					$this->_logger->addDebug('Couldn\'t update request status');
 					return false;
 				}
 
-				$resource = Mage::getSingleton('core/resource');
-				$writeConnection = $resource->getConnection('core_write');
-				$table = Mage::getConfig()->getTablePrefix()."contentor_status";
+				$table = $this->_resource->getTableName('contentor_status');
 				$query = "INSERT INTO " . $table . " (`contentor_id`, `status`, `status_time`) 
 						VALUES (:contentor_id, :status, NOW())";
 				$binds = array(
 						'contentor_id'	=> $object->id,
 						'status'		=> 'Received as completed for ' . $object->language->target . ', completion time: ' . date("Y-m-d H:i:s", strtotime($object->completed)),
 				);
-				$writeConnection->query($query, $binds);
-				*/
+				$connection->query($query, $binds);
+				
+				return true;
 			}
 		} else {
 			// Not waiting for a product with this id
