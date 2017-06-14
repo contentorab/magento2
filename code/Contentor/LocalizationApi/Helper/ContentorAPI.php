@@ -10,16 +10,15 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			\Contentor\LocalizationApi\Helper\Data $helper,
 			\Magento\Catalog\Model\ProductFactory $productFactory,
 			\Magento\Framework\App\ResourceConnection $resource,
-			\Magento\Store\Model\StoreManagerInterface $storeManager,
-			\Psr\Log\LoggerInterface $logger,
-			array $data = []
+			\Magento\Store\Model\StoreManagerInterface $storeManager
+			//\Psr\Log\LoggerInterface $logger
 			) {
 				$this->_helper = $helper;
 				$this->_productFactory = $productFactory;
 				$this->_resource = $resource;
 				$this->_storeManager = $storeManager;
-				$this->_logger = $logger;
-				parent::__construct($context, $data);
+				$this->_logger = $context->getLogger();
+				parent::__construct($context);
 	}
 	
 	public function getTestText($id) {

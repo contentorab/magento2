@@ -7,7 +7,6 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
 use Magento\Framework\View\Element\Context;
 use Magento\Store\Model\StoreRepository;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class SourceRenderer extends \Magento\Framework\View\Element\Html\Select {
 	/**
@@ -25,11 +24,11 @@ class SourceRenderer extends \Magento\Framework\View\Element\Html\Select {
 	 * @param \Magento\Directory\Model\ResourceModel\Country\CollectionFactory $countryCollectionFactory
 	 * @param array $data
 	 */
-	public function __construct(Context $context, StoreRepository $storeRepository, ScopeConfigInterface $scopeConfig, array $data = [])
+	public function __construct(Context $context, StoreRepository $storeRepository, array $data = [])
 	{
 				parent::__construct($context, $data);
 				$this->_storeRepository = $storeRepository;
-				$this->_scopeConfig = $scopeConfig;
+				$this->_scopeConfig = $context->getScopeConfig();
 	}
 	/**
 	 * Returns countries array

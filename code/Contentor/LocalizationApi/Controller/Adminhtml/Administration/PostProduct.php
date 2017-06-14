@@ -8,13 +8,12 @@ class PostProduct extends \Magento\Framework\App\Action\Action
 			\Magento\Framework\App\Action\Context $context,
 			\Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi,
 			\Magento\Framework\App\Request\Http $request,
-			\Magento\Catalog\Model\ProductFactory $productFactory,
-			array $data = []
+			\Magento\Catalog\Model\ProductFactory $productFactory
 			) {
 				$this->_contentorApi = $contentorApi;
 				$this->_request = $request;
 				$this->_productfactory = $productFactory;
-				parent::__construct($context, $data);
+				parent::__construct($context);
 	}
 	
     public function execute()

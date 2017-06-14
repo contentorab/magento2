@@ -2,7 +2,7 @@
 // $product = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/token/apitoken');
 // $myTestText = $this->helper('Contentor\LocalizationApi\Helper\ContentorAPI')->getTestText(12);
 
-print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">klick</a>';
+//print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">klick</a>';
 ?>
 <p>
 	<form method="post" action="<?php print $this->getUrl("contentor/administration/postproduct/"); ?>" name="contentorproducts">
@@ -25,7 +25,7 @@ print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">k
 			?>
 	</select>
 </p>
-<br>
+<br><br><br>
 <p>
 	<h2>Target store view(s)</h2>
 			<?php
@@ -61,37 +61,14 @@ print '<a href="' . $this->getUrl("contentor/administration/checktoken/") . '">k
 
 			?>
 </p>
-<br>
-<p>
-	<fieldset>
-	<!-- Data to send here! -->
-	<h2>Data to send</h2>
-	<?php
-		$data = $this->helper('Contentor\LocalizationApi\Helper\ContentorAPI')->getFieldData($this->getProduct(), 'product');
-		foreach($data as $value) {
-			if($value['id'] != 'auto_sku') {
-				print '<b>' . $value['name'] . '</b><br>';
-				print $value['value'] . '<br><br>';
-			}
-		}
-	
-	
-	?>
-	</fieldset>
-</p>
-<br>
-<p>
-	<!-- Extra context! -->
-
-</p>
-<br>
+<br><br><br>
 <p>
  <input type="submit" value="Send for localization" name="submitme">
  </form>
 </p>
-<br>
+<br><br><br>
 <p>
-	<h2>Request status</h2>
+	<h3>Request status</h3>
 			<?php 
 			// Get and print log for this product
 			$messages = $this->getRequestStatus($this->getProduct()->getSku());

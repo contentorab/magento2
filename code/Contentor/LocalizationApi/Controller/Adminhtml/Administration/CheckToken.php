@@ -6,11 +6,10 @@ class CheckToken extends \Magento\Framework\App\Action\Action
 	
 	public function __construct(
 			\Magento\Framework\App\Action\Context $context,
-			\Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi,
-			array $data = []
+			\Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi
 			) {
 				$this->_contentorApi = $contentorApi;
-				parent::__construct($context, $data);
+				parent::__construct($context);
 	}
 	
     public function execute()

@@ -5,7 +5,6 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\Locale\ListsInterface;
 use Magento\Store\Model\System\Store;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
  
 class Localization extends \Magento\Framework\View\Element\Template
@@ -15,21 +14,16 @@ class Localization extends \Magento\Framework\View\Element\Template
      */
     protected $_template = 'product/edit/localization.phtml';
  
-    /**
-     * Core registry
-     *
-     * @var Registry
-     */
     protected $_coreRegistry;
     protected $_resolver;
     protected $_systemStores;
+    protected $_scopeConfig;
  
     public function __construct(
         Context $context,
         Registry $registry,
     	ListsInterface $localeList,
     	Store $systemStores,
-    	ScopeConfigInterface $scopeConfig,
     	ResourceConnection	$resource,
         array $data = []
     )
@@ -37,9 +31,8 @@ class Localization extends \Magento\Framework\View\Element\Template
     	$this->_coreRegistry = $registry;
     	$this->_localeList = $localeList;
     	$this->_systemStores = $systemStores;
-    	$this->_scopeconfig = $scopeConfig;
     	$this->_resource = $resource;
-    	//$this->_logger->addDebug($systemStores);
+    	$this->_scopeConfig = $context->getScopeConfig();
         parent::__construct($context, $data);
     }
  
@@ -65,10 +58,10 @@ class Localization extends \Magento\Framework\View\Element\Template
     
     public function getStoreLocale($id)
     {
-    	return $this->_scopeconfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+    	return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
     }
     
-    public  function getrequestStatus($sku) {
+    public  function getRequestStatus($sku) {
     	$connection = $this->_resource->getConnection('core_read');
     	$statustable = $table = $this->_resource->getTableName('contentor_status');
     	$producttable = $table = $this->_resource->getTableName('contentor_products');
