@@ -414,12 +414,12 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				for($i = 2;$i <= $result->pages;$i++) {
 					// Curl page number $i
 					$pageUrl = $url . '&page=' . $i;
-					$pageResult = self::getCurl($token, $pageUrl);
+					$pageResult = $this->getCurl($token, $pageUrl);
 					foreach($pageResult->requests as $request) {
 						// This is a request, so fint out what happend with it, pending, confirmed, canceled or completed
 						$requestId = $request->id;
 						$newState = $request->state;
-						$currentStatus = self::getRequestStatus($request->id);
+						$currentStatus = $this->getRequestStatus($request->id);
 						if($currentStatus['state'] != $newState && $currentStatus['state']) {
 							// OK, I have to do stuff!
 							if($newState == 'completed') {
