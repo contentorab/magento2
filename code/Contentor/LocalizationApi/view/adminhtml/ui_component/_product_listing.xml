@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+	<listingToolbar name="listing_top">
+        <massaction name="listing_massaction">
+            <action name="export_products">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">export_products</item>
+                        <item name="label" xsi:type="string" translate="true">Send for Localization</item>
+                        <item name="url" xsi:type="url" path="contentor/administration/postbulkproducts"/>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
+    </listingToolbar>
+</listing>
