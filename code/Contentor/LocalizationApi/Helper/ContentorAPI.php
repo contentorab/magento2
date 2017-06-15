@@ -562,15 +562,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		
 		if($productInfo = $connection->fetchRow($query, $binds)) {
 
-			$this->_logger->addDebug('Product: ' . $productInfo['sku'] . ' Store: ' . $productInfo['target_store']);
-			
 			$product = $this->_productFactory->create()->setStoreId($productInfo['target_store'])->loadByAttribute('sku',$productInfo['sku']);
 			
 			if($product) {
 				// setData on product depending on licalizationsfields received on the right store
 				$this->_storeManager->setCurrentStore($productInfo['target_store']);
-				
-				$this->_logger->addDebug($product->getId());
 				
 				foreach($object->fields as $field) {
 					if($field->type == 'localizable') {
