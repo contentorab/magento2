@@ -394,7 +394,6 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 					if($newState == 'completed') {
 						// Put product
 						if($currentStatus['type'] == 'product') {
-							$this->_logger->addDebug('Product Ready');
 							$this->putProduct($request);
 						} else if($currentStatus['type'] == 'category') {
 							$this->_logger->addDebug('Category Ready');
@@ -407,7 +406,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 						}
 					} else {
 						// The state changed, so I have to log it!
-						//$this->logStateChange($request, $currentStatus['type']);						
+						$this->logStateChange($request, $currentStatus['type']);						
 					}
 				}
 			}
@@ -426,7 +425,6 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 							if($newState == 'completed') {
 								// Put product
 								if($currentStatus['type'] == 'product') {
-									$this->_logger->addDebug('Product Ready');
 									$this->putProduct($request);
 								} else if($currentStatus['type'] == 'category') {
 									$this->_logger->addDebug('Product Ready');
@@ -439,7 +437,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 								}
 							} else {
 								// The state changed, so I have to log it!
-								//self::logStateChange($request, $currentStatus['type']);
+								$this->logStateChange($request, $currentStatus['type']);
 							}
 						}
 					}
@@ -509,9 +507,8 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 	
-	protected static function logStateChange($response, $type) {
-		$resource = Mage::getSingleton('core/resource');
-		$writeConnection = $resource->getConnection('core_write');
+	protected function logStateChange($response, $type) {
+		$connection = $this->_resource->getConnection('core_write');
 		
 		switch ($type) {
 			case 'product':
@@ -525,13 +522,15 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				break;
 		}
 		
-		$table = Mage::getConfig()->getTablePrefix() . $tableName;
+		$table = $this->_resource->getTableName($tableName);
+		
 		$query = "UPDATE `" . $table . "` SET `state` = :state WHERE `contentor_id` = :contentor_id";
 		$binds = array(
 				'state'			=> $response->state,
 				'contentor_id'	=> $response->id,
 		);
-		$writeConnection->query($query, $binds);
+		
+		$connection->query($query, $binds);
 		
 		if($response->state == 'confirmed') {
 			$statusMessage = 'Order with this entry was confirmed';
@@ -542,14 +541,14 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			$statusMessage = 'Status was change to ' . $response->state;
 		}
 		
-		$table = Mage::getConfig()->getTablePrefix()."contentor_status";
+		$table = $this->_resource->getTableName('contentor_status');
 		$query = "INSERT INTO " . $table . " (`contentor_id`, `status`, `status_time`)
 							VALUES (:contentor_id, :status, NOW())";
 		$binds = array(
 				'contentor_id'	=> $response->id,
 				'status'		=> $statusMessage
 		);
-		$writeConnection->query($query, $binds);
+		$connection->query($query, $binds);
 	}
 
 	protected function putProduct($object) {
