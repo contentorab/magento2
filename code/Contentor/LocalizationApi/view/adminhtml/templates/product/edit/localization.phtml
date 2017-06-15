@@ -63,7 +63,7 @@
 </p>
 <br><br><br>
 <p>
- <input type="submit" value="Send for localization" name="submitme">
+ <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for localization</span></button>
  </form>
 </p>
 <br><br><br>
@@ -75,37 +75,29 @@
 			$lastId = '';
 			if(count($messages)) {
 				// I have content
-				print '<ul class="messages">';
 				foreach($messages as $message) {
 					if($message['contentor_id'] != $lastId) {
 
 						// If not for the first time ever print the end of prev.
 						if($lastId) {
-							print '</ul>';
-							print '</li>';
+							print '</div>';
 						}
 						
 						// New request, print header and button if needed
 						if($message['state'] == 'canceled') {
 							// Product canceled
-							print '<li class="error-msg">';
+							print '<div style="background-color:#faebe7; border: 1px solid black; padding:10px; margin-bottom:10px;">';
 							print '<h4>Canceled</h4>';
 						} else if($message['state'] == 'confirmed') {
-							print '<li class="notice-msg">';
-							print '<h4 style="float:left">Confirmed</h4>';
-							print '<div class="form-buttons"></div>';
-							print '<div style="clear:both"></div>';
-							
-						} else if($message['state'] == 'completed' || $message['completed_time'] != null) {
+							print '<div style="background-color:#fffbf0; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+							print '<h4>Confirmed</h4>';
+						} else if($message['state'] == 'completed') {
 							// Product completed
-							print '<li class="success-msg">';
+							print '<div style="background-color:#eff5ea; border: 1px solid black; padding:10px; margin-bottom:10px;">';
 							print '<h4>Completed ' . $message['completed_time'] . '</h4>';
 						} else {
-							print '<li class="notice-msg">';
-							print '<h4 style="float:left">Sent ' . $message['sent_time'] . '</h4>';
-							print '<div class="form-buttons"></div>';
-							print '<div style="clear:both"></div>';
-							
+							print '<div style="background-color:#fffbf0; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+							print '<h4>Sent ' . $message['sent_time'] . '</h4>';
 						}
 						
 						print '<p>Target store: ' . $message['target_store'] . '<br>';
@@ -120,16 +112,13 @@
 						$lastId = $message['contentor_id'];
 						print '<hr>';
 						print '<p><h5>Log messages</h5>';
-						print '<ul>';
 					}
 					
 					// This happens every iteration
-					print '<li><i>' . $message['status_time'] . '</i> - ' . $message['status'] . '</li>';
+					print '<i>' . $message['status_time'] . '</i> - ' . $message['status'] . '<br>';
 					
 				}
-				print '</ul></p>';
-				print '</li>';
-				print '</ul>';
+				print '</p>';
 			} else {
 				print "<i>(No events to show)</i>";
 			}

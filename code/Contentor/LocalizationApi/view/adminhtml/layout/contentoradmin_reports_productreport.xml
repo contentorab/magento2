@@ -1,0 +1,7 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Contentor\LocalizationApi\Block\Adminhtml\Reports\ProductReportBlock" name="example_block_name" template="Contentor_LocalizationApi::reports/productreport.phtml"/>
+        </referenceContainer>
+    </body>
+</page>
