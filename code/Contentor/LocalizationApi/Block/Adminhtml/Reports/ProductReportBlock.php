@@ -6,6 +6,7 @@ use \Magento\Framework\View\Element\Template\Context;
 use \Magento\Framework\Locale\ListsInterface;
 use \Magento\Store\Model\StoreRepository;
 use \Magento\Catalog\Model\ProductFactory;
+use \Magento\Framework\App\Request\Http;
 
 class ProductReportBlock extends \Magento\Framework\View\Element\Template
 {
@@ -15,13 +16,15 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
 								ResourceConnection $resource, 
 								ListsInterface $localeList,
 								StoreRepository $storeRepository,
-								ProductFactory $productFactory)
+								ProductFactory $productFactory,
+								Http $request)
 	{
 		$this->_logger = $context->getLogger();
 		$this->_resource = $resource;
 		$this->_localeList = $localeList;
 		$this->_storeRepository = $storeRepository;
 		$this->_productFactory = $productFactory;
+		$this->_request = $request;
 
 		parent::__construct($context);
 	}
@@ -68,5 +71,10 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
 	public function getStoreLocale($id)
 	{
 		return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+	}
+	
+	public function getParameter($id)
+	{
+		return $this->_request->getParam($id);
 	}
 }

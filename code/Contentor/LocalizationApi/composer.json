@@ -1,5 +1,5 @@
 {
-  "name": "contentor/localizationapi",
+  "name": "contentorab/localizationapi",
   "description": "A Magento 2 module that sends and receives product attributes for localization by Contentor",
   "type": "magento2-module",
   "version": "0.0.3",

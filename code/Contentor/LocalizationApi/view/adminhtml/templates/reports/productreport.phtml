@@ -1,15 +1,12 @@
 <?php
-	if(isset($_GET['page'])) {	
-		$page = abs($_GET['page']);
-	} else {
+	$page = abs($block->getParameter('page'));
+	$pagesize = abs($block->getParameter('pagesize'));
+	if(empty($page)) {	
 		$page = 1;
 	}
-	if(isset($_GET['pagesize'])) {
-		$pagesize = abs($_GET['pagesize']);
-	} else {
+	if(empty($pagesize)) {
 		$pagesize = 30;
-	}
-	
+	}	
 	// Pagination $page and $pagesize
 	$tot = $block->getTotal();
 	if($tot > 0) {
