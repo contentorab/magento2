@@ -465,6 +465,6 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 	
 	private function getDEV() {
-		return true;
+		return false;
 	}
 }
