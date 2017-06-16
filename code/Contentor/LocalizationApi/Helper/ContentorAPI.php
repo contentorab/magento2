@@ -18,11 +18,8 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				$this->_resource = $resource;
 				$this->_storeManager = $storeManager;
 				$this->_logger = $context->getLogger();
+				$this->_scopeConfig = $context->getScopeConfig();
 				parent::__construct($context);
-	}
-	
-	public function getTestText($id) {
-		return 'Test text ' . $id;
 	}
 	
 	public function getFieldData($entity, $entityType, $extraField=false) {
@@ -48,7 +45,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				}
 	
 				foreach($fieldArray as $field) {
-					$textLocale = $this->scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $field['store']);
+					$textLocale = $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $field['store']);
 					
 					if($field['attribute'] == 'productURL') {
 						$value = $entity->setStoreId($field['store'])->getUrlInStore();
@@ -82,116 +79,13 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				$messages[] = 'No settings found';
 			}
 			
-		} else if ($entityType == 'category') {
-			$categoryID = $entity->getId();
-			$fieldArray = unserialize(Mage::getStoreConfig('contentor_options/contentor_fields/contentor_category_fields_input', Mage::app()->getStore()));
-			if(is_array($fieldArray)) {
-				$fields[] = array('id' => 'auto_id',
-						'type' => 'internal',
-						'data' => 'string',
-						'value' => $categoryID);
-				// Add extra content if sent
-				if($extraField) {
-					$fields[] = array('id' => 'extraField',
-							'name' => $extraField['name'],
-							'type' => $extraField['type'],
-							'data' => $extraField['data'],
-							'value' => $extraField['value']);
-				}
-				
-				// Loop and add fields as above
-				foreach($fieldArray as $field) {
-					$textLocale = 	Mage::getStoreConfig('general/locale/code', $field['store']);
-					if($field['attribute'] == 'categoryURL') {
-						$value = $entity->getCategoryUrl();
-						$name = 'Category URL';
-					} else {
-						// Mage::getModel('catalog/category')->load($categoryID)->getData();
-						$value 		= 	Mage::getModel('catalog/category')->setStoreId($field['store'])->load($categoryID)->getData($field['attribute']);
-						$name 		=	Mage::getResourceModel('catalog/category')->getAttribute($field['attribute'])->getFrontendLabel();
-						$name		.=	' [' . $textLocale . ']';
-					}
-						
-					if(!isset($n[$field['attribute']])) {
-						$n[$field['attribute']] = 1;
-					} else {
-						$n[$field['attribute']]++;
-					}
-					$id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
-						
-					if($value != '') {
-						$fields[] = array('id'=>$id,
-								'name'=>$name,
-								'type'=>$field['type'],
-								'data'=>$field['data'],
-								'value'=>$value);
-					} else {
-						if(isset($fields['required'])) {
-							$messages[] = 'Required field: [' . $field['attribute'] . '] empty';
-						}
-					}
-				}
-			} else {
-				$messages[] = 'No settings found';
-			}
-			
-		} else if($entityType == 'cmspage') {
-			$cmsPage = $entity;
-			$fieldArray = unserialize(Mage::getStoreConfig('contentor_options/contentor_fields/contentor_cmspage_fields_input', Mage::app()->getStore()));
-			if(is_array($fieldArray)) {
-				$pageData = $cmsPage->getData();
-				$fieldNames = array(
-		        	'title' 			=>	'Page title',
-		        	'identifier'		=>	'URL key',
-		        	'content_heading'	=>	'Content Heading',
-		        	'content'			=>	'Content',
-		        	'meta_keywords'		=>	'Meta Keywords',
-		        	'meta_description'	=>	'Meta Description'
-	        	);
-				$fields[] = array('id' => 'auto_id',
-						'type' => 'internal',
-						'data' => 'string',
-						'value' => $cmsPage->getId());
-				// Add extra content if sent
-				if($extraField) {
-					$fields[] = array('id' => 'extraField',
-							'name' => $extraField['name'],
-							'type' => $extraField['type'],
-							'data' => $extraField['data'],
-							'value' => $extraField['value']);
-				}
-				foreach($fieldArray as $field) {
-					$name = $fieldNames[$field['attribute']];
-					$value = $pageData[$field['attribute']];
-					
-					if(!isset($n[$field['attribute']])) {
-						$n[$field['attribute']] = 1;
-					} else {
-						$n[$field['attribute']]++;
-					}
-					$id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
-					
-					if($value != '') {
-						$fields[] = array('id'=>$id,
-								'name'=>$name,
-								'type'=>$field['type'],
-								'data'=>$field['data'],
-								'value'=>$value);
-					} else {
-						if(isset($fields['required'])) {
-							$messages[] = 'Required field: [' . $field['attribute'] . '] empty';
-						}
-					}
-				}
-			} else {
-				$messages[] = 'No settings found';
-			}
-		}
+		} 
+		
 		if(!count($messages)) {
 			return $fields;
 		} else {
 			$message = implode('<br>', $messages);
-			Mage::throwException(Mage::helper('adminhtml')->__('No data sent!<br>' . $message));
+			$this->_logger->critical('No data sent!<br>' . $message);
 			return false;
 		} 
 	}
@@ -249,94 +143,6 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$connection->query($statusQuery, $statusBinds);
 	}
 	
-	public static function logSentCategory($contentorID, $cat_id, $sourceLocale, $targetLocale, $targetID, $type) {
-		$resource = Mage::getSingleton('core/resource') or die('No recource');
-	
-		$writeConnection = $resource->getConnection('core_write');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_categories";
-		$query = "INSERT INTO " . $table . "
-						  (contentor_id, cat_id, source_locale, target_locale, target_store, sent_time, state, type)
-						  VALUES
-						  (:contentor_id, :sku, :source_locale, :target_locale, :target_store, NOW(), 'pending', :type)";
-		$binds = array(
-				'contentor_id'	=> $contentorID,
-				'sku'			=> $cat_id,
-				'source_locale' => $sourceLocale,
-				'target_locale' => $targetLocale,
-				'target_store'  => $targetID,
-				'type'			=> $type,
-		);
-	
-		if(!$writeConnection->query($query, $binds)) {
-			Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing product to DB'));
-			return false;
-		} else {
-			$typeTable = Mage::getConfig()->getTablePrefix()."contentor_type";
-			$typeQuery = "INSERT INTO `" . $typeTable . "` (`contentor_id`, `type`) VALUES (:contentor_id, 'category')";
-			$typeBinds = array('contentor_id' => $contentorID);
-			$writeConnection->query($typeQuery, $typeBinds);
-			
-			$table = Mage::getConfig()->getTablePrefix()."contentor_status";
-			$query = "INSERT INTO " . $table . "
-								(contentor_id, status, status_time)
-								VALUES
-								(:contentor_id, :status, NOW())";
-			$binds = array(
-					'contentor_id'	=> $contentorID,
-					'status'		=> 'Sent for localisation to: ' . $targetLocale,
-			);
-			if(!$writeConnection->query($query, $binds)) {
-				Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing status to DB'));
-			} else {
-				return true;
-			}
-		}
-	}
-	
-	public static function logSentCmspage($contentorID, $page_id, $sourceLocale, $targetLocale, $targetID, $type) {
-		$resource = Mage::getSingleton('core/resource') or die('No recource');
-	
-		$writeConnection = $resource->getConnection('core_write');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_cmspages";
-		$query = "INSERT INTO " . $table . "
-						  (contentor_id, page_id, source_locale, target_locale, target_store, sent_time, state, type)
-						  VALUES
-						  (:contentor_id, :page_id, :source_locale, :target_locale, :target_store, NOW(), 'pending', :type)";
-		$binds = array(
-				'contentor_id'	=> $contentorID,
-				'page_id'		=> $page_id,
-				'source_locale' => $sourceLocale,
-				'target_locale' => $targetLocale,
-				'target_store'  => $targetID,
-				'type'			=> $type,
-		);
-
-		if(!$writeConnection->query($query, $binds)) {
-			Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing product to DB'));
-			return false;
-		} else {
-			$typeTable = Mage::getConfig()->getTablePrefix()."contentor_type";
-			$typeQuery = "INSERT INTO `" . $typeTable . "` (`contentor_id`, `type`) VALUES (:contentor_id, 'cmspage')";
-			$typeBinds = array('contentor_id' => $contentorID);
-			$writeConnection->query($typeQuery, $typeBinds);
-				
-			$table = Mage::getConfig()->getTablePrefix()."contentor_status";
-			$query = "INSERT INTO " . $table . "
-								(contentor_id, status, status_time)
-								VALUES
-								(:contentor_id, :status, NOW())";
-			$binds = array(
-					'contentor_id'	=> $contentorID,
-					'status'		=> 'Sent for localisation to: ' . $targetLocale,
-			);
-			if(!$writeConnection->query($query, $binds)) {
-				Mage::throwException(Mage::helper('adminhtml')->__('Error: Writing status to DB'));
-			} else {
-				return true;
-			}
-		}
-	}
-
 	public function send($request) {
 		$token = $this->getToken();
 		$url = $this->getURL() . 'content';
@@ -451,62 +257,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 
-	public static function fetchSingle($id, $type) {
-		// Get info from db wcontentorid = $id
-		
-		$token = ContentorAPI::getToken();
-		$url = ContentorAPI::getURL();
-		$url .= '/request/' . $id;
 
-		switch ($type) {
-			case 'product':
-				$tableName = "contentor_products";
-				$putFunction = 'putProduct';
-				break;
-			case 'category':
-				$tableName = "contentor_categories";
-				$putFunction = 'putCategory';
-				break;
-			case 'cmspage':
-					$tableName = "contentor_cmspages";
-					$putFunction = 'putCmspage';
-					break;
-		}
-
-		$response = self::getCurl($token, $url);
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$table = Mage::getConfig()->getTablePrefix() . $tableName;
-		$query = "SELECT `contentor_id`, `completed_time`, `state` FROM `" . $table . "` WHERE `contentor_id` = :contentor_id";
-		$binds = array('contentor_id'=>$id);
-		$requestInfo = $readConnection->fetchAll($query, $binds);
-		if($requestInfo[0]['state'] == NULL) {
-			if($requestInfo[0]['completed_time'] == NULL) {
-				$currentState = 'pending';
-			} else {
-				$currentState = 'completed';
-			}
-			// Write crrent state to db mabey?
-		} else {
-			$currentState = $requestInfo[0]['state'];
-		}
-		if($currentState != $response->state) {
-			// State changed!!
-			// If now completed, but not before, put product with putproduct
-			if($response->state == 'completed') {
-				// State changed to completed"
-				// Put product and all that!
-				self::$putFunction($response);				
-			} else {
-				// Log state change and send true for reload!
-				self::logStateChange($response, $type);
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	protected function logStateChange($response, $type) {
 		$connection = $this->_resource->getConnection('core_write');
 		
@@ -624,126 +375,6 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 	}
 
-	protected static function putCategory($object) {
-		// Get id and target store from Magento DB
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_categories";
-		$query = "SELECT cat_id, target_store FROM `" . $table . "` WHERE `contentor_id` = :contentor_id AND completed_time IS NULL";
-		$binds = array('contentor_id' => $object->id);
-		if($categoryInfo = $readConnection->fetchRow($query, $binds)) {
-				
-			$catagory = Mage::getSingleton('catalog/category')->setId($categoryInfo['cat_id']);
-			if($catagory) {
-				// setData on product depending on licalizationsfields received on the right store
-				Mage::app()->setCurrentStore($categoryInfo['target_store']);
-				if(!Mage::getModel('Contentor_LocalizationApi/Hooks')->beforeSave($object, 'category', $catagory)) {
-					return false;
-					exit;
-				}
-				foreach($object->fields as $field) {
-					if($field->type == 'localizable') {
-						// Update
-						$attribute = substr($field->id, 0, -4);
-						$catagory->setData($attribute, $field->value);
-						$catagory->getResource()->saveAttribute($catagory, $attribute);
-					}
-				}
-
-				// Write notice in Magento DB, set completed date in DB
-				$resource = Mage::getSingleton('core/resource');
-				$writeConnection = $resource->getConnection('core_write');
-				$table = Mage::getConfig()->getTablePrefix()."contentor_categories";
-				$query = "UPDATE " . $table . " SET `completed_time` = :completed_time, `state` = 'completed' WHERE `contentor_id` = :contentor_id";
-				$binds = array(
-						'completed_time'	=> $object->completed,
-						'contentor_id'		=> $object->id,
-				);
-				if(!$writeConnection->query($query, $binds)) {
-					// Set notice that something didn't work!
-					return false;
-				}
-		
-				$resource = Mage::getSingleton('core/resource');
-				$writeConnection = $resource->getConnection('core_write');
-				$table = Mage::getConfig()->getTablePrefix()."contentor_status";
-				$query = "INSERT INTO " . $table . " (`contentor_id`, `status`, `status_time`)
-						VALUES (:contentor_id, :status, NOW())";
-				$binds = array(
-						'contentor_id'	=> $object->id,
-						'status'		=> 'Received as completed for ' . $object->language->target . ', completion time: ' . date("Y-m-d H:i:s", strtotime($object->completed)),
-				);
-				$writeConnection->query($query, $binds);
-			}
-		} else {
-			// Not waiting for a product with this id
-			return false;
-		}
-	}
-	
-	protected static function putCmspage($object) {
-		// Get id and target store from Magento DB
-		$resource = Mage::getSingleton('core/resource');
-		$readConnection = $resource->getConnection('core_read');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_cmspages";
-		$query = "SELECT page_id, target_store FROM `" . $table . "` WHERE `contentor_id` = :contentor_id AND completed_time IS NULL";
-		$binds = array('contentor_id' => $object->id);
-		$cmspageInfo = $readConnection->fetchRow($query, $binds);
-		
-		// Get current page from page_id
-		$currentPage = Mage::getModel('cms/page')->load($cmspageInfo['page_id']);
-		
-		$currentPageData = $currentPage->getData();
-		
-		$newPageData = Array (
-			'title' => $currentPageData['title'],
-			'root_template' => $currentPageData['root_template'],
-			'identifier' => $currentPageData['identifier'],
-			'content' => $currentPageData['content'],
-			'is_active' => 0,
-			'stores' => array($cmspageInfo['target_store']),
-			'sort_order' => $currentPageData['sort_order']
-		);
-		if(!Mage::getModel('Contentor_LocalizationApi/Hooks')->beforeSave($object, 'cmspage', $currentPage)) {
-			return false;
-			exit;
-		}
-		foreach($object->fields as $field) {
-			if($field->type == 'localizable') {
-				// Update
-				$attribute = substr($field->id, 0, -4);
-				if($attribute == 'identifier') {
-					$value = Mage::getModel('catalog/product_url')->formatUrlKey($field->value);
-				} else {
-					$value = $field->value;
-				}
-				$newPageData[$attribute] = $value;
-			}
-		}
-
-		$newPage = Mage::getModel('cms/page')->setData($newPageData)->save();
-
-		// Write notice in Magento DB, set completed date in DB
-		$resource = Mage::getSingleton('core/resource');
-		$writeConnection = $resource->getConnection('core_write');
-		$table = Mage::getConfig()->getTablePrefix()."contentor_cmspages";
-		$query = "UPDATE " . $table . " SET `completed_time` = :completed_time, `state` = 'completed' WHERE `contentor_id` = :contentor_id";
-		$binds = array(
-				'completed_time'	=> $object->completed,
-				'contentor_id'		=> $object->id,
-		);
-		$writeConnection->query($query, $binds);
-		
-		$table = Mage::getConfig()->getTablePrefix()."contentor_status";
-		$query = "INSERT INTO " . $table . " (`contentor_id`, `status`, `status_time`)
-				VALUES (:contentor_id, :status, NOW())";
-		$binds = array(
-				'contentor_id'	=> $object->id,
-				'status'		=> 'Received as completed for ' . $object->language->target . ', completion time: ' . date("Y-m-d H:i:s", strtotime($object->completed)),
-		);
-		$writeConnection->query($query, $binds);
-	}
-	
 	public function testAuth($token=false) {
 		$url = $this->getURL() . 'auth';
 		if(!$token) {
