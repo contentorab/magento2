@@ -1,0 +1,26 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+<add id="Contentor_LocalizationApi::reports"
+     title="Contentor Localization"
+     module="Contentor_LocalizationApi"
+     sortOrder="9999"
+     resource="Magento_Backend::content"
+
+     parent="Magento_Reports::report"
+    /> 
+
+<add id="Contentor_LocalizationApi::productreport"
+     title="Product Report"
+     module="Contentor_LocalizationApi"
+     sortOrder="9999"
+     resource="Magento_Backend::content"
+
+     parent="Contentor_LocalizationApi::reports"
+     action="contentor/reports/productreport"
+    />     
+    
+    
+    
+    
+    </menu>
+</config>
