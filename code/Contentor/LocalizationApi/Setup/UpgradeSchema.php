@@ -109,7 +109,7 @@ class UpgradeSchema implements  UpgradeSchemaInterface
 				'Target Locale'
         	)->addColumn(
 				'target_store',
-				\Magento\Framework\DB\Ddl\Table::TYPE_INT,
+				\Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
 				5,
 				[],
 				'Target Store'
