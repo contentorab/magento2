@@ -4,6 +4,7 @@
         <tab id="contentorconfig" translate="label" sortOrder="999999">
             <label>Contentor API</label>
         </tab>
+        
 <section id="contentor_options" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
 	<label>API Config Options</label>
 	<tab>contentorconfig</tab>
@@ -52,5 +53,20 @@
 		</field>
 	</group>
 </section>
+
+<section id="contentor_versioning" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+	<label>API Versioning Options</label>
+	<tab>contentorconfig</tab>
+	<resource>Contentor_LocalizationApi::contentor_localizationapi</resource>
+	
+	<group id="versioning" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+		<label>Versioning</label>
+		<field id="versioning_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+			<label>Enable Versioning</label>
+			<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+		</field>
+	</group>
+</section>
+
     </system>
 </config>
