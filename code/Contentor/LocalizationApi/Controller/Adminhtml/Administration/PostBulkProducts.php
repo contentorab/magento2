@@ -8,13 +8,16 @@ class PostBulkProducts extends \Magento\Framework\App\Action\Action
 			\Magento\Framework\App\Action\Context $context,
 			\Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi,
 			\Magento\Framework\App\Request\Http $request,
-			\Magento\Catalog\Model\ProductFactory $productFactory,
+			\Magento\Framework\Locale\ListsInterface $localeList,
+			\Magento\Store\Model\System\Store $systemStores,
 			\Magento\Framework\View\Result\PageFactory $pageFactory
 			) {
 				$this->_contentorApi = $contentorApi;
 				$this->_request = $request;
-				$this->_productfactory = $productFactory;
+				$this->_localeList = $localeList;
+				$this->_systemStores = $systemStores;
 				$this->_pageFactory = $pageFactory;
+				//$this->_scopeConfig = $context->getScopeConfig();
 				parent::__construct($context);
 	}
 	
