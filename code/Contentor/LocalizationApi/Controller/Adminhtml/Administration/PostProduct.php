@@ -47,7 +47,6 @@ class PostProduct extends \Magento\Framework\App\Action\Action
 	    				$connection = $this->_resource->getConnection('core_read');
 	    				$table = $this->_resource->getTableName('contentor_products');
 	    			
-	    				//$table = Mage::getConfig()->getTablePrefix()."contentor_products";
 	    				$query = "SELECT `contentor_id` FROM `" . $table . "` WHERE `sku` = :sku AND `target_locale` = :target_locale AND `source_locale` = :source_locale ORDER BY `sent_time` DESC";
 	    				$binds = array('sku' 	=> $sku,
 	    						'target_locale'	=> $targetLocale,

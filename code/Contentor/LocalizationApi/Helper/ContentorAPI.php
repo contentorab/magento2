@@ -116,7 +116,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				'source_locale' => $sourceLocale,
 				'target_locale' => $targetLocale,
 				'target_store'  => $targetID,
-				'type'			=> $type,
+				'type'			=> $type
 		);
 
 		$connection->query($query, $binds);
@@ -140,7 +140,11 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			'status'		=> 'Sent for localisation to: ' . $targetLocale,
 		);
 		
-		$connection->query($statusQuery, $statusBinds);
+		if($connection->query($statusQuery, $statusBinds)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public function send($request) {
