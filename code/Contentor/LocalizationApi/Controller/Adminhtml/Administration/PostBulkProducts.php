@@ -25,7 +25,7 @@ class PostBulkProducts extends \Magento\Framework\App\Action\Action
     {
     	// Set template
     	$resultPage = $this->_pageFactory->create();
-    	$resultPage->setActiveMenu('Magento_Reports::report');
+    	$resultPage->setActiveMenu('Magento_Catalog::catalog');
     	$resultPage->getConfig()->getTitle()->prepend(__('Contentor Bulk Products Post'));
     	 
     	return $resultPage;

@@ -2,6 +2,7 @@
 
 // If settings set then loop products and target(s) to send like on single product page
 $data = $this->getRequest()->getParams();
+print_r($data);
 $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
 ?>
 
@@ -42,9 +43,7 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
 <form id="productform">
 <p>
 	<?php
-	
-	if(isset($data['selected'])) {
-		$products = $data['selected'];
+	if($products = $this->getProductsWithFilter()) {
 		$n = count($products);
 		$prodList = implode(',', $products);
 		print 'Submiting this form will send <b>' . $n . '</b> products';
