@@ -29,7 +29,8 @@ class ProductAttributeRenderer extends \Magento\Framework\View\Element\Html\Sele
 		public function _toHtml() {
 			if (!$this->getOptions()) {
 				$allowed = array('text', 'textarea');
-				$attributeInfo = $this->_attributeFactory->getCollection();
+				$attributeInfo = $this->_attributeFactory->getCollection()
+					->addFieldToFilter(\Magento\Eav\Model\Entity\Attribute\Set::KEY_ENTITY_TYPE_ID, 4);
 				$this->addOption('', '');
 				$this->addOption('productURL', 'Product URL (url)');
 				foreach ($attributeInfo as $attribute) {
