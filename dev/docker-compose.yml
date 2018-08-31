@@ -8,7 +8,7 @@ services:
     links:
       - contentor-magento2-db
     volumes:
-      - ../code:/var/www/contentor
+      - ../:/var/www/contentor
     env_file:
       - dev-env
     working_dir: /var/www/html/
