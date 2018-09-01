@@ -2,6 +2,8 @@
 
 namespace Contentor\LocalizationApi\Helper;
 
+use Magento\Framework\App\ObjectManager;
+
 class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
@@ -22,12 +24,36 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				parent::__construct($context);
 	}
 	
+	/**
+	 * Check if a value is in serialized form.
+	 */
+	private function isSerialized($value) {
+		return (boolean) preg_match('/^((s|i|d|b|a|O|C):|N;)/', $value);
+	}
+
+	/**
+	 * Helper to unserialize something serialized via ArraySerialized. The
+	 * format changes between 2.1 and 2.2 from PHPs serialized format to
+	 * JSON.
+	 */
+	private function unserialize($value) {
+		if(empty($value)) return false;
+ 
+		if($this->isSerialized($value)) {
+			$unserializer = ObjectManager::getInstance()->get(\Magento\Framework\Unserialize\Unserialize::class);
+        } else {
+			$unserializer = ObjectManager::getInstance()->get(\Magento\Framework\Serialize\Serializer\Json::class);
+		}
+ 
+		return $unserializer->unserialize($value);
+	}
+	
 	public function getFieldData($entity, $entityType, $extraField=false) {
 		$messages = array();
 		if($entityType == 'product') {
 			$sku = $entity->getSku();
 			$productID = $entity->getId();
-			$fieldArray = unserialize($this->_helper->getConfig('contentor_options/fieldDetails/productFieldDetails'));
+			$fieldArray = $this->unserialize($this->_helper->getConfig('contentor_options/fieldDetails/productFieldDetails'));
 
 			if(is_array($fieldArray)) {
 				$fields[] = array('id' => 'auto_sku',
