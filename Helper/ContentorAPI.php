@@ -190,7 +190,9 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 
 		if($response = curl_exec($ch)) {
 			$response = json_decode($response, true);
+
 			if(!isset($response['id'])) {
+				
 				// No ID returned
 				$contentorID = 'No ID returned';
 			} else {
@@ -199,7 +201,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			curl_close($ch);
 			return $contentorID;
 		} else {
-			//Mage::log(curl_getinfo($ch), null, 'contentor.log');
+			$this->_logger->addDebug('Unable to complete request: ' . print_r(curl_getinfo($ch), true));
 			curl_close($ch);
 			return 'Curl failed';
 		}
@@ -210,12 +212,26 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$token = $this->getToken();
 		$url = $this->getURL() . 'content';
 		// New url with new uery for modified!
-		$args = array('criteria'=>array(array('type'=>'modified','criteria'=>array('from'=>$date,'to'=>'tomorrow'))),'sortBy'=>array('created:desc'));
+		$args = array(
+			'criteria' => array(
+				array(
+					'type' => 'modified',
+					'criteria' => array(
+						'from' => $date,
+						'to' => 'tomorrow'
+					)
+				)
+			),
+			'sortBy' => array('created:desc')
+		);
 		$query = array('query' => json_encode($args));
 		$queryParams = http_build_query($query);
 		$url .= '?' . $queryParams;
 		// Result
 		$result = $this->getCurl($token, $url);
+		
+		// Protect against no result
+		if($result === false) return;
 		
 		if($result->total > 0) {
 			// Process results from page 1
@@ -436,14 +452,17 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+
+		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		// If error log curl_getinfo();
-		if(!$response) {
-			$this->_logger->addDebug(curl_getinfo($ch));
+		if(!$response || $status < 200 || $status >= 299) {
+			$this->_logger->addDebug('Unable to complete request: ' . print_r(curl_getinfo($ch), true));
+			curl_close($ch);
+			return false;
+		} else {
+			curl_close($ch);
+			return json_decode($response);
 		}
-		curl_close($ch);
-		$return =  json_decode($response);
-		
-		return $return;
 	}
 
 	protected function getURL() {
