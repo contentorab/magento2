@@ -23,7 +23,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 				$this->_scopeConfig = $context->getScopeConfig();
 				parent::__construct($context);
 	}
-	
+
 	/**
 	 * Check if a value is in serialized form.
 	 */
@@ -54,7 +54,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			$sku = $entity->getSku();
 			$productID = $entity->getId();
 			$fieldArray = $this->unserialize($this->_helper->getConfig('contentor_options/fieldDetails/productFieldDetails'));
-
+			
 			if(is_array($fieldArray)) {
 				$fields[] = array('id' => 'auto_sku',
 						'type' => 'internal',
@@ -77,9 +77,9 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 						$value = $entity->setStoreId($field['store'])->getUrlInStore();
 						$name = 'Product URL';
 					} else {
-						$attribute	= $entity->getResource()->getAttribute($field['attribute']);
-						$value 		=	$entity->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
-						$name 		=	$attribute->getFrontendLabel();
+						$attribute = $entity->getResource()->getAttribute($field['attribute']);
+						$value = $entity->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
+						$name = $attribute->getFrontendLabel();
 					}
 
 					if(!isset($n[$field['attribute']])) {
@@ -89,7 +89,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 					}
 					$id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
 
-					if($value != '') {
+					if(! empty($value)) {
 						$fields[] = array('id'=>$id,
 								'name'=>$name,
 								'type'=>$field['type'],
@@ -106,7 +106,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 			}
 			
 		} 
-		
+
 		if(!count($messages)) {
 			return $fields;
 		} else {
@@ -229,7 +229,7 @@ class ContentorAPI extends \Magento\Framework\App\Helper\AbstractHelper
 		$url .= '?' . $queryParams;
 		// Result
 		$result = $this->getCurl($token, $url);
-		
+
 		// Protect against no result
 		if($result === false) return;
 		
