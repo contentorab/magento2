@@ -6,4 +6,4 @@ cd $LOCAL_DIR
 # Setup the data directory used Docker Compose
 mkdir data
 
-docker-compose up
+sudo docker-compose up
