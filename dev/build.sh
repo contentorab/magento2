@@ -6,6 +6,8 @@ DIR="$LOCAL_DIR/.."
 cd "$DIR"
 
 rm release.zip
-zip -r release.zip "." -x '.git/*' -x 'dev/*' -x '.DS_Store' -x '*/.DS_Store/*' -x ".gitignore" -x ".eslintconfig"
+zip -r release.zip "." -x '.git/*' -x 'dev/*' -x '.DS_Store' -x '*/.DS_Store/*' \
+ -x ".gitignore" -x ".eslintconfig" -x ".editorconfig" -X "ruleset.xml" \
+ -x "vendor/*"
 
 echo "Distribution built to release.zip"
