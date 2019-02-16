@@ -10,13 +10,15 @@ class PostProduct extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Request\Http $request,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Contentor\LocalizationApi\Helper\Data $helper
+        \Contentor\LocalizationApi\Helper\Data $helper,
+        \Magento\Backend\Helper\Data $backendHelper
     ) {
         $this->_contentorApi = $contentorApi;
         $this->_request = $request;
         $this->_productfactory = $productFactory;
         $this->_resource = $resource;
         $this->_helper = $helper;
+        $this->_backendHelper = $backendHelper;
         parent::__construct($context);
     }
 
@@ -70,6 +72,10 @@ class PostProduct extends \Magento\Framework\App\Action\Action
             }
         }
 
-        $this->getResponse()->setRedirect($this->_request->getParam('returnurl'))->sendResponse();
+        $url = $this->_backendHelper->getUrl(
+            'catalog/product/edit',
+            [ 'id' => $productId ]
+        );
+        $this->getResponse()->setRedirect($url)->sendResponse();
     }
 }
