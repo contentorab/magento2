@@ -12,6 +12,7 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Contentor\LocalizationApi\Helper\Data $helper,
+        \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\View\Result\PageFactory $pageFactory
     ) {
         $this->_contentorApi = $contentorApi;
@@ -20,6 +21,7 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
         $this->_resource = $resource;
         $this->_scopeConfig = $scopeConfig;
         $this->_helper = $helper;
+        $this->_backendHelper = $backendHelper;
         $this->_pageFactory = $pageFactory;
         parent::__construct($context);
     }
@@ -105,7 +107,6 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
                 unset($productlist[$i]);
             }
 
-
             $productsLeft = $numberTargets*count($productlist);
             $procent = (1-($productsLeft/$total))*100;
 
@@ -134,9 +135,11 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"\">";
                 }
             } else {
+                $url = $this->_backendHelper->getUrl('contentor/reports/productreport');
+
                 $returnData .= "<input type=\"hidden\" name=\"theend\" value=\"true\">";
                 $returnData .= "<h3>Done!</h3>";
-                $returnData .= "Go to <a href=\"" . "\">report page</a>";
+                $returnData .= "Go to <a href=\"" . $url . "\">report page</a>";
             }
             $returnData .= "</form>";
         }
