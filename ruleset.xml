@@ -7,12 +7,15 @@ and that we keep compatibility with older PHP versions.
 -->
 <ruleset name="ExtensionStandard">
 	<config name="installed_paths" value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/,vendor/wimg/php-compatibility/" />
-	<config name="testVersion" value="5.4"/>
+	<config name="testVersion" value="7.0"/>
 
 	<rule ref="./vendor/magento-ecg/coding-standard/Ecg" />
-	<rule ref="./vendor/magento/marketplace-eqp/MEQP1" />
+	<rule ref="./vendor/magento/marketplace-eqp/MEQP2" />
 	<rule ref="./vendor/wimg/php-compatibility/PHPCompatibility" />
+    <rule ref="PSR2">
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore" />
+    </rule>
 
-	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>dev/*</exclude-pattern>
 </ruleset>

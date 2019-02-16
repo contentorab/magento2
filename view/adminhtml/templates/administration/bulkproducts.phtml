@@ -11,27 +11,27 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
         function($) {
             $(function() {
                 doSend = function(formular) {
-                	if(!document.getElementsByName("theend").value) {
-            			const products = formular.products.value;
-            			const source = formular.source.value;
-            			const total = formular.total.value;
-            			let targets;
-            			if(formular.targets.type == 'select-multiple') {
-            				targets = new Array;
-            				for(x=0;x<formular.targets.length;x++) {
-            					if(formular.targets[x].selected) {
-            						targets.push(formular.targets[x].value);
-            					}
-            				}
-            				targets = targets.join(',');
-            			} else {
-            				targets = formular.targets.value;
-            			}
-						$.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total }, function(data) {
-							document.getElementById('resultdiv').innerHTML = data;
-			                doSend(document.getElementById('progressform'));
-						});
-                	}
+                    if(!document.getElementsByName("theend").value) {
+                        const products = formular.products.value;
+                        const source = formular.source.value;
+                        const total = formular.total.value;
+                        let targets;
+                        if(formular.targets.type == 'select-multiple') {
+                            targets = new Array;
+                            for(x=0;x<formular.targets.length;x++) {
+                                if(formular.targets[x].selected) {
+                                    targets.push(formular.targets[x].value);
+                                }
+                            }
+                            targets = targets.join(',');
+                        } else {
+                            targets = formular.targets.value;
+                        }
+                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total }, function(data) {
+                            document.getElementById('resultdiv').innerHTML = data;
+                            doSend(document.getElementById('progressform'));
+                        });
+                    }
                 }
             });
         });
@@ -41,79 +41,77 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
 
 <form id="productform">
 <p>
-	<?php
-	if($products = $this->getProductsWithFilter()) {
-		$n = count($products);
-		$prodList = implode(',', $products);
-		print 'Submiting this form will send <b>' . $n . '</b> products';
-		print '<input type="hidden" name="products" value="' . $prodList . '" id="prodlist">';
-		print '<input type="hidden" name="total" value=0>';
-	} else {
-		print "Error, no data set";
-	}
-	?>
+    <?php
+    if ($products = $this->getProductsWithFilter()) {
+        $n = count($products);
+        $prodList = implode(',', $products);
+        print 'Submiting this form will send <b>' . $n . '</b> products';
+        print '<input type="hidden" name="products" value="' . $prodList . '" id="prodlist">';
+        print '<input type="hidden" name="total" value=0>';
+    } else {
+        print "Error, no data set";
+    }
+    ?>
 </p>
 <br><br>
 <p>
-	<h3>Source locale</h3>
-	<?php
-	// Get default locale from settings
-	$defaultSource = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/source/sourcelocale');
-	$localeList = $this->getLocaleList();
-	?>
-	<select name="source">
-		<option value="">Choose source language</option>
-		<?php
-		foreach($localeList as $lang) {
-			
-			print '<option value="' . $lang['value'] . '"';
-			if($lang['value'] == $defaultSource) {
-				print ' SELECTED';
-			}
-			print '>' . $lang['label'] . '</option>';
+    <h3>Source locale</h3>
+    <?php
+    // Get default locale from settings
+    $defaultSource = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/source/sourcelocale');
+    $localeList = $this->getLocaleList();
+    ?>
+    <select name="source">
+        <option value="">Choose source language</option>
+        <?php
+        foreach ($localeList as $lang) {
+            print '<option value="' . $lang['value'] . '"';
+            if ($lang['value'] == $defaultSource) {
+                print ' SELECTED';
+            }
+            print '>' . $lang['label'] . '</option>';
+        }
+        ?>
+    </select>
+    <br>
+</p>
+<br><br>
+<p>
+    <h3>Target store(s)</h3>
+    <?php
+    // Get default stores from settings
+    $defaultstores = explode(',', $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/targets/targetviews'));
+    $storesStructure = $this->getStoreViews();
 
-		}
-		?>
-	</select>
-	<br>
-</p>
-<br><br>
-<p>
-	<h3>Target store(s)</h3>
-	<?php
-	// Get default stores from settings
-	$defaultstores = explode(',',$this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/targets/targetviews'));
-	$storesStructure = $this->getStoreViews();
-	
-	print '<select name="targets" class="select multiselect" size="10" multiple="multiple">';
-	
-	foreach($storesStructure as $website) {
-		print '<optgroup label="' . $website['label'] . '"></optgroup>';
-		foreach($website['children'] as $store) {
-			print '<optgroup label="    ' . $store['label'] . '"></optgroup>';
-			foreach($store['children'] as $storeview) {
-				$id = $storeview['value'];
-				$name = $storeview['label'];
-				$locale = $this->getStoreLocale($id);
-				//str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
-				if(in_array($id, $defaultstores)) {
-					$checked = 'selected="selected"';
-				} else {
-					$checked = '';
-				}
-				print '<option value="' . $id . '" ' . $checked . '>     ' . $name . ' (' . $locale .')</option>';
-			}
-		}
-	}
-	print '</select>';
-	?>
+    print '<select name="targets" class="select multiselect" size="10" multiple="multiple">';
+
+    foreach ($storesStructure as $website) {
+        print '<optgroup label="' . $website['label'] . '"></optgroup>';
+        foreach ($website['children'] as $store) {
+            print '<optgroup label="    ' . $store['label'] . '"></optgroup>';
+            foreach ($store['children'] as $storeview) {
+                $id = $storeview['value'];
+                $name = $storeview['label'];
+                $locale = $this->getStoreLocale($id);
+                //str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
+                if (in_array($id, $defaultstores)) {
+                    $checked = 'selected="selected"';
+                } else {
+                    $checked = '';
+                }
+                print '<option value="' . $id . '" ' . $checked . '>     ' . $name . ' (' . $locale .')</option>';
+            }
+        }
+    }
+    print '</select>';
+    ?>
 </p>
 </form>
 <br><br>
 <p>
-	<button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span>Send for localization</span></button>
+    <button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span>Send for localization</span></button>
 </p>
 <br><br>
 <p>
-	<div id="resultdiv"></div>
+    <div id="resultdiv"></div>
 </p>
