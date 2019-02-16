@@ -15,6 +15,9 @@ services:
   contentor-magento2-db:
     image: mysql:5.7
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - contentor-magento2-mysql:/var/lib/mysql
     env_file:
       - dev-env
+
+volumes:
+  contentor-magento2-mysql:

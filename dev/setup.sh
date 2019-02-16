@@ -7,6 +7,7 @@ echo "Installing Magento and Sample Data"
 sudo docker-compose exec contentor-magento2-web install-magento
 sudo docker-compose exec contentor-magento2-web install-sampledata
 sudo docker-compose exec --user www-data contentor-magento2-web bin/magento config:set admin/security/session_lifetime 90000
+sudo docker-compose exec --user www-data contentor-magento2-web bin/magento deploy:mode:set developer
 
 echo "Enabling symlinked templates"
 sudo docker-compose exec --user www-data contentor-magento2-web bin/magento config:set dev/template/allow_symlink 1
