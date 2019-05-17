@@ -1,31 +1,82 @@
 <?php
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
-class SendBulkProducts extends \Magento\Framework\App\Action\Action
-{
+use Contentor\LocalizationApi\Model\Service\ProductSendContent;
+use Contentor\LocalizationApi\Service\ConfigurationService;
+use Magento\Backend\App\Action;
+use Magento\Backend\Helper\Data;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Class SendBulkProducts
+ * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
+ */
+class SendBulkProducts extends Action
+{
+    /**
+     * @var ProductSendContent
+     */
+    private $productSendContent;
+
+    /**
+     * @var ConfigurationService
+     */
+    private $configurationService;
+
+    /**
+     * @var Http
+     */
+    private $request;
+
+    /**
+     * @var ProductFactory
+     */
+    private $productFactory;
+
+    /**
+     * @var Data
+     */
+    private $backendHelper;
+
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+
+    /**
+     * SendBulkProducts constructor.
+     * @param Context $context
+     * @param Http $request
+     * @param ProductFactory $productFactory
+     * @param Data $backendHelper
+     * @param PageFactory $pageFactory
+     * @param ProductSendContent $productSendContent
+     * @param ConfigurationService $configurationService
+     */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi,
-        \Magento\Framework\App\Request\Http $request,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Contentor\LocalizationApi\Helper\Data $helper,
-        \Magento\Backend\Helper\Data $backendHelper,
-        \Magento\Framework\View\Result\PageFactory $pageFactory
+        Context $context,
+        Http $request,
+        ProductFactory $productFactory,
+        Data $backendHelper,
+        PageFactory $pageFactory,
+        ProductSendContent $productSendContent,
+        ConfigurationService $configurationService
     ) {
-        $this->_contentorApi = $contentorApi;
-        $this->_request = $request;
-        $this->_productfactory = $productFactory;
-        $this->_resource = $resource;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_helper = $helper;
-        $this->_backendHelper = $backendHelper;
-        $this->_pageFactory = $pageFactory;
         parent::__construct($context);
+        $this->request = $request;
+        $this->productFactory = $productFactory;
+        $this->backendHelper = $backendHelper;
+        $this->pageFactory = $pageFactory;
+        $this->productSendContent = $productSendContent;
+        $this->configurationService = $configurationService;
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     */
     public function execute()
     {
         // Get product list and send 10/50/100? first, then print form with the rest
@@ -39,7 +90,7 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
         $numberTargets = count($targetIDs);
 
         foreach ($targetIDs as $targetID) {
-            $targets[$targetID] = str_replace('_', '-', $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $targetID));
+            $targets[$targetID] = str_replace('_', '-', $this->configurationService->getMainLocale());
         }
 
         // Check if source in targets?
@@ -62,48 +113,12 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
             for ($i=0; $i<$max; $i++) {
                 // Send some products
                 $prodID = $productlist[$i];
-                $product = $this->_productfactory->create()->load($prodID);
-                $sku = $product->getSku();
-
-                if ($fields = $this->_contentorApi->getFieldData($product, 'product')) {
-                    // Then Loop targets and send
-                    foreach ($targets as $targetID => $targetLocale) {
-                        // Find out type and pass it along
-                        $type = 'standard';
-                        $prevID = false;
-                        // TODO: check settings for versioning
-
-                        if ($this->_helper->getConfig('contentor_versioning/versioning/versioning_enable')) {
-                            $connection = $this->_resource->getConnection('core_read');
-                            $table = $this->_resource->getTableName('contentor_products');
-
-                            $query = "SELECT `contentor_id` FROM `" . $table . "` WHERE `sku` = :sku AND `target_locale` = :target_locale AND `source_locale` = :source_locale ORDER BY `sent_time` DESC";
-                            $binds = ['sku'     => $sku,
-                            'target_locale'    => $targetLocale,
-                            'source_locale' => $sourceLocale
-                            ];
-                            $return = $connection->fetchOne($query, $binds);
-
-                            if ($return) {
-                                   $type = 'update';
-                                   $prevID = $return;
-                            }
-                        }
-
-                        $request = $this->_contentorApi->createRequest($sourceLocale, $targetLocale, $fields, $type, $prevID);
-
-                        if ($contentorID = $this->_contentorApi->send($request)) {
-                            if (!$this->_contentorApi->logSent($contentorID, $sku, $sourceLocale, $targetLocale, $targetID, $product, $type)) {
-                                      print 'No logs written';
-                            }
-                        } else {
-                            print 'Error sending to Contentor API';
-                        }
-                    }
-                } else {
-                    $this->getResponse()->setBody('Error can\'t get fields from settings');
-                }
-
+                $product = $this->productfactory->create()->load($prodID);
+                $this->productSendContent->execute(
+                    $product,
+                    $sourceLocale,
+                    $targets
+                );
                 unset($productlist[$i]);
             }
 
@@ -135,7 +150,7 @@ class SendBulkProducts extends \Magento\Framework\App\Action\Action
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"\">";
                 }
             } else {
-                $url = $this->_backendHelper->getUrl('contentor/reports/productreport');
+                $url = $this->backendHelper->getUrl('contentor/reports/productreport');
 
                 $returnData .= "<input type=\"hidden\" name=\"theend\" value=\"true\">";
                 $returnData .= "<h3>Done!</h3>";

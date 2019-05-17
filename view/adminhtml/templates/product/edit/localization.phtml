@@ -1,7 +1,30 @@
+<?php
+/** @var \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\Localization $block */
+?>
+<?php if (!$block->isReady()) :?>
+    <?php
+    $configUrl = $this->getUrl(
+        'adminhtml/system_config/edit/section/contentor_options'
+    );
+
+    echo sprintf(
+        'Current configuration issues  : </br> %s',
+        implode(',</br>', $block->getValidationMessages())
+    );
+
+    echo sprintf(
+        '</br> Please configure your localization API <a href="%s">here</a> ',
+        $configUrl
+    );
+    ?>
+
+<?php else: ?>
+
 <p>
     <form method="post" action="<?php print $this->getUrl("contentor/administration/postproduct/"); ?>" name="contentorproducts">
     <input type="hidden" name="returnurl" value ="<?php print $this->getProduct()->getProductUrl(); ?>">
     <input type="hidden" name="productid" value ="<?php print $this->getProduct()->getId(); ?>">
+    <?= $block->getBlockHtml('formkey') ?>
 
     <h2>Source store locale</h2>
     <select name="source">
@@ -117,3 +140,4 @@
             ?>
 
 </p>
+<?php endif;?>

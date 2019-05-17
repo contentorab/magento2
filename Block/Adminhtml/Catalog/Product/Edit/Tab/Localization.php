@@ -1,6 +1,7 @@
 <?php
 namespace Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab;
 
+use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\Locale\ListsInterface;
@@ -19,12 +20,28 @@ class Localization extends \Magento\Framework\View\Element\Template
     protected $_systemStores;
     protected $_scopeConfig;
 
+    /**
+     * @var ConfigurationService
+     */
+    private $configurationService;
+
+    /**
+     * Localization constructor.
+     * @param Context $context
+     * @param Registry $registry
+     * @param ListsInterface $localeList
+     * @param Store $systemStores
+     * @param ResourceConnection $resource
+     * @param ConfigurationService $configurationService
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         Registry $registry,
         ListsInterface $localeList,
         Store $systemStores,
         ResourceConnection    $resource,
+        ConfigurationService $configurationService,
         array $data = []
     ) {
         $this->_coreRegistry = $registry;
@@ -33,6 +50,7 @@ class Localization extends \Magento\Framework\View\Element\Template
         $this->_resource = $resource;
         $this->_scopeConfig = $context->getScopeConfig();
         parent::__construct($context, $data);
+        $this->configurationService = $configurationService;
     }
 
     /**
@@ -45,21 +63,35 @@ class Localization extends \Magento\Framework\View\Element\Template
         return $this->_coreRegistry->registry('current_product');
     }
 
+    /**
+     * @return array
+     */
     public function getLocales()
     {
         return $this->_localeList->getOptionLocales();
     }
 
+    /**
+     * @return array
+     */
     public function getStoreViews()
     {
         return $this->_systemStores->getStoresStructure();
     }
 
+    /**
+     * @param string $id
+     * @return string
+     */
     public function getStoreLocale($id)
     {
         return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
     }
 
+    /**
+     * @param string $sku
+     * @return array
+     */
     public function getRequestStatus($sku)
     {
         $connection = $this->_resource->getConnection('core_read');
@@ -70,5 +102,23 @@ class Localization extends \Magento\Framework\View\Element\Template
         $status = $connection->fetchAll($query, $binds);
 
         return $status;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValidationMessages()
+    {
+        $result = $this->configurationService->validateConfiguration();
+        return $result['messages'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReady()
+    {
+        $result = $this->configurationService->validateConfiguration();
+        return !$result['error'];
     }
 }

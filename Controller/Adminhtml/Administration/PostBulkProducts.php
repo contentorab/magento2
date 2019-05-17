@@ -1,30 +1,38 @@
 <?php
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
-class PostBulkProducts extends \Magento\Framework\App\Action\Action
-{
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Class PostBulkProducts
+ * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
+ */
+class PostBulkProducts extends Action
+{
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+
+    /**
+     * PostBulkProducts constructor.
+     * @param Context $context
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Contentor\LocalizationApi\Helper\ContentorAPI $contentorApi,
-        \Magento\Framework\App\Request\Http $request,
-        \Magento\Framework\Locale\ListsInterface $localeList,
-        \Magento\Store\Model\System\Store $systemStores,
-        \Magento\Framework\View\Result\PageFactory $pageFactory
+        Context $context,
+        PageFactory $pageFactory
     ) {
-        $this->_contentorApi = $contentorApi;
-        $this->_request = $request;
-        $this->_localeList = $localeList;
-        $this->_systemStores = $systemStores;
-        $this->_pageFactory = $pageFactory;
-        //$this->_scopeConfig = $context->getScopeConfig();
         parent::__construct($context);
+        $this->pageFactory = $pageFactory;
     }
 
     public function execute()
     {
         // Set template
-        $resultPage = $this->_pageFactory->create();
+        $resultPage = $this->pageFactory->create();
         $resultPage->setActiveMenu('Magento_Catalog::catalog');
         $resultPage->getConfig()->getTitle()->prepend(__('Contentor Bulk Products Post'));
 
