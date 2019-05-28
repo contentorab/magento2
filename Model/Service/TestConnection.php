@@ -34,6 +34,9 @@ class TestConnection
     }
 
     /**
+     * Validate contentor api state
+     * Do test call to check if everything ready
+     *
      * @throws LocalizedException
      */
     public function execute()

@@ -4,11 +4,16 @@ namespace Contentor\LocalizationApi\Model\Spi;
 /**
  * Interface ContentEntityLoaderInterface
  * @package Contentor\LocalizationApi\Model\Spi
+ *
+ * Represent entity loader repository
+ * @see \Contentor\LocalizationApi\Model\EntityResolver
  */
 interface ContentEntityLoaderInterface
 {
     /**
-     * @param $contentorId
+     * Returns Product Content Request  by contentor ID
+     *
+     * @param int|string $contentorId
      * @return ContentEntityInterface
      */
     public function loadByContentorId($contentorId);

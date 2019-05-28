@@ -7,6 +7,8 @@ use Magento\Store\Model\ScopeInterface;
 /**
  * Class ConfigurationService
  * @package Contentor\LocalizationApi\Service
+ *
+ * Contains all accessors to configurable extension options (api credentials, general settings)
  */
 class ConfigurationService
 {
@@ -41,6 +43,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns token from config
+     *
      * @param string|null $store
      * @return string
      */
@@ -54,6 +58,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns Automation enabled flag
+     *
      * @param string|null $store
      * @return bool
      */
@@ -67,6 +73,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns versioning enabled flag
+     *
      * @param string|null $store
      * @return bool
      */
@@ -80,6 +88,8 @@ class ConfigurationService
     }
 
     /**
+     * Return is developer mode enabled flag
+     *
      * @param string|null $store
      * @return bool
      */
@@ -94,6 +104,8 @@ class ConfigurationService
 
 
     /**
+     * Returns Contentor API url from magento config
+     *
      * @param string|null $store
      * @return string
      */
@@ -107,6 +119,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns Main locale from magento config
+     *
      * @param string|null $store
      * @return string
      */
@@ -120,6 +134,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns Source locale from magento config
+     *
      * @param string|null $store
      * @return string
      */
@@ -133,6 +149,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns Product target store views from magento config
+     *
      * @param string|null $store
      * @return array
      */
@@ -146,6 +164,8 @@ class ConfigurationService
     }
 
     /**
+     * Returns Product attributes map from magento config
+     *
      * @param string|null $store
      * @return array
      */
@@ -170,6 +190,9 @@ class ConfigurationService
     }
 
     /**
+     * Basic config validation.
+     * Check required API fields before make real api request.
+     *
      * @param string|null $store
      * @return array
      */

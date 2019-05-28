@@ -6,6 +6,7 @@ use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 /**
  * Class Transfer
  * @package Contentor\LocalizationAp\Model\Http
+ *
  */
 class Transfer implements HttpRequestTransferInterface
 {

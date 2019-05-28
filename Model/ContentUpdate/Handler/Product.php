@@ -17,6 +17,11 @@ use Magento\Store\Model\StoreManagerInterface;
 /**
  * Class Product
  * @package Contentor\LocalizationApi\Model\ContentUpdate\Handler
+ *
+ * Product Content update handler.
+ * Responsibility : process content updates returned by API.
+ * Each Content Entity should have own handler with related to specific
+ * Magento entity logic (Product,Category,Cms)
  */
 class Product implements ContentUpdateHandlerInterface
 {
@@ -88,15 +93,16 @@ class Product implements ContentUpdateHandlerInterface
         if ($data['state'] != 'completed') {
             return;
         }
+        // 1. search product
         /** @var \Magento\Catalog\Api\Data\ProductInterface| \Magento\Catalog\Model\Product $product */
         $product = $this->productFactory->create()->setStoreId(
             $entity->getTargetStore()
         )->loadByAttribute('sku', $entity->getSku());
-
+        // do nothing if not exist
         if (!$product) {
             return;
         }
-        // setData on product depending on licalizationsfields received on the right store
+        //2.  setData on product depending on licalizationsfields received on the right store
         $this->storeManager->setCurrentStore($entity->getTargetStore());
         foreach ($data['fields'] as $field) {
             if ($field['type'] == 'localizable') {
@@ -109,12 +115,12 @@ class Product implements ContentUpdateHandlerInterface
             $product->setStatus(1);
         }
 
-        //1. save product
+        //3.1. save product
         $this->catalogProductRepository->save($product);
-        //2. update contentor
+        //3.2. update contentor
         $entity->setCompletedTime($data['completed_time']);
         $this->productRepository->save($entity);
-        //3. Update Status
+        //3.3. Update Status
         $status = 'Received as completed for '
             . $data['language']['target']
             . ', completion time: '

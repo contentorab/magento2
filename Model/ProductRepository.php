@@ -11,6 +11,9 @@ use Contentor\LocalizationApi\Model\Spi\ContentEntityLoaderInterface;
 /**
  * Class ProductRepository
  * @package Contentor\LocalizationApi\Model
+ *
+ * Main product content request repository
+ * implement CRUD for product content request
  */
 class ProductRepository implements ProductRepositoryInterface, ContentEntityLoaderInterface
 {
@@ -46,6 +49,8 @@ class ProductRepository implements ProductRepositoryInterface, ContentEntityLoad
     }
 
     /**
+     * Returns last product content update by locale
+     *
      * @param string $sku
      * @param string $targetLocale
      * @param string $sourceLocale
@@ -63,6 +68,8 @@ class ProductRepository implements ProductRepositoryInterface, ContentEntityLoad
     }
 
     /**
+     * Save Product Content Request
+     *
      * @param ProductInterface $product
      * @return ProductInterface
      * @throws \Magento\Framework\Exception\AlreadyExistsException
@@ -74,6 +81,8 @@ class ProductRepository implements ProductRepositoryInterface, ContentEntityLoad
     }
 
     /**
+     * Returns Product Content Request  by contentor ID
+     *
      * @param int $contentorId
      * @return ContentEntityLoaderInterface|ProductInterface
      */

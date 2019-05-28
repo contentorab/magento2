@@ -11,9 +11,18 @@ use Magento\Framework\ObjectManagerInterface;
 /**
  * Class EntityResolver
  * @package Contentor\LocalizationApi\Model
+ *
+ * Work with different content entities (Product,CMS..)
+ * Get Content Updates API returns all request data in one response,
+ * this class can help you to find needed to find related repository
+ * for easy data management
  */
 class EntityResolver
 {
+    /**
+     * Static repository map.
+     * @var array
+     */
     private $repositoriesMap = [
         ProductInterface::TYPE_CODE => ProductRepositoryInterface::class
     ];
@@ -42,12 +51,15 @@ class EntityResolver
     }
 
     /**
+     * Find entity  by contentor id
+     *
      * @param int $contentorId
      * @return \Contentor\LocalizationApi\Model\Spi\ContentEntityInterface
      * @throws LocalizedException
      */
     public function findByContentorId($contentorId)
     {
+        //2. try to find type
         $type = $this->typeRepository->getByContentorId($contentorId);
         if (null === $type) {
             throw new LocalizedException(__('Undefined content type for contentorId %1', $contentorId));
@@ -57,16 +69,24 @@ class EntityResolver
             throw new LocalizedException(__('Undefined content type  %1', $type));
         }
 
+        //2. try to find type repository
         /** @var ContentEntityLoaderInterface $repository */
         $repository = $this->objectManager->create(
             $this->repositoriesMap[$type]
         );
 
+        //3. load content entity
         return $repository->loadByContentorId(
             $contentorId
         );
     }
 
+
+    /**
+     * @param $contentorId
+     * @param $entity
+     * @deprecated
+     */
     public function saveByContentorId($contentorId, $entity)
     {
     }

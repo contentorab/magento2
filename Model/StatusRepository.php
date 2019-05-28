@@ -9,6 +9,8 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 /**
  * Class StatusRepository
  * @package Contentor\LocalizationApi\Model
+ * @api
+ * Allow to work with contentor status relations.
  */
 class StatusRepository implements StatusRepositoryInterface
 {
@@ -44,6 +46,9 @@ class StatusRepository implements StatusRepositoryInterface
     }
 
     /**
+     * Save product contentor status.
+     * Should be used for status updates, to avoid direct DB queries
+     *
      * @param int $contentorId
      * @param string $status
      * @param null $date

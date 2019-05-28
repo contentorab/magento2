@@ -25,6 +25,9 @@ class HandlerFactory
     }
 
     /**
+     * Standard M2 factory. Create handler instance by class name
+     * and check ContentUpdateHandlerInterface support
+     *
      * @param string $className
      * @param array $arguments
      * @throws \InvalidArgumentException

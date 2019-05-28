@@ -8,6 +8,9 @@ namespace Contentor\LocalizationApi\Api;
 interface StatusRepositoryInterface
 {
     /**
+     * Save product contentor status.
+     * Should be used for status updates, to avoid direct DV queries
+     *
      * @param int $contentorId
      * @param string $status
      * @param null $date

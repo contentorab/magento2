@@ -9,6 +9,9 @@ use Contentor\LocalizationApi\Model\ResourceModel\Type;
 /**
  * Class TypeRepository
  * @package Contentor\LocalizationApi\Model
+ * @api
+ * Allow to save different contentorId->type relations.
+ * We need to know what type of content linked to ContentorId.
  */
 class TypeRepository implements TypeRepositoryInterface
 {
@@ -36,6 +39,8 @@ class TypeRepository implements TypeRepositoryInterface
     }
 
     /**
+     * Save Product content Type.
+     *
      * @param int $contentorId
      * @param string $typeCode
      * @return \Contentor\LocalizationApi\Api\Data\TypeInterface
@@ -52,6 +57,8 @@ class TypeRepository implements TypeRepositoryInterface
     }
 
     /**
+     * Returns content type code by contentorID
+     *
      * @param string $contentorId
      * @return string string
      * @throws \Magento\Framework\Exception\LocalizedException

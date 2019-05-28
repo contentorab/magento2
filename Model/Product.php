@@ -9,6 +9,8 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Class Product
  * @package Contentor\LocalizationApi\Model
+ *
+ * Product model. Represent data from `contentor_products` table
  */
 class Product extends AbstractModel implements ProductInterface , ContentEntityInterface
 {

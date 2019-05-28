@@ -9,6 +9,11 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 /**
  * Class TestConnection
  * @package Contentor\LocalizationApi\Model\Gateway
+ *
+ * Gateway command for URL [ContentorBaseUrl]/auth:GET.
+ * Responsibility : Check if API ready.
+ * Used check api state before sending any requests.
+ * TODO : API endpoint not available [15.05.2019]
  */
 class TestConnection
 {

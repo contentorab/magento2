@@ -9,6 +9,10 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 /**
  * Class SendContent
  * @package Contentor\LocalizationApi\Model\Gateway
+ *
+ * Gateway command for URL [ContentorBaseUrl]/content:PUT.
+ * Responsibility : Data transfer, pre format API response result.
+ * Used for sending data to contentor
  */
 class SendContent
 {
@@ -52,8 +56,10 @@ class SendContent
     }
 
     /**
+     * Send data to contentor
+     *
      * @param array $data
-     * @return mixed
+     * @return int|string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(array $data)
@@ -88,7 +94,10 @@ class SendContent
     }
 
     /**
-     * @param $data
+     * Prepare data for request
+     * and make data understandble for API
+     *
+     * @param array $data
      * @return array
      */
     private function prepareRequest($data)

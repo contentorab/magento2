@@ -8,6 +8,7 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Class Type
  * @package Contentor\LocalizationApi\Model
+ * Type model. Represent data from `contentor_type` table
  */
 class Type extends AbstractModel implements TypeInterface
 {

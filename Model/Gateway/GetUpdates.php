@@ -9,6 +9,10 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 /**
  * Class GetUpdates
  * @package Contentor\LocalizationApi\Model\Gateway
+ *
+ * Gateway command for URL [ContentorBaseUrl]/content:GET.
+ * Responsibility : Data transfer, pre format API response result.
+ * Used for getting updates from contentor
  */
 class GetUpdates
 {
@@ -52,6 +56,8 @@ class GetUpdates
     }
 
     /**
+     * Recursively get updates for all content types.
+     *
      * @param string $date
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -67,6 +73,7 @@ class GetUpdates
             }
         }
         if ($result['pages'] > 1) {
+            // more than two pages, process 1 by 1
             for ($i = 2; $i <= $result['pages']; $i++) {
                 $nextPage = $this->getUpdates($date, $i);
                 foreach ($nextPage['requests'] as $request) {
@@ -79,7 +86,9 @@ class GetUpdates
     }
 
     /**
-     * @param $date
+     * Returns data by page.
+     *
+     * @param string $date
      * @param null $page
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException

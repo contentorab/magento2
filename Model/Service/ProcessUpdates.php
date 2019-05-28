@@ -9,6 +9,9 @@ use Magento\Framework\Exception\LocalizedException;
 /**
  * Class ProcessUpades
  * @package Contentor\LocalizationApi\Model\Service
+ *
+ * Contentor 'getUpdates' api endpoint service
+ *
  */
 class ProcessUpdates
 {
@@ -52,16 +55,23 @@ class ProcessUpdates
     }
 
     /**
-     * @param $date
+     * Get and process api updates by date
+     *
+     * @param string $date
      * @throws LocalizedException
      */
     public function execute($date)
     {
-        foreach ($this->getUpdatesGateway->execute($date) as $update) {
+        //1. get updates
+        $updates = $this->getUpdatesGateway->execute($date);
+        foreach ($updates->execute($date) as $update) {
             $entity = $this->entityResolver->findByContentorId(
                 $update['id']
             );
+            //2. find entity handler
             $handler = $this->handlerList->getHandlerByCode($entity->getContentCode());
+
+            //3. process update
             $handler->execute($entity, $update);
         }
     }

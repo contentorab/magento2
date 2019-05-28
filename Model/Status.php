@@ -8,6 +8,7 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Class Status
  * @package Contentor\LocalizationApi\Model
+ * Status model. Represent data from `contentor_status` table
  */
 class Status extends AbstractModel implements StatusInterface
 {

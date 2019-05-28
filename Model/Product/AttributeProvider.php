@@ -7,6 +7,9 @@ use Magento\Catalog\Api\Data\ProductInterface;
 /**
  * Class AttributeProvider
  * @package Contentor\LocalizationApi\Model
+ *
+ * Provide all localizible attributes based on config ,
+ * particular product , and apply extra data if needed
  */
 class AttributeProvider
 {
@@ -42,6 +45,8 @@ class AttributeProvider
     }
 
     /**
+     * Returns list of attributes in contentor api format
+     *
      * @return array
      */
     public function getList()

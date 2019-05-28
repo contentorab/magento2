@@ -18,6 +18,8 @@ use Psr\Log\LoggerInterface;
 /**
  * Class ProductSendContent
  * @package Contentor\LocalizationApi\Model\Service
+ *
+ * Send product content request has complicated logic, and moved to separate service.
  */
 class ProductSendContent
 {
@@ -116,6 +118,16 @@ class ProductSendContent
     }
 
 
+    /**
+     * Send content request to contentor.
+     *
+     * Normalize magento product attributes, search localizeble  attirbutes and prepare data for API
+     *
+     * @param ProductInterface $product
+     * @param string $sourceLocale
+     * @param array $targetLocales
+     * @return void
+     */
     public function execute(ProductInterface $product, $sourceLocale,  $targetLocales)
     {
         $data = $this->getFields($product);
