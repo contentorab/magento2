@@ -63,7 +63,7 @@ class Import
             $result = $this->processUpdates->execute($lastRun);
 
             if ($result !== true) {
-                $this->logger->addDebug('Error cron job');
+                $this->logger->debug('Error cron job');
             } else {
                 // If successful, write new time to db!
                 $connection = $this->resource->getConnection('core_write');
