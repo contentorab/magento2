@@ -1,6 +1,7 @@
 <?php
 namespace Contentor\LocalizationApi\Model\ContentUpdate;
 
+use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Product;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
@@ -15,12 +16,7 @@ class HandlerList
     /**
      * @var array
      */
-    private $config = [];
-
-    /**
-     * @var HandlerFactory
-     */
-    private $handlerFactory;
+    private $handlers = [];
 
     /**
      * HandlerList constructor.
@@ -28,11 +24,11 @@ class HandlerList
      * @param array $config
      */
     public function __construct(
-        HandlerFactory $handlerFactory,
-        $config = []
+        Product $product
     ) {
-        $this->config = $config;
-        $this->handlerFactory = $handlerFactory;
+        $this->handlers = [
+            'product' => $product
+        ];
     }
 
     /**
@@ -45,13 +41,12 @@ class HandlerList
      */
     public function getHandlerByCode($code, array $arguments = [])
     {
-        foreach ($this->config as $handlerCode => $handlerClass) {
-            if ($handlerCode === $code) {
-                return $this->handlerFactory->create($handlerClass, $arguments);
-            }
+        $handler = $this->handlers[$code];
+        if(empty($handler)) {
+            throw  new LocalizedException(__('Handler with code %1 is not defined', $code));
         }
 
-        throw  new LocalizedException(__('Handler with code %1 is not defined', $code));
+        return $handler;
     }
 }
 

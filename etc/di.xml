@@ -14,11 +14,6 @@
             <argument name="logger" xsi:type="object">contentorLogger</argument>
         </arguments>
     </type>
-    <type name="Contentor\LocalizationApi\Model\ContentUpdate\HandlerList">
-        <arguments>
-            <argument name="product" xsi:type="object">\Contentor\LocalizationApi\Model\ContentUpdate\Handler\Product</argument>
-        </arguments>
-    </type>
 
     <preference for="Contentor\LocalizationApi\Model\Spi\HttpClientInterface"
                 type="Contentor\LocalizationApi\Model\Http\Client\Curl" />
