@@ -23,7 +23,7 @@ class Status extends AbstractDb
     {
         $this->_init(
             'contentor_status',
-            StatusInterface::CONTENTOR_ID
+            StatusInterface::ID
         );
     }
 }

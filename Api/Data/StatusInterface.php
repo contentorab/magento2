@@ -11,6 +11,7 @@ interface StatusInterface
      * Column names
      * @var string
      */
+    const ID = 'id';
     const CONTENTOR_ID = 'contentor_id';
     const STATUS_TIME  =  'status_time';
     const STATUS       =  'status';
