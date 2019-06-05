@@ -4,6 +4,7 @@ namespace Contentor\LocalizationApi\Model\Gateway;
 use Psr\Log\LoggerInterface;
 
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
@@ -46,7 +47,7 @@ class GetUpdates
      * @param JsonToArray $jsonToArrayConverter
      */
     public function __construct(
-        LoggerInterface $logger,
+        Logger $logger,
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter
@@ -85,7 +86,7 @@ class GetUpdates
         }
 
         // Output some information to the log about how many updated requests where found
-        $this->logger->debug('Found ' . count($updates) . ' updated requests since ' . date('c', strtotime($date)));
+        $this->logger->info('Found ' . count($updates) . ' updated requests since ' . date('c', strtotime($date)));
 
         return $updates;
     }

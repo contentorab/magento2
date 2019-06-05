@@ -1,11 +1,11 @@
 <?php
 namespace Contentor\LocalizationApi\Model\Http\Client;
 
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\HTTP\Adapter\Curl as CurlAdapter;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Curl
@@ -35,7 +35,7 @@ class Curl implements HttpClientInterface
     public function __construct(
         ConfigurationService $configurationService,
         CurlAdapter $curl,
-        LoggerInterface $logger
+        Logger $logger
     ) {
         $this->configurationService = $configurationService;
         $this->curl = $curl;
