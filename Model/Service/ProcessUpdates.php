@@ -64,7 +64,7 @@ class ProcessUpdates
     {
         //1. get updates
         $updates = $this->getUpdatesGateway->execute($date);
-        foreach ($updates->execute($date) as $update) {
+        foreach ($updates as $update) {
             $entity = $this->entityResolver->findByContentorId(
                 $update['id']
             );
