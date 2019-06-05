@@ -9,149 +9,77 @@ class UpgradeSchema implements UpgradeSchemaInterface
 {
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-
         $setup->startSetup();
-        if (version_compare($context->getVersion(), '0.0.3') < 0) {
-            // Add config table
-            $configTable = $setup->getConnection()->newTable(
-                $setup->getTable('contentor_config')
-            )->addColumn(
+
+        if (version_compare($context->getVersion(), '0.2.0') < 0) {
+             // Add indexes to the status table
+             $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_status'),
+                'id',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'primary' => true,
+                    'comment' => 'Id of status message'
+                ]
+            );
+
+            $setup->getConnection()->addIndex(
+                $setup->getTable('contentor_status'),
+                'on_id',
+                'contentor_id'
+            );
+
+            // Index for config table
+            $setup->getConnection()->addIndex(
+                $setup->getTable('contentor_config'),
+                'primary',
                 'key',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Key'
-            )->addColumn(
-                'value',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                [],
-                'Value'
-            )->setComment(
-                'Config Table'
+                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_PRIMARY
             );
-            $setup->getConnection()->createTable($configTable);
 
-            // Add status table
-            $statusTable = $setup->getConnection()->newTable(
-                $setup->getTable('contentor_status')
-            )->addColumn(
-                'contentor_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                10,
-                [],
-                'Contentor ID'
-            )->addColumn(
-                'status_time',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                0,
-                [],
-                'Status Time'
-            )->addColumn(
-                'status',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                128,
-                [],
-                'Status'
-            )->setComment(
-                'Status Table'
+            // Merged index for versioning
+            $setup->getConnection()->addIndex(
+                $setup->getTable('contentor_products'),
+                'id_and_locales',
+                array('sku', 'source_locale', 'target_locale')
             );
-            $setup->getConnection()->createTable($statusTable);
 
-            // Add type table
-            $typeTable = $setup->getConnection()->newTable(
-                $setup->getTable('contentor_type')
-            )->addColumn(
+             // Migrate the identifier fields to 36 characters to align with API specification
+             $setup->getConnection()->modifyColumn(
+                $setup->getTable('contentor_status'),
                 'contentor_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                10,
-                [],
-                'Contentor ID'
-            )->addColumn(
-                'type',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Type'
-            )->setComment(
-                'Type Table'
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 36
+                ]
             );
-            $setup->getConnection()->createTable($typeTable);
 
-            // Add status table
-            $productTable = $setup->getConnection()->newTable(
-                $setup->getTable('contentor_products')
-            )->addColumn(
+            $setup->getConnection()->modifyColumn(
+                $setup->getTable('contentor_type'),
                 'contentor_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Contentor ID'
-            )->addColumn(
-                'sku',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                32,
-                [],
-                'Product SKU'
-            )->addColumn(
-                'source_locale',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Source Locale'
-            )->addColumn(
-                'target_locale',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Target Locale'
-            )->addColumn(
-                'target_store',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                5,
-                [],
-                'Target Store'
-            )->addColumn(
-                'sent_time',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                0,
-                [],
-                'Sent Time'
-            )->addColumn(
-                'completed_time',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                0,
-                [],
-                'Completed Time'
-            )->addColumn(
-                'deadline_time',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                0,
-                [],
-                'Deadline Time'
-            )->addColumn(
-                'canceled_time',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                0,
-                [],
-                'Canceled Time'
-            )->addColumn(
-                'state',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'State'
-            )->addColumn(
-                'type',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                16,
-                [],
-                'Type'
-            )->setComment(
-                'Type Table'
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 36,
+                    'nullable' => false,
+                    'primary' => true,
+                ]
             );
-            $setup->getConnection()->createTable($productTable);
+
+            $setup->getConnection()->modifyColumn(
+                $setup->getTable('contentor_products'),
+                'contentor_id',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 36,
+                    'nullable' => false,
+                    'primary' => true,
+                ]
+            );
         }
+
         $setup->endSetup();
     }
 }
