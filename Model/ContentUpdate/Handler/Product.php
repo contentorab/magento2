@@ -118,7 +118,7 @@ class Product implements ContentUpdateHandlerInterface
         //3.1. save product
         $this->catalogProductRepository->save($product);
         //3.2. update contentor
-        $entity->setCompletedTime($data['completed_time']);
+        $entity->setCompletedTime($data['completed']);
         $this->productRepository->save($entity);
         //3.3. Update Status
         $status = 'Received as completed for '
