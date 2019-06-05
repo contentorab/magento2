@@ -1,6 +1,8 @@
 <?php
 namespace Contentor\LocalizationApi\Model\Gateway;
 
+use Psr\Log\LoggerInterface;
+
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
@@ -17,9 +19,9 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 class GetUpdates
 {
     /**
-     * @var ConfigurationService
+     * @var LoggerInterface
      */
-    private $configurationService;
+    private $logger;
 
     /**
      * @var HttpClientInterface
@@ -44,12 +46,12 @@ class GetUpdates
      * @param JsonToArray $jsonToArrayConverter
      */
     public function __construct(
-        ConfigurationService $configurationService,
+        LoggerInterface $logger,
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter
     ) {
-        $this->configurationService = $configurationService;
+        $this->logger = $logger;
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
@@ -82,6 +84,9 @@ class GetUpdates
             }
         }
 
+        // Output some information to the log about how many updated requests where found
+        $this->logger->debug('Found ' . count($updates) . ' updated requests since ' . date('c', strtotime($date)));
+
         return $updates;
     }
 
@@ -97,7 +102,6 @@ class GetUpdates
     {
         $headers =  [
             'Content-Type'  => 'application/json',
-            'Authorization' =>  'Bearer '. $this->configurationService->getToken(),
             'Accept'        => 'application/json'
         ];
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
@@ -105,8 +109,8 @@ class GetUpdates
             'headers' => $headers,
             'params' => [],
             'method' => \Zend_Http_Client::GET,
-            'uri' => sprintf('%scontent?%s%s',
-                $this->configurationService->getApiBaseUrl(),
+            'body' => null,
+            'uri' => sprintf('v1/content?%s%s',
                 $this->buildSearchCriteria($date),
                 (null === $page) ? '' : '&page=' . $page
 

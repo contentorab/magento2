@@ -4,7 +4,6 @@ namespace Contentor\LocalizationApi\Model\Gateway;
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
-use Contentor\LocalizationApi\Service\ConfigurationService;
 
 /**
  * Class SendContent
@@ -16,11 +15,6 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
  */
 class SendContent
 {
-    /**
-     * @var ConfigurationService
-     */
-    private $configurationService;
-
     /**
      * @var HttpClientInterface
      */
@@ -44,12 +38,10 @@ class SendContent
      * @param JsonToArray $jsonToArrayConverter
      */
     public function __construct(
-        ConfigurationService $configurationService,
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter
     ) {
-        $this->configurationService = $configurationService;
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
@@ -66,7 +58,6 @@ class SendContent
     {
         $headers =  [
             'Content-Type'  => 'application/json',
-            'Authorization' =>  'Bearer '. $this->configurationService->getToken(),
             'Accept'        => 'application/json'
         ];
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
@@ -75,22 +66,20 @@ class SendContent
             'params' => [],
             'body' => json_encode($this->prepareRequest($data)),
             'method' => \Zend_Http_Client::PUT,
-            'uri' => sprintf('%s/content', $this->configurationService->getApiBaseUrl())
+            'uri' => 'v1/content'
         ]);
 
         $result = $this->httpClient->sendRequest($transfer);
-        $result = $this->jsonToArrayConverter->convert(
-            $result['body']
-        );
 
-        if (!isset($result['id'])) {
-            // No ID returned
-            $contentorId = 'No ID returned';
+        if($result['code'] !== 200) {
+            // TODO: Should this throw an exception
         } else {
-            $contentorId = $result['id'];
-        }
+            $result = $this->jsonToArrayConverter->convert(
+                $result['body']
+            );
 
-        return $contentorId;
+            return $result['id'];
+        }
     }
 
     /**

@@ -18,11 +18,6 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 class TestConnection
 {
     /**
-     * @var ConfigurationService
-     */
-    private $configurationService;
-
-    /**
      * @var HttpClientInterface
      */
     private $httpClient;
@@ -45,12 +40,10 @@ class TestConnection
      * @param JsonToArray $jsonToArrayConverter
      */
     public function __construct(
-        ConfigurationService $configurationService,
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter
     ) {
-        $this->configurationService = $configurationService;
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
@@ -66,7 +59,6 @@ class TestConnection
         return true;
         $headers =  [
             'Content-Type'  => 'application/json',
-            'Authorization' =>  'Bearer '. $this->configurationService->getToken(),
             'Accept'        => 'application/json'
         ];
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
@@ -75,7 +67,7 @@ class TestConnection
             'params' => [],
             'body' => '',
             'method' => \Zend_Http_Client::GET,
-            'uri' => sprintf('%sauth', $this->configurationService->getApiBaseUrl())
+            'uri' => 'v1/auth'
         ]);
 
         $result = $this->httpClient->sendRequest($transfer);

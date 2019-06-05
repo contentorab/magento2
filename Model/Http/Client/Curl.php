@@ -3,6 +3,7 @@ namespace Contentor\LocalizationApi\Model\Http\Client;
 
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
+use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\HTTP\Adapter\Curl as CurlAdapter;
 use Psr\Log\LoggerInterface;
 
@@ -12,6 +13,11 @@ use Psr\Log\LoggerInterface;
  */
 class Curl implements HttpClientInterface
 {
+    /**
+     * @var ConfigurationService
+     */
+    private $configurationService;
+
     /**
      * @var CurlAdapter
      */
@@ -27,9 +33,11 @@ class Curl implements HttpClientInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        ConfigurationService $configurationService,
         CurlAdapter $curl,
         LoggerInterface $logger
     ) {
+        $this->configurationService = $configurationService;
         $this->curl = $curl;
         $this->logger = $logger;
     }
@@ -41,22 +49,40 @@ class Curl implements HttpClientInterface
     public function sendRequest(HttpRequestTransferInterface $transfer)
     {
         $headers = [];
+        $token = $this->configurationService->getToken();
+        if (! empty($token)) {
+            // Apply the authorization token if it is set
+            $headers[] = 'Authorization: Bearer ' . $token;
+        }
+
         foreach ($transfer->getHeaders() as $name => $value) {
             $headers[] = sprintf('%s: %s', $name, $value);
         }
+
+        $url = $this->configurationService->getApiBaseUrl() . $transfer->getUri();
+
+        $this->logger->debug('Sending request to API', [
+            'method' => $transfer->getMethod(),
+            'url' => $url,
+            'body' => $transfer->getBody()
+        ]);
+
         $this->curl->write(
             $transfer->getMethod(),
-            $transfer->getUri(),
+            $url,
             '1.1',
             $headers,
             $transfer->getBody()
         );
 
-        $this->logger->debug($transfer->getBody());
         $response = $this->curl->read();
-        return [
+        $result = [
             'code' => \Zend_Http_Response::extractCode($response),
             'body' => \Zend_Http_Response::extractBody($response),
         ];
+
+        $this->logger->debug('Got response via API', $result);
+
+        return $result;
     }
 }
