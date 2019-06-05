@@ -61,8 +61,9 @@ class EntityResolver
     {
         //2. try to find type
         $type = $this->typeRepository->getByContentorId($contentorId);
-        if (null === $type) {
-            throw new LocalizedException(__('Undefined content type for contentorId %1', $contentorId));
+        if (empty($type)) {
+            // No type found - meaning we didn't send this request - return null as we can't load associated entity
+            return null;
         }
 
         if (!isset($this->repositoriesMap[$type])) {

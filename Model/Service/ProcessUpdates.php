@@ -68,6 +68,12 @@ class ProcessUpdates
             $entity = $this->entityResolver->findByContentorId(
                 $update['id']
             );
+
+            if($entity == null) {
+                // If entity is not found - continue processing other updates
+                continue;
+            }
+
             //2. find entity handler
             $handler = $this->handlerList->getHandlerByCode($entity->getContentCode());
 
