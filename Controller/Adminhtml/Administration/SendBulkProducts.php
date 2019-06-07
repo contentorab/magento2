@@ -90,7 +90,7 @@ class SendBulkProducts extends Action
         $numberTargets = count($targetIDs);
 
         foreach ($targetIDs as $targetID) {
-            $targets[$targetID] = str_replace('_', '-', $this->configurationService->getMainLocale());
+            $targets[$targetID] = str_replace('_', '-', $this->configurationService->getMainLocale($targetID));
         }
 
         // Check if source in targets?
@@ -113,7 +113,7 @@ class SendBulkProducts extends Action
             for ($i=0; $i<$max; $i++) {
                 // Send some products
                 $prodID = $productlist[$i];
-                $product = $this->productfactory->create()->load($prodID);
+                $product = $this->productFactory->create()->load($prodID);
                 $this->productSendContent->execute(
                     $product,
                     $sourceLocale,
@@ -157,8 +157,8 @@ class SendBulkProducts extends Action
                 $returnData .= "Go to <a href=\"" . $url . "\">report page</a>";
             }
             $returnData .= "</form>";
-        }
 
-        $this->getResponse()->setBody($returnData);
+            $this->getResponse()->setBody($returnData);
+        }
     }
 }
