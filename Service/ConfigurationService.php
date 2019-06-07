@@ -44,7 +44,7 @@ class ConfigurationService
 
     public function getVersion() {
         // TODO: Maybe move this into the config file or pull it from the runtime somehow
-        return '0.2.0';
+        return '0.3.1';
     }
 
     /**
