@@ -19,7 +19,7 @@ interface ProductInterface
     const SENT_TIME = 'sent_time';
     const COMPLETED_TIME = 'completed_time';
     const DEADLINE_TIME = 'deadline_time';
-    const CANCELLED_TIME = 'canceled_time';
+    const CANCELED_TIME = 'canceled_time';
     const STATE = 'state';
     const TYPE = 'type';
     const TYPE_CODE = 'product';
@@ -85,12 +85,12 @@ interface ProductInterface
      * @param string $sendTime
      * @return void
      */
-    public function setSendTime($sendTime);
+    public function setSentTime($sendTime);
 
     /**
      * @return string
      */
-    public function getSendTime();
+    public function getSentTime();
 
     /**
      * @param string $completedTime
@@ -115,15 +115,15 @@ interface ProductInterface
     public function getDeadlineTime();
 
     /**
-     * @param string $cancelledTime
+     * @param string $canceledTime
      * @return void
      */
-    public function setCancelledTime($cancelledTime);
+    public function setCanceledTime($canceledTime);
 
     /**
      * @return string
      */
-    public function getCancelledTime();
+    public function getCanceledTime();
 
     /**
      * @param string $state

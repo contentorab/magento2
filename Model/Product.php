@@ -127,7 +127,7 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
      * @param string $sendTime
      * @return void
      */
-    public function setSendTime($sendTime)
+    public function setSentTime($sendTime)
     {
         $this->setData(
             self::SENT_TIME,
@@ -138,7 +138,7 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     /**
      * @return string
      */
-    public function getSendTime()
+    public function getSentTime()
     {
         return $this->getData(self::SENT_TIME);
     }
@@ -184,23 +184,23 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     }
 
     /**
-     * @param string $cancelledTime
+     * @param string $canceledTime
      * @return void
      */
-    public function setCancelledTime($cancelledTime)
+    public function setCanceledTime($canceledTime)
     {
         $this->setData(
-            self::CANCELLED_TIME,
-            $cancelledTime
+            self::CANCELED_TIME,
+            $canceledTime
         );
     }
 
     /**
      * @return string
      */
-    public function getCancelledTime()
+    public function getCanceledTime()
     {
-        return $this->getData(self::CANCELLED_TIME);
+        return $this->getData(self::CANCELED_TIME);
     }
 
     /**
