@@ -9,7 +9,7 @@ and that we keep compatibility with older PHP versions.
 	<config name="installed_paths" value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/,vendor/wimg/php-compatibility/" />
 	<config name="testVersion" value="7.0"/>
 
-	<rule ref="./vendor/magento-ecg/coding-standard/Ecg" />
+	<rule ref="./vendor/magento-ecg/coding-standard/EcgM2" />
 	<rule ref="./vendor/magento/marketplace-eqp/MEQP2" />
 	<rule ref="./vendor/wimg/php-compatibility/PHPCompatibility" />
     <rule ref="PSR2">
