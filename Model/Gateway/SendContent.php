@@ -4,6 +4,7 @@ namespace Contentor\LocalizationApi\Model\Gateway;
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class SendContent
@@ -100,8 +101,12 @@ class SendContent
             'fields' => $data['fields']
         ];
 
-        if (!empty($data['previd']) && $data['type'] == 'update') {
-            $request['previous'] = $data['previd'];
+        if($data['type'] == 'update') {
+            if(empty($data['previous'])) {
+                throw new LocalizedException('Tried sending update request without previous version');
+            } else {
+                $request['previous'] = $data['previous'];
+            }
         }
 
         return $request;

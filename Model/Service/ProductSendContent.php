@@ -6,6 +6,7 @@ use Contentor\LocalizationApi\Api\Data\ProductInterfaceFactory;
 use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
 use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Gateway\SendContent;
 use Contentor\LocalizationApi\Model\Product\AttributeProviderFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
@@ -24,6 +25,11 @@ use Psr\Log\LoggerInterface;
 class ProductSendContent
 {
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @var AttributeProviderFactory
      */
     private $attributeProviderFactory;
@@ -32,11 +38,6 @@ class ProductSendContent
      * @var ConfigurationService
      */
     private $configurationService;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var ProductRepositoryInterface
@@ -89,9 +90,9 @@ class ProductSendContent
      * @param TypeRepositoryInterface $typeRepository
      * @param StatusRepositoryInterface $statusRepository
      * @param TestConnection $testConnection
-     * @param LoggerInterface $logger
      */
     public function __construct(
+        Logger $logger,
         AttributeProviderFactory $attributeProviderFactory,
         ConfigurationService $configurationService,
         ProductRepositoryInterface $contentorProductRepository,
@@ -101,9 +102,9 @@ class ProductSendContent
         DateTime $date,
         TypeRepositoryInterface $typeRepository,
         StatusRepositoryInterface $statusRepository,
-        TestConnection $testConnection,
-        LoggerInterface $logger
+        TestConnection $testConnection
     ) {
+        $this->logger = $logger;
         $this->attributeProviderFactory = $attributeProviderFactory;
         $this->configurationService = $configurationService;
         $this->logger = $logger;
@@ -139,12 +140,17 @@ class ProductSendContent
         }
 
         try {
-            $this->testConnection->execute();
+            $this->logger->info('Sending ' . $product->getSku() . ' for localization to: ' . implode(' ', array_values($targetLocales)));
+
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
                 $prevID = false;
 
                 if ($this->configurationService->isVersioningEnabled()) {
+                    /*
+                     * When versioning is active try to resolve the last update
+                     * of this product and locale combination.
+                     */
                     $update = $this->contentorProductRepository->getLastUpdateByLocale(
                         $product->getSku(),
                         $targetLocale,
@@ -156,12 +162,13 @@ class ProductSendContent
                         $prevID = $update->getContentorId();
                     }
                 }
+
                 $contentorId = $this->sendContent->execute([
                     'sourceLocale' => $sourceLocale,
                     'targetLocale' => $targetLocale,
                     'fields' => $data,
                     'type' => $type,
-                    'prevID' => $prevID,
+                    'previous' => $prevID,
                 ]);
 
                 if ($contentorId) {
@@ -169,8 +176,14 @@ class ProductSendContent
                     $this->saveTypeEntity($contentorId);
                     $this->saveStatusEntity(
                         $contentorId,
-                        'Sent for localisation to: ' . $targetLocale
+                        'Sent for localization to ' . $targetLocale
                     );
+
+                    if ($type == 'update') {
+                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
+                    } else {
+                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
+                    }
                 } else {
                     $this->logger->critical(
                         sprintf('Api returns empty Contentor ID. Skip product %s', $product->getSku())
@@ -208,6 +221,7 @@ class ProductSendContent
                 ContentorProductInterface::TARGET_LOCALE => $targetLocale,
                 ContentorProductInterface::TARGET_STORE => $targetId,
                 ContentorProductInterface::TYPE => $type,
+                ContentorProductInterface::STATE => 'pending',
                 ContentorProductInterface::SENT_TIME => $this->date->gmtDate(),
             ],
             ContentorProductInterface::class
