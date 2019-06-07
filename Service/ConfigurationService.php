@@ -42,6 +42,11 @@ class ConfigurationService
         $this->scopeConfig = $scopeConfig;
     }
 
+    public function getVersion() {
+        // TODO: Maybe move this into the config file or pull it from the runtime somehow
+        return '0.2.0';
+    }
+
     /**
      * Returns token from config
      *

@@ -24,7 +24,7 @@ class Curl implements HttpClientInterface
     private $curl;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
 
@@ -48,7 +48,9 @@ class Curl implements HttpClientInterface
      */
     public function sendRequest(HttpRequestTransferInterface $transfer)
     {
-        $headers = [];
+        $headers = [
+            'User-Agent' => 'ContentorMagento2/' . $this->configurationService->getVersion()
+        ];
         $token = $this->configurationService->getToken();
         if (! empty($token)) {
             // Apply the authorization token if it is set
@@ -80,8 +82,6 @@ class Curl implements HttpClientInterface
             'code' => \Zend_Http_Response::extractCode($response),
             'body' => \Zend_Http_Response::extractBody($response),
         ];
-
-        $this->logger->debug('Got response via API', $result);
 
         return $result;
     }
