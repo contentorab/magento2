@@ -2,12 +2,18 @@
   "name": "contentorab/localizationapi",
   "description": "A Magento 2 module that sends and receives product attributes for localization by Contentor",
   "type": "magento2-module",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "license": [
     "OSL-3.0"
   ],
   "require": {
     "ext-curl": "*"
+  },
+  "repositories": {
+    "meqp": {
+        "type": "git",
+        "url": "https://github.com/magento/marketplace-eqp.git"
+    }
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3.0",

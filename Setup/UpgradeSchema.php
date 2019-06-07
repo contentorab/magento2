@@ -11,7 +11,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '0.2.0') < 0) {
+        if (version_compare($context->getVersion(), '0.3.0') < 0) {
              // Add indexes to the status table
              $setup->getConnection()->addColumn(
                 $setup->getTable('contentor_status'),
