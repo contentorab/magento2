@@ -1,8 +1,8 @@
 <?php
 namespace Contentor\LocalizationApi\Cron;
 
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Service\ProcessUpdates;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\App\ResourceConnection;
 
 /**
@@ -17,7 +17,7 @@ class Import
     private $processUpdates;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
     /**
@@ -27,12 +27,12 @@ class Import
 
     /**
      * Import constructor.
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param ResourceConnection $resource
      * @param ProcessUpdates $processUpdates
      */
     public function __construct(
-        LoggerInterface $logger,
+        Logger $logger,
         ResourceConnection $resource,
         ProcessUpdates $processUpdates
     ) {
@@ -47,36 +47,62 @@ class Import
      */
     public function execute()
     {
-            $now = gmdate('Y-m-d H:i');
-            $connection = $this->resource->getConnection('core_read');
-            $table = $this->resource->getTableName('contentor_config');
-            $query = "SELECT `value` FROM `" . $table . "` WHERE `key` = 'lastRun'";
-            $lastRun = $connection->fetchOne($query);
+        $connection = $this->resource->getConnection('core_read');
 
-            $noTime = false;
-            if (!$lastRun) {
-                $noTime = true;
-                $lastRun = gmdate('Y-m-d H:i', strtotime('-2 days'));
+        $lastRun = $this->get($connection, 'lastRun');
+        $lastStateChange = $this->get($connection, 'lastStateChange');
+
+        if(empty($lastStateChange)) {
+            $this->logger->info('Running initial content synchronization');
+        } else {
+            $this->logger->info('Running content synchronization, last state change seen ' . $lastStateChange . ' (at ' . $lastRun . ')');
+        }
+
+        while(true) {
+            $result = $this->processUpdates->execute(
+                empty($lastStateChange) ? gmdate('c', strtotime('-2 days')) : $lastStateChange
+            );
+
+            // Save the new last state change and then continue
+            $this->update($connection, 'lastStateChange', $result['lastStateChange'], $lastStateChange);
+            $lastStateChange = $result['lastStateChange'];
+
+            if($result['updates'] == 0) {
+                break;
             }
+        }
 
-            $result = false;
-            $result = $this->processUpdates->execute($lastRun);
+        $this->update($connection, 'lastRun', gmdate('c'), $lastRun);
 
-            if ($result !== true) {
-                $this->logger->debug('Error cron job');
-            } else {
-                // If successful, write new time to db!
-                $connection = $this->resource->getConnection('core_write');
-                $table = $this->resource->getTableName('contentor_config');
-
-                if ($noTime) {
-                    $query = "INSERT INTO `" . $table . "` (`key`, `value`) VALUES ('lastRun', '" . $now . "')";
-                } else {
-                    $query = "UPDATE `" . $table . "` SET `value` = '" . $now . "' WHERE `key` = 'lastRun'";
-                }
-                $connection->query($query);
-                return true;
-            }
         return $this;
+    }
+
+    private function get($connection, $key) {
+        $table = $this->resource->getTableName('contentor_config');
+        $query = "SELECT `value` FROM `" . $table . "` WHERE `key` = :key";
+        $binds = [
+            'key' => $key
+        ];
+        $date = $connection->fetchOne($query, $binds);
+        if(empty($date)) {
+            return null;
+        } else {
+            return $date;
+        }
+    }
+
+    private function update($connection, $key, $value, $previous) {
+        $table = $this->resource->getTableName('contentor_config');
+        if (empty($previous)) {
+            $query = "INSERT INTO `" . $table . "` (`key`, `value`) VALUES (:key, :value)";
+        } else {
+            $query = "UPDATE `" . $table . "` SET `value` = :value WHERE `key` = :key";
+        }
+
+        $binds = [
+            'key' => $key,
+            'value' => $value
+        ];
+        $connection->query($query, $binds);
     }
 }

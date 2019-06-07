@@ -69,24 +69,12 @@ class GetUpdates
     {
         $result = $this->getUpdates($date);
         $updates = [];
-        if ($result['total'] > 0) {
-            // Process results from page 1
-            foreach ($result['requests'] as $request) {
-                $updates[] = $request;
-            }
-        }
-        if ($result['pages'] > 1) {
-            // more than two pages, process 1 by 1
-            for ($i = 2; $i <= $result['pages']; $i++) {
-                $nextPage = $this->getUpdates($date, $i);
-                foreach ($nextPage['requests'] as $request) {
-                    $updates[] = $request;
-                }
-            }
+        foreach ($result['requests'] as $request) {
+            $updates[] = $request;
         }
 
         // Output some information to the log about how many updated requests where found
-        $this->logger->info('Found ' . count($updates) . ' updated requests since ' . date('c', strtotime($date)));
+        $this->logger->info('Found ' . count($updates) . ' updated requests since ' . $date);
 
         return $updates;
     }
@@ -135,14 +123,14 @@ class GetUpdates
         $args = [
             'criteria' => [
                 [
-                    'type' => 'modified',
+                    'type' => 'lastStateChange',
                     'criteria' => [
                         'from' => $date,
-                        'to' => 'tomorrow'
+                        'fromInclusive' => false
                     ]
                 ]
             ],
-            'sortBy' => ['created:desc']
+            'sortBy' => [ 'lastStateChange:asc' ]
         ];
 
         return http_build_query(

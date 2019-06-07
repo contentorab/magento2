@@ -1,6 +1,7 @@
 <?php
 namespace Contentor\LocalizationApi\Model\Service;
 
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\ContentUpdate\HandlerList;
 use Contentor\LocalizationApi\Model\EntityResolver;
 use Contentor\LocalizationApi\Model\Gateway\GetUpdates;
@@ -15,6 +16,11 @@ use Magento\Framework\Exception\LocalizedException;
  */
 class ProcessUpdates
 {
+      /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var HandlerList
      */
@@ -43,11 +49,13 @@ class ProcessUpdates
      * @param EntityResolver $entityResolver
      */
     public function __construct(
+        Logger $logger,
         HandlerList $handlerList,
         TestConnection $testConnection,
         GetUpdates $getUpdatesGateway,
         EntityResolver $entityResolver
     ) {
+        $this->logger = $logger;
         $this->handlerList = $handlerList;
         $this->testConnection = $testConnection;
         $this->getUpdatesGateway = $getUpdatesGateway;
@@ -55,7 +63,8 @@ class ProcessUpdates
     }
 
     /**
-     * Get and process api updates by date
+     * Get and process a chunk of updates, returning the last state change
+     * seen.
      *
      * @param string $date
      * @throws LocalizedException
@@ -64,7 +73,12 @@ class ProcessUpdates
     {
         //1. get updates
         $updates = $this->getUpdatesGateway->execute($date);
+        $lastStateChangeSeen = $date;
+        $count = 0;
         foreach ($updates as $update) {
+            // Keep the last state change seen - no matter if the entity exists or not
+            $lastStateChangeSeen = $update['lastStateChange'];
+
             $entity = $this->entityResolver->findByContentorId(
                 $update['id']
             );
@@ -74,11 +88,20 @@ class ProcessUpdates
                 continue;
             }
 
+            $count++;
+
             //2. find entity handler
             $handler = $this->handlerList->getHandlerByCode($entity->getContentCode());
 
             //3. process update
             $handler->execute($entity, $update);
         }
+
+        $this->logger->info('Processed ' . $count . ' requests, with the last state change being ' . $lastStateChangeSeen);
+
+        return [
+            'lastStateChange' => $lastStateChangeSeen,
+            'updates' => count($updates)
+        ];
     }
 }
