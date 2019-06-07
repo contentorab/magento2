@@ -78,4 +78,8 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
     {
         return $this->_request->getParam($id);
     }
+
+    public function getPage($page) {
+        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page ]);
+    }
 }

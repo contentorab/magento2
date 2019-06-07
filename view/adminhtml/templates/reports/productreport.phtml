@@ -20,17 +20,17 @@ if ($tot > 0) {
         if ($i == $page) {
             print '<b>' . $i . '</b> ';
         } else {
-            print '<a href="' . $this->getUrl('adminhtml/contentor/productsreport') . '?page=' . $i . '&pagesize=' . $pagesize . '">' . $i . '</a> ';
+            print '<a href="' . $this->getPage($i) . '">' . $i . '</a> ';
         }
     }
     print ' | ';
     if ($page > 1) {
-        print '<a href="' . $this->getUrl('adminhtml/contentor/productsreport') . '?page=' . ($page-1) . '&pagesize=' . $pagesize . '">Previous</a> ';
+        print '<a href="' . $this->getPage($page - 1) . '">Previous</a> ';
     }
     if ($page < $nPages) {
-        print ' <a href="' . $this->getUrl('adminhtml/contentor/productsreport') . '?page=' . ($page+1) . '&pagesize=' . $pagesize . '">Next</a> ';
+        print ' <a href="' . $this->getPage($page + 1) . '">Next</a> ';
     }
-     
+
     $offset = ($page-1)*$pagesize;
     $productList = $block->getProductList($offset, $pagesize);
     $n = count($productList);
@@ -75,7 +75,7 @@ if ($tot > 0) {
         } else {
             $even = '#fff';
         }
-        
+
         $sent = [];
         $sentStores = explode(",", $prod['sent']);
         foreach ($sentStores as $sentStore) {
@@ -84,7 +84,7 @@ if ($tot > 0) {
                 $sent[$sentinfo[0]] = $sentinfo[1];
             }
         }
-        
+
         $completed = [];
         $completeStores = explode(",", $prod['completed']);
         foreach ($completeStores as $completeStore) {
@@ -93,7 +93,7 @@ if ($tot > 0) {
                 $completed[$completeinfo[0]] = $completeinfo[1];
             }
         }
-        
+
         $state = [];
         $stateStores = explode(",", $prod['state']);
         foreach ($stateStores as $stateStore) {
@@ -102,7 +102,7 @@ if ($tot > 0) {
                 $state[$stateinfo[0]] = $stateinfo[1];
             }
         }
-        
+
         print '<tr title="' . $url . '" style="background-color:' . $even . '; border-bottom:1px solid #aaa;">';
         print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $prod['sku'] . '</a></td>';
         print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $prodName . '</td>';
@@ -140,7 +140,7 @@ if ($tot > 0) {
             print '</td>';
         }
         print '</tr>';
-        
+
         $i++;
     }
     ?>
