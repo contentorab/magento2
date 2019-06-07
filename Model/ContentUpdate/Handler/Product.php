@@ -90,19 +90,85 @@ class Product implements ContentUpdateHandlerInterface
      */
     public function execute(ContentEntityInterface $entity, array $data)
     {
-        if ($data['state'] != 'completed') {
+        if ($data['state'] == 'completed') {
+            $this->handleCompleted($entity, $data);
+        } else if($data['state'] == 'confirmed') {
+            $this->handleConfirmed($entity, $data);
+        } else if($data['state'] == 'canceled') {
+            $this->handleCanceled($entity, $data);
+        }
+    }
+
+    /**
+     * Handle the scenario where a request becomes confirmed. This takes
+     * care of two scenarios:
+     *
+     * 1) When it initially receives a deadline
+     * 2) If the product goes from completed/canceled to confirmed
+     */
+    private function handleConfirmed(ContentEntityInterface $entity, array $data) {
+        if($entity->getState() == 'confirmed') {
+            // This product is already in a confirmed state - skip it
+            // TODO: This might need to update the deadline
             return;
         }
-        // 1. search product
+
+        // Update the state and completed time of the product
+        $entity->setState($data['state']);
+        $this->productRepository->save($entity);
+
+        // Show a status message in the log for the product
+        $status = 'Order confirmed for delivery';
+
+        $this->statusRepository->saveProductStatus(
+            $entity->getContentorId(),
+            $status
+        );
+    }
+
+     /**
+     * Handle the scenario where a request becomes canceled.
+     */
+    private function handleCanceled(ContentEntityInterface $entity, array $data) {
+        if($entity->getState() == 'canceled') {
+            // This product is already in a canceled state - skip it
+            return;
+        }
+
+        // Update the state and deadline of the product
+        $entity->setState($data['state']);
+        $this->productRepository->save($entity);
+
+        // Show a status message in the log for the product
+        $status = 'Order canceled';
+
+        $this->statusRepository->saveProductStatus(
+            $entity->getContentorId(),
+            $status
+        );
+    }
+
+    /**
+     * Handle the scenario where an item is received as completed. The job
+     * of this function is to copy back data into the Magento product.
+     */
+    private function handleCompleted(ContentEntityInterface $entity, array $data) {
+        if($entity->getState() == 'completed') {
+            // This product is already in a completed state - skip it
+            return;
+        }
+
         /** @var \Magento\Catalog\Api\Data\ProductInterface| \Magento\Catalog\Model\Product $product */
         $product = $this->productFactory->create()->setStoreId(
             $entity->getTargetStore()
         )->loadByAttribute('sku', $entity->getSku());
-        // do nothing if not exist
-        if (!$product) {
+
+        if (! $product) {
+            // The Magento product represented by this SKU does not exist, abort the update
             return;
         }
-        //2.  setData on product depending on licalizationsfields received on the right store
+
+        // Copy back the fields from the completed request into the product
         $this->storeManager->setCurrentStore($entity->getTargetStore());
         foreach ($data['fields'] as $field) {
             if ($field['type'] == 'localizable') {
@@ -112,15 +178,19 @@ class Product implements ContentUpdateHandlerInterface
         }
 
         if ($this->configurationService->isAutomationEnabled()) {
+            // If the product should go live when received back update its status
             $product->setStatus(1);
         }
 
-        //3.1. save product
+        // Save the product with the updated attributes
         $this->catalogProductRepository->save($product);
-        //3.2. update contentor
+
+        // Update the state and completed time of the product
         $entity->setCompletedTime($data['completed']);
+        $entity->setState($data['state']);
         $this->productRepository->save($entity);
-        //3.3. Update Status
+
+        // Show a status message in the log for the product
         $status = 'Received as completed for '
             . $data['language']['target']
             . ', completion time: '
