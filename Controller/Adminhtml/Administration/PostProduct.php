@@ -23,11 +23,6 @@ class PostProduct extends \Magento\Backend\App\Action
     private $productFactory;
 
     /**
-     * @var Data
-     */
-    private $backendHelper;
-
-    /**
      * @var Http
      */
     private $request;
@@ -44,12 +39,10 @@ class PostProduct extends \Magento\Backend\App\Action
         Context $context,
         Http $request,
         ProductFactory $productFactory,
-        Data $backendHelper,
         ProductSendContent $productSendContent
     ) {
         parent::__construct($context);
         $this->productFactory = $productFactory;
-        $this->backendHelper = $backendHelper;
         $this->productSendContent = $productSendContent;
         $this->request = $request;
     }
@@ -82,7 +75,7 @@ class PostProduct extends \Magento\Backend\App\Action
                 );
             }
 
-            $url = $this->backendHelper->getUrl(
+            $url = $this->getUrl(
                 'catalog/product/edit',
                 ['id' => $productId]
             );

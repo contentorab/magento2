@@ -37,11 +37,6 @@ class SendBulkProducts extends Action
     private $productFactory;
 
     /**
-     * @var Data
-     */
-    private $backendHelper;
-
-    /**
      * @var PageFactory
      */
     private $pageFactory;
@@ -60,7 +55,6 @@ class SendBulkProducts extends Action
         Context $context,
         Http $request,
         ProductFactory $productFactory,
-        Data $backendHelper,
         PageFactory $pageFactory,
         ProductSendContent $productSendContent,
         ConfigurationService $configurationService
@@ -68,7 +62,6 @@ class SendBulkProducts extends Action
         parent::__construct($context);
         $this->request = $request;
         $this->productFactory = $productFactory;
-        $this->backendHelper = $backendHelper;
         $this->pageFactory = $pageFactory;
         $this->productSendContent = $productSendContent;
         $this->configurationService = $configurationService;
@@ -150,7 +143,7 @@ class SendBulkProducts extends Action
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"\">";
                 }
             } else {
-                $url = $this->backendHelper->getUrl('contentor/reports/productreport');
+                $url = $this->getUrl('contentor/reports/productreport');
 
                 $returnData .= "<input type=\"hidden\" name=\"theend\" value=\"true\">";
                 $returnData .= "<h3>Done!</h3>";
