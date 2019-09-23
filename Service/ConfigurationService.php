@@ -25,6 +25,7 @@ class ConfigurationService
     const XML_PATH_API_BASE_URL = 'contentor_options/contentor_options/api_base_url';
     const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
     const XML_PATH_MAIN_LOCALE = 'general/locale/code';
+    const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
     /**#@-*/
 
     /**
@@ -178,6 +179,32 @@ class ConfigurationService
     {
         $data =  $this->scopeConfig->getValue(
             self::XML_PATH_PRODUCT_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        $result = json_decode($data, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns Product attributes map from magento config for content creation
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getContentCreationProductFields($store = null)
+    {
+        $data =  $this->scopeConfig->getValue(
+            self::XML_PATH_CONTENT_CREATION_FIELDS,
             ScopeInterface::SCOPE_STORE,
             $store
         );

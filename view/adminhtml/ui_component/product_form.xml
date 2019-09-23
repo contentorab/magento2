@@ -18,4 +18,23 @@
            </htmlContent>
        </container>
    </fieldset>
+    <fieldset name="contentor.contentcreation">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Contentor Content Creation</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="sortOrder" xsi:type="number">110</item>
+            </item>
+        </argument>
+        <container name="fieldname_container" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortOrder" xsi:type="number">170</item>
+                </item>
+            </argument>
+            <htmlContent name="html_content_demo">
+                <argument name="block" xsi:type="object">Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\ContentCreation</argument>
+            </htmlContent>
+        </container>
+    </fieldset>
 </form>

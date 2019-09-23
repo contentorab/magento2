@@ -1,5 +1,5 @@
 <?php
-namespace Contentor\LocalizationApi\Block\Adminhtml\Reports;
+namespace Contentor\LocalizationApi\Block\Adminhtml\Reports\ContentCreation;
 
 use \Magento\Framework\App\ResourceConnection;
 use \Magento\Framework\View\Element\Template\Context;
@@ -10,7 +10,7 @@ use \Magento\Framework\App\Request\Http;
 
 /**
  * Class ProductReportBlock
- * @package Contentor\LocalizationApi\Block\Adminhtml\Reports
+ * @package Contentor\LocalizationApi\Block\Adminhtml\Reports\ContentCreation
  */
 class ProductReportBlock extends \Magento\Framework\View\Element\Template
 {
@@ -70,7 +70,7 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
     {
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `sku` FROM `" . $table . "` WHERE `synchronize_type` = ". \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE ." GROUP BY `sku`, `source_locale`";
+        $query = "SELECT `sku` FROM `" . $table . "` WHERE `synchronize_type` = ". \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ." GROUP BY `sku`, `source_locale`";
         $result = $connection->query($query);
         $total = $result->rowCount();
 
@@ -91,7 +91,7 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
 				FROM `" . $table . "` 
-				WHERE `synchronize_type` = ". \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE ."
+				WHERE `synchronize_type` = ". \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ."
 				GROUP BY `sku`, `source_locale`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
