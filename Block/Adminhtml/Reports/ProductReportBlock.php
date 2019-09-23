@@ -49,7 +49,8 @@ class ProductReportBlock extends \Magento\Framework\View\Element\Template
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "`
+				FROM `" . $table . "` 
+				WHERE `synchronize_type` = ". \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE ."
 				GROUP BY `sku`, `source_locale`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;

@@ -23,6 +23,7 @@ interface ProductInterface
     const STATE = 'state';
     const TYPE = 'type';
     const TYPE_CODE = 'product';
+    const SYNCHRONIZE_TYPE = 'synchronize_type';
     /**#@-*/
 
     /**
@@ -146,4 +147,15 @@ interface ProductInterface
      * @return string
      */
     public function getType();
+
+    /**
+     * @param int $type
+     * @return boolean
+     */
+    public function setSynchronizeType($type);
+
+    /**
+     * @return int
+     */
+    public function getSynchronizeType();
 }

@@ -97,8 +97,11 @@ class Localization extends \Magento\Framework\View\Element\Template
         $connection = $this->_resource->getConnection('core_read');
         $statustable = $table = $this->_resource->getTableName('contentor_status');
         $producttable = $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `" . $producttable . "`.`contentor_id`, `" . $producttable . "`.`target_store`, `" . $producttable . "`.`sent_time`, `" . $producttable . "`.`completed_time`, `" . $producttable . "`.`canceled_time`, `" . $statustable . "`.`status_time`, `" . $statustable . "`.`status`, `" . $producttable . "`.`state`, `" . $producttable . "`.`type` FROM `" . $producttable . "` LEFT JOIN `" . $statustable . "` ON `" . $producttable . "`.`contentor_id`= `" . $statustable . "`.`contentor_id` WHERE `" . $producttable . "`.`sku` = :this_sku ORDER BY `" . $producttable . "`.`contentor_id` DESC, `" . $statustable . "`.`status_time`";
-        $binds = [ 'this_sku' => $sku ];
+        $query = "SELECT `" . $producttable . "`.`contentor_id`, `" . $producttable . "`.`target_store`, `" . $producttable . "`.`sent_time`, `" . $producttable . "`.`completed_time`, `" . $producttable . "`.`canceled_time`, `" . $statustable . "`.`status_time`, `" . $statustable . "`.`status`, `" . $producttable . "`.`state`, `" . $producttable . "`.`type` FROM `" . $producttable . "` LEFT JOIN `" . $statustable . "` ON `" . $producttable . "`.`contentor_id`= `" . $statustable . "`.`contentor_id` WHERE `" . $producttable . "`.`sku` = :this_sku AND `synchronize_type` = :this_synchronize_type ORDER BY `" . $producttable . "`.`contentor_id` DESC, `" . $statustable . "`.`status_time`";
+        $binds = [
+            'this_sku' => $sku,
+            'this_synchronize_type' => \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE
+        ];
         $status = $connection->fetchAll($query, $binds);
 
         return $status;
