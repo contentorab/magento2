@@ -143,7 +143,7 @@ class SendBulkProducts extends Action
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"\">";
                 }
             } else {
-                $url = $this->getUrl('contentor/reports/productreport');
+                $url = $this->getUrl('contentor/reports/contentcreation_productreport');
 
                 $returnData .= "<input type=\"hidden\" name=\"theend\" value=\"true\">";
                 $returnData .= "<h3>Done!</h3>";
