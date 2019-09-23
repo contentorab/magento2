@@ -156,7 +156,8 @@ class ProductSendContent
                     $update = $this->contentorProductRepository->getLastUpdateByLocale(
                         $product->getSku(),
                         $targetLocale,
-                        $sourceLocale
+                        $sourceLocale,
+                        \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE
                     );
 
                     if (null !== $update->getContentorId()) {

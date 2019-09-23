@@ -60,7 +60,6 @@ class AttributeProvider
 
         $product = $this->product;
         $sku = $product->getSku();
-        $productID = $product->getId();
         $fields = [];
 
         $fields[] = [
@@ -91,11 +90,9 @@ class AttributeProvider
         $n = [];
         foreach ($fieldArray as $field) {
             if ($field['attribute'] == 'productURL') {
-                $value = $product->setStoreId($field['store'])->getUrlInStore();
                 $name = 'Product URL';
             } else {
                 $attribute = $product->getResource()->getAttribute($field['attribute']);
-                $value = $product->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
                 $name = $attribute->getFrontendLabel();
             }
 
@@ -106,25 +103,24 @@ class AttributeProvider
             }
             $id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
 
-            if (! empty($value)) {
-                $fields[] = [
-                    'id'=>$id,
-                    'name'=>$name,
-                    'type'=>'creatable',
-                    'data'=>$field['data'],
-                    'value'=>$value,
-                    'hints' => [
-                        [
-                            'type'   => 'word-count',
-                            'around' => $field['word_count'],
-                        ]
+            //Value has to be null for creatable field
+            $fields[] = [
+                'id'=>$id,
+                'name'=>$name,
+                'type'=>'creatable',
+                'data'=>$field['data'],
+                'value' => null,
+                'hints' => [
+                    [
+                        'type'   => 'word-count',
+                        'around' => $field['word_count'],
+                    ],
+                    [
+                        'type'   => 'free-text',
+                        'around' => 'Summarize product description',
                     ]
-                ];
-            } else {
-                if (isset($fields['required'])) {
-                    $messages[] = 'Required field: [' . $field['attribute'] . '] empty';
-                }
-            }
+                ]
+            ];
         }
 
         return $fields;

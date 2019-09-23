@@ -54,15 +54,17 @@ class ProductRepository implements ProductRepositoryInterface, ContentEntityLoad
      * @param string $sku
      * @param string $targetLocale
      * @param string $sourceLocale
+     * @param int $synchronizeType
      * @return ProductInterface|\Magento\Framework\DataObject
      */
-    public function getLastUpdateByLocale($sku , $targetLocale, $sourceLocale)
+    public function getLastUpdateByLocale($sku , $targetLocale, $sourceLocale, $synchronizeType)
     {
         /** @var \Contentor\LocalizationApi\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->collectionFactory->create();
         $collection->addFieldToFilter(ProductInterface::SKU, $sku);
         $collection->addFieldToFilter(ProductInterface::TARGET_LOCALE, $targetLocale);
         $collection->addFieldToFilter(ProductInterface::SOURCE_LOCALE, $sourceLocale);
+        $collection->addFieldToFilter(ProductInterface::SYNCHRONIZE_TYPE, $synchronizeType);
         $collection->setOrder('sent_time');
         return $collection->getFirstItem();
     }
