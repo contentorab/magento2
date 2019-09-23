@@ -109,16 +109,11 @@ class AttributeProvider
                 'name'=>$name,
                 'type'=>'creatable',
                 'data'=>$field['data'],
-                'value' => null,
                 'hints' => [
                     [
                         'type'   => 'word-count',
-                        'around' => $field['word_count'],
+                        'around' => (int) $field['word_count'],
                     ],
-                    [
-                        'type'   => 'free-text',
-                        'around' => 'Summarize product description',
-                    ]
                 ]
             ];
         }

@@ -270,10 +270,9 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
 
     /**
      * @param int $type
-     * @return int
      */
     public function setSynchronizeType($type)
     {
-        return $this->setSynchronizeType(self::SYNCHRONIZE_TYPE);
+        $this->setData(self::SYNCHRONIZE_TYPE, $type);
     }
 }
