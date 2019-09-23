@@ -2,7 +2,7 @@
     <body>
         <referenceContainer name="content">
             <block class="Contentor\LocalizationApi\Block\Adminhtml\Reports\ContentCreation\ProductReportBlock"
-                   name="example_block_name" template="Contentor_LocalizationApi::reports/productreport.phtml"/>
+                   name="content_creation_report_block" template="Contentor_LocalizationApi::reports/productreport.phtml"/>
         </referenceContainer>
     </body>
 </page>
