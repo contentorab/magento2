@@ -2,7 +2,7 @@
 
 // If settings set then loop products and target(s) to send like on single product page
 $data = $this->getRequest()->getParams();
-$sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
+$sendURL = $block->getSendUrl();
 ?>
 
 <script type="text/javascript">
@@ -109,7 +109,7 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
 </form>
 <br><br>
 <p>
-    <button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span>Send for localization</span></button>
+    <button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span><?= $block->getLabelSubmitButton(); ?></span></button>
 </p>
 <br><br>
 <p>

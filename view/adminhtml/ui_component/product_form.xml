@@ -13,7 +13,7 @@
                    <item name="sortOrder" xsi:type="number">160</item>
                </item>
            </argument>
-           <htmlContent name="html_content_demo">
+           <htmlContent name="html_content_block">
                <argument name="block" xsi:type="object">Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\Localization</argument>
            </htmlContent>
        </container>
@@ -32,7 +32,7 @@
                     <item name="sortOrder" xsi:type="number">170</item>
                 </item>
             </argument>
-            <htmlContent name="html_content_demo">
+            <htmlContent name="html_content_block">
                 <argument name="block" xsi:type="object">Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\ContentCreation</argument>
             </htmlContent>
         </container>

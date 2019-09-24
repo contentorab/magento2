@@ -97,7 +97,7 @@ class ContentCreationProductFields extends \Magento\Config\Block\System\Config\F
     {
         if (!$this->_fieldDataTypeRenderer) {
             $this->_fieldDataTypeRenderer = $this->getLayout()->createBlock(
-                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldDataTypeRendererContentCreation',
+                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldDataTypeRenderer',
                 '',
                 ['data' => ['is_render_to_js_template' => true]]
             );
