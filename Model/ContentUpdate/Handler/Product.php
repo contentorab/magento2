@@ -171,9 +171,20 @@ class Product implements ContentUpdateHandlerInterface
         // Copy back the fields from the completed request into the product
         $this->storeManager->setCurrentStore($entity->getTargetStore());
         foreach ($data['fields'] as $field) {
+            //Handle localizable field
             if ($field['type'] == 'localizable') {
                 $attribute = substr($field['id'], 0, -4);
                 $product->setDataUsingMethod($attribute, $field['value']);
+            }
+            //Handle creatable field
+            if ($field['type'] == 'creatable') {
+                if ( array_key_exists('value', $field) ) {
+                    $attribute = substr($field['id'], 0, -4);
+                    $product->setDataUsingMethod($attribute, $field['value']);
+                } else {
+                    // TODO: Contentor doesn't have value key in testing env
+                    return;
+                }
             }
         }
 

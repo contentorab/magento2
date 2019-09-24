@@ -65,8 +65,8 @@ class ProcessUpdates
     /**
      * Get and process a chunk of updates, returning the last state change
      * seen.
-     *
-     * @param string $date
+     * @param $date
+     * @return array
      * @throws LocalizedException
      */
     public function execute($date)
