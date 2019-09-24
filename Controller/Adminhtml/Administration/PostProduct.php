@@ -53,32 +53,39 @@ class PostProduct extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-            $request = $this->request;
-            $productId = $request->getParam('productid');
-            $product = $this->productFactory->create()->load($productId);
-            $sourceLocale = $request->getParam('source');
-            $targetList = $request->getParam('targets');
-            foreach ($targetList as $targetData) {
-                list($id, $locale) = explode(':', $targetData);
-                $targets[$id] = $locale;
-            }
+        $targets = [];
 
-            if (!count($targets)) {
-                // No target selected
-            } elseif (in_array($sourceLocale, $targets)) {
-                // Source locale in targets
-            } else {
-                $this->productSendContent->execute(
-                    $product,
-                    $sourceLocale,
-                    $targets
-                );
-            }
+        $request = $this->request;
 
-            $url = $this->getUrl(
-                'catalog/product/edit',
-                ['id' => $productId]
+        $productId = $request->getParam('productid');
+
+        $product = $this->productFactory->create()->load($productId);
+
+        $sourceLocale = $request->getParam('source');
+
+        $targetList = $request->getParam('targets');
+
+        foreach ($targetList as $targetData) {
+            list($id, $locale) = explode(':', $targetData);
+            $targets[$id] = $locale;
+        }
+
+        if (!count($targets)) {
+            // No target selected
+        } elseif (in_array($sourceLocale, $targets)) {
+            // Source locale in targets
+        } else {
+            $this->productSendContent->execute(
+                $product,
+                $sourceLocale,
+                $targets
             );
+        }
+
+        $url = $this->getUrl(
+            'catalog/product/edit',
+            ['id' => $productId]
+        );
 
         $this->getResponse()->setRedirect($url)->sendResponse();
     }

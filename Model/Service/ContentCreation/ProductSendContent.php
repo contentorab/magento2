@@ -14,7 +14,6 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class ProductSendContent
