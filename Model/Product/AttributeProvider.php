@@ -8,7 +8,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
  * Class AttributeProvider
  * @package Contentor\LocalizationApi\Model
  *
- * Provide all localizible attributes based on config ,
+ * Provide all localizable and creatable attributes based on config ,
  * particular product , and apply extra data if needed
  */
 class AttributeProvider
@@ -29,19 +29,27 @@ class AttributeProvider
     private $extraFields;
 
     /**
+     * @var int
+     */
+    private $syncType;
+
+    /**
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param ProductInterface $product
      * @param array $extraFields
+     * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         ProductInterface $product,
-        array $extraFields = []
+        array $extraFields = [],
+        $syncType = null
     ) {
         $this->configurationService = $configurationService;
         $this->product = $product;
         $this->extraFields = $extraFields;
+        $this->syncType = $syncType;
     }
 
     /**
@@ -51,7 +59,13 @@ class AttributeProvider
      */
     public function getList()
     {
-        $fieldArray = $this->configurationService->getProductFields();
+        if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE  ) {
+            $fieldArray = $this->configurationService->getProductFields();
+        }
+
+        if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE  ) {
+            $fieldArray = $this->configurationService->getContentCreationProductFields();
+        }
 
         //map is empty
         if (empty($fieldArray)) {
@@ -59,8 +73,11 @@ class AttributeProvider
         }
 
         $product = $this->product;
+
         $sku = $product->getSku();
+
         $productID = $product->getId();
+
         $fields = [];
 
         $fields[] = [
@@ -83,6 +100,7 @@ class AttributeProvider
         }
 
         $n = [];
+
         foreach ($fieldArray as $field) {
             if ($field['attribute'] == 'productURL') {
                 $value = $product->setStoreId($field['store'])->getUrlInStore();
@@ -98,18 +116,40 @@ class AttributeProvider
             } else {
                 $n[$field['attribute']]++;
             }
+
             $id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
 
-            if (! empty($value)) {
-                $fields[] = ['id'=>$id,
-                    'name'=>$name,
-                    'type'=>$field['type'],
-                    'data'=>$field['data'],
-                    'value'=>$value];
-            } else {
-                if (isset($fields['required'])) {
-                    $messages[] = 'Required field: [' . $field['attribute'] . '] empty';
+            //localizable feature
+            if ( $this->syncType == \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE ) {
+                if (! empty($value)) {
+                    $fields[] = [
+                        'id' => $id,
+                        'name' => $name,
+                        'type' => $field['type'],
+                        'data' => $field['data'],
+                        'value' => $value];
+                } else {
+                    if (isset($fields['required'])) {
+                        $messages[] = 'Required field: [' . $field['attribute'] . '] empty';
+                    }
                 }
+            }
+
+            //content creation feature
+            if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE  ) {
+                //Value has to be null for creatable field
+                $fields[] = [
+                    'id' => $id,
+                    'name' => $name,
+                    'type' => 'creatable',
+                    'data' => $field['data'],
+                    'hints' => [
+                        [
+                            'type'   => 'word-count',
+                            'around' => (int) $field['word_count'],
+                        ],
+                    ]
+                ];
             }
         }
 

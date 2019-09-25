@@ -178,6 +178,7 @@ class Product implements ContentUpdateHandlerInterface
             }
             //Handle creatable field
             if ($field['type'] == 'creatable') {
+                $field['value'] = 'hah';
                 if ( array_key_exists('value', $field) ) {
                     $attribute = substr($field['id'], 0, -4);
                     $product->setDataUsingMethod($attribute, $field['value']);

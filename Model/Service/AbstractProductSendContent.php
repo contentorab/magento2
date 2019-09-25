@@ -1,5 +1,5 @@
 <?php
-namespace Contentor\LocalizationApi\Model\Service\ContentCreation;
+namespace Contentor\LocalizationApi\Model\Service;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface as ContentorProductInterface;
 use Contentor\LocalizationApi\Api\Data\ProductInterfaceFactory;
@@ -8,7 +8,7 @@ use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
 use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Gateway\SendContent;
-use \Contentor\LocalizationApi\Model\Product\ContentCreation\AttributeProviderFactory;
+use Contentor\LocalizationApi\Model\Product\AttributeProviderFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\DataObjectHelper;
@@ -17,63 +17,74 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * Class ProductSendContent
- * @package Contentor\LocalizationApi\Model\Service\ContentCreation
+ * @package Contentor\LocalizationApi\Model\Service
+ * Abstract class for localizable and creatable features
  */
-class ProductSendContent
+class AbstractProductSendContent
 {
+    /**
+     * @var string
+     */
+    protected $_syncType;
+
+    /**
+     * @var string
+     */
+    protected $_syncName;
+
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var AttributeProviderFactory
      */
-    private $attributeProviderFactory;
+    protected $attributeProviderFactory;
 
     /**
      * @var ConfigurationService
      */
-    private $configurationService;
+    protected $configurationService;
 
     /**
      * @var ProductRepositoryInterface
      */
-    private $contentorProductRepository;
+    protected $contentorProductRepository;
 
     /**
      * @var SendContent
      */
-    private $sendContent;
+    protected $sendContent;
 
     /**
      * @var ProductInterfaceFactory
      */
-    private $productInterfaceFactory;
+    protected $productInterfaceFactory;
 
     /**
      * @var DataObjectHelper
      */
-    private $dataObjectHelper;
+    protected $dataObjectHelper;
 
     /**
      * @var DateTime
      */
-    private $date;
+    protected $date;
 
     /**
      * @var TypeRepositoryInterface
      */
-    private $typeRepository;
+    protected $typeRepository;
 
     /**
      * @var StatusRepositoryInterface
      */
-    private $statusRepository;
+    protected $statusRepository;
     /**
      * @var TestConnection
      */
-    private $testConnection;
+    protected $testConnection;
 
     /**
      * ProductSendContent constructor.
@@ -99,7 +110,7 @@ class ProductSendContent
         DateTime $date,
         TypeRepositoryInterface $typeRepository,
         StatusRepositoryInterface $statusRepository,
-        \Contentor\LocalizationApi\Model\Service\TestConnection $testConnection
+        TestConnection $testConnection
     ) {
         $this->logger = $logger;
         $this->attributeProviderFactory = $attributeProviderFactory;
@@ -119,7 +130,7 @@ class ProductSendContent
     /**
      * Send content request to contentor.
      *
-     * Normalize magento product attributes, search localizeble  attirbutes and prepare data for API
+     * Normalize magento product attributes, search localizable/created  attributes and prepare data for API
      *
      * @param ProductInterface $product
      * @param string $sourceLocale
@@ -129,7 +140,6 @@ class ProductSendContent
     public function execute(ProductInterface $product, $sourceLocale,  $targetLocales)
     {
         $data = $this->getFields($product);
-
         if (empty($data)) {
             $this->logger->critical(
                 sprintf('Empty attributes map. Skip product %s', $product->getSku())
@@ -138,10 +148,7 @@ class ProductSendContent
         }
 
         try {
-
-            $contentorId = null;
-
-            $this->logger->info('Sending ' . $product->getSku() . ' for content creation to: ' . implode(' ', array_values($targetLocales)));
+            $this->logger->info('Sending ' . $product->getSku() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
 
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
@@ -156,7 +163,7 @@ class ProductSendContent
                         $product->getSku(),
                         $targetLocale,
                         $sourceLocale,
-                        \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE
+                        $this->_syncType
                     );
 
                     if (null !== $update->getContentorId()) {
@@ -178,13 +185,13 @@ class ProductSendContent
                     $this->saveTypeEntity($contentorId);
                     $this->saveStatusEntity(
                         $contentorId,
-                        'Sent for content creation to ' . $targetLocale
+                        'Sent for '. $this->_syncName .' to ' . $targetLocale
                     );
 
                     if ($type == 'update') {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as update request ( content creation ) to ' . $prevID . ', assigned id ' . $contentorId);
+                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
                     } else {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as standard request ( content creation ) , assigned id ' . $contentorId);
+                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
                     }
                 } else {
                     $this->logger->critical(
@@ -210,7 +217,7 @@ class ProductSendContent
      * @param string $targetId
      * @param string $type
      */
-    private function saveEntity($contentorId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
+    protected function saveEntity($contentorId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
     {
         /** @var ContentorProductInterface $product */
         $product = $this->productInterfaceFactory->create();
@@ -225,7 +232,7 @@ class ProductSendContent
                 ContentorProductInterface::TYPE => $type,
                 ContentorProductInterface::STATE => 'pending',
                 ContentorProductInterface::SENT_TIME => $this->date->gmtDate(),
-                ContentorProductInterface::SYNCHRONIZE_TYPE => \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE,
+                ContentorProductInterface::SYNCHRONIZE_TYPE => $this->_syncType,
             ],
             ContentorProductInterface::class
         );
@@ -237,7 +244,7 @@ class ProductSendContent
      * @param int $contentorId
      * @return void
      */
-    private function saveTypeEntity($contentorId)
+    protected function saveTypeEntity($contentorId)
     {
         $this->typeRepository->saveProductContentRequest($contentorId);
     }
@@ -246,7 +253,7 @@ class ProductSendContent
      * @param int $contentorId
      * @param string $status
      */
-    private function saveStatusEntity($contentorId, $status)
+    protected function saveStatusEntity($contentorId, $status)
     {
         $this->statusRepository->saveProductStatus($contentorId, $status);
     }
@@ -255,12 +262,12 @@ class ProductSendContent
      * @param ProductInterface $product
      * @return array
      */
-    private function getFields(ProductInterface $product)
+    protected function getFields(ProductInterface $product)
     {
-        /** @var \Contentor\LocalizationApi\Model\Product\ContentCreation\AttributeProvider $attributeProvider */
         $attributeProvider = $this->attributeProviderFactory->create([
             'product' => $product,
-            'extraFields' => []
+            'extraFields' => [],
+            'syncType' => $this->_syncType
         ]);
 
         return $attributeProvider->getList();
