@@ -5,7 +5,7 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentc
  * Class PostProduct
  * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation
  */
-class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\PostProductAbstract
+class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostProduct
 {
 
 }

@@ -6,10 +6,10 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
 
 /**
- * Class PostProductAbstract
+ * Class AbstractPostProduct
  * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
  */
-class PostProductAbstract extends \Magento\Backend\App\Action
+class AbstractPostProduct extends \Magento\Backend\App\Action
 {
     /**
      * @var array
@@ -27,7 +27,7 @@ class PostProductAbstract extends \Magento\Backend\App\Action
     protected $request;
 
     /**
-     * PostProductAbstract constructor.
+     * AbstractPostProduct constructor.
      * @param Context $context
      * @param Http $request
      * @param ProductFactory $productFactory
