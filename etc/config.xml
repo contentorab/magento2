@@ -4,7 +4,7 @@
         <contentor_options>
             <contentor_options>
                 <developer_mode>0</developer_mode>
-                <api_base_url>https://api.contentor.com/</api_base_url>
+                <api_base_url>http://api.dev.contentor.com:8080/</api_base_url>
             </contentor_options>
         </contentor_options>
     </default>
