@@ -7,5 +7,9 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentc
  */
 class SendBulkProducts extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractSendBulkProducts
 {
-
+    /**
+     * Creatable - content creation should be sent even if source and locale is same
+     * @var bool
+     */
+    protected $shouldValidateTargetAndSource = false;
 }

@@ -27,6 +27,13 @@ class AbstractPostProduct extends \Magento\Backend\App\Action
     protected $request;
 
     /**
+     * Should validate target and source which should be different
+     * use for localization
+     * @var bool
+     */
+    protected $shouldValidateTargetAndSource = true;
+
+    /**
      * AbstractPostProduct constructor.
      * @param Context $context
      * @param Http $request
@@ -70,7 +77,7 @@ class AbstractPostProduct extends \Magento\Backend\App\Action
 
         if (!count($targets)) {
             // No target selected
-        } elseif (in_array($sourceLocale, $targets)) {
+        } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
             // Source locale in targets
         } else {
             /**

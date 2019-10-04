@@ -40,6 +40,13 @@ class AbstractSendBulkProducts extends Action
     protected $pageFactory;
 
     /**
+     * Should validate target and source which should be different
+     * use for localization
+     * @var bool
+     */
+    protected $shouldValidateTargetAndSource = true;
+
+    /**
      * AbstractSendBulkProducts constructor.
      * @param Context $context
      * @param Http $request
@@ -86,7 +93,7 @@ class AbstractSendBulkProducts extends Action
         // Check if source in targets?
         if (!count($targets)) {
             $this->getResponse()->setBody('No data sent!<br>No target selected');
-        } elseif (in_array($sourceLocale, $targets)) {
+        } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
             $this->getResponse()->setBody('No data sent!<br>Source language in targets');
         } else {
             // Loop products
