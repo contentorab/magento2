@@ -33,7 +33,7 @@ class ProductReport extends \Magento\Framework\App\Action\Action
         // Set template
         $resultPage = $this->_pageFactory->create();
         $resultPage->setActiveMenu('Magento_Reports::report');
-        $resultPage->getConfig()->getTitle()->prepend(__('Contentor Product Localization Report'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Contentor Product | Content Creation Report'));
         return $resultPage;
     }
 }
