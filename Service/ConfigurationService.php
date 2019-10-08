@@ -261,4 +261,45 @@ class ConfigurationService
 
        return $result;
     }
+
+    /**
+     * Basic config validation.
+     * Check required API fields before make real api request.
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function validateContentCreationConfiguration($store = null)
+    {
+        $result = [
+            'error' => false,
+            'messages' => []
+        ];
+        if (empty($this->getToken($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Token';
+        }
+
+        if (empty($this->getApiBaseUrl($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Contentor base API Url';
+        }
+
+        if (empty($this->getContentCreationProductFields($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Product Attribute configuration';
+        }
+
+        if (empty($this->getSourceLocale($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Source locale';
+        }
+
+        if (empty($this->getTargetStoreViews($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Target store views';
+        }
+
+        return $result;
+    }
 }

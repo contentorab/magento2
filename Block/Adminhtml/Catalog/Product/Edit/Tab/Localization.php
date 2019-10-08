@@ -24,4 +24,20 @@ class Localization extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Pr
     {
         return $this->getUrl("contentor/administration/postproduct/");
     }
+
+    /**
+     * @return array
+     */
+    public function getValidationMessages()
+    {
+        return parent::getValidationMessages();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReady()
+    {
+        return parent::isReady();
+    }
 }
