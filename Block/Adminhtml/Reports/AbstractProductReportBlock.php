@@ -91,12 +91,13 @@ class AbstractProductReportBlock extends \Magento\Framework\View\Element\Templat
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
         $query = "SELECT `sku`,
+                    `delivery_speed` AS deliverySpeed,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
 				FROM `" . $table . "` 
 				WHERE `synchronize_type` = ". $this->_syncType ."
-				GROUP BY `sku`, `source_locale`
+				GROUP BY `sku`, `source_locale`, `delivery_speed`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 

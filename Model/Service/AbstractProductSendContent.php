@@ -87,7 +87,13 @@ class AbstractProductSendContent
     protected $testConnection;
 
     /**
-     * ProductSendContent constructor.
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $request;
+
+    /**
+     * AbstractProductSendContent constructor.
+     * @param Logger $logger
      * @param AttributeProviderFactory $attributeProviderFactory
      * @param ConfigurationService $configurationService
      * @param ProductRepositoryInterface $contentorProductRepository
@@ -98,6 +104,7 @@ class AbstractProductSendContent
      * @param TypeRepositoryInterface $typeRepository
      * @param StatusRepositoryInterface $statusRepository
      * @param TestConnection $testConnection
+     * @param \Magento\Framework\App\RequestInterface $request
      */
     public function __construct(
         Logger $logger,
@@ -110,7 +117,8 @@ class AbstractProductSendContent
         DateTime $date,
         TypeRepositoryInterface $typeRepository,
         StatusRepositoryInterface $statusRepository,
-        TestConnection $testConnection
+        TestConnection $testConnection,
+        \Magento\Framework\App\RequestInterface $request
     ) {
         $this->logger = $logger;
         $this->attributeProviderFactory = $attributeProviderFactory;
@@ -124,6 +132,7 @@ class AbstractProductSendContent
         $this->typeRepository = $typeRepository;
         $this->statusRepository = $statusRepository;
         $this->testConnection = $testConnection;
+        $this->request = $request;
     }
 
 
@@ -233,6 +242,7 @@ class AbstractProductSendContent
                 ContentorProductInterface::STATE => 'pending',
                 ContentorProductInterface::SENT_TIME => $this->date->gmtDate(),
                 ContentorProductInterface::SYNCHRONIZE_TYPE => $this->_syncType,
+                ContentorProductInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed')
             ],
             ContentorProductInterface::class
         );

@@ -103,6 +103,28 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        /**
+         *  Added column to show delivery-speed
+         */
+        if (version_compare($context->getVersion(), '0.5.0') < 0) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_products'),
+                'delivery_speed',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'length' => 36,
+                    'comment'  => 'Delivery Speed'
+                ]
+            );
+
+            $setup->getConnection()->addIndex(
+                $setup->getTable('contentor_products'),
+                'on_delivery_speed',
+                'delivery_speed'
+            );
+        }
+
         $setup->endSetup();
     }
 }

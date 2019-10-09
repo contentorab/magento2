@@ -54,7 +54,7 @@ if ($tot > 0) {
         <div class="hor-scroll">
             <table cellspacing=0 >
                 <thead>
-                    <tr class="headings"><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th></tr>
+                    <tr class="headings"><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th><th>Delivery Speed</th></tr>
                     <tr class="headings"><th></th><th></th><th></th>
                 <?php
                 foreach ($storeInfo as $id => $store) {
@@ -139,6 +139,7 @@ if ($tot > 0) {
             }
             print '</td>';
         }
+        print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['deliverySpeed'] !== null ? ucwords($prod['deliverySpeed']) : 'Normal') . '</td>';
         print '</tr>';
 
         $i++;

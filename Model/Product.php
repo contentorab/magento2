@@ -275,4 +275,20 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     {
         $this->setData(self::SYNCHRONIZE_TYPE, $type);
     }
+
+    /**
+     * @return string
+     */
+    public function getDeliverySpeed()
+    {
+        return $this->getData(self::DELIVERY_SPEED);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setDeliverySpeed($value)
+    {
+        $this->setData(self::DELIVERY_SPEED, $value);
+    }
 }

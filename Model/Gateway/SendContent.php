@@ -32,20 +32,27 @@ class SendContent
     private $jsonToArrayConverter;
 
     /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    private $request;
+
+    /**
      * SendContent constructor.
-     * @param ConfigurationService $configurationService
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      * @param JsonToArray $jsonToArrayConverter
+     * @param \Magento\Framework\App\RequestInterface $request
      */
     public function __construct(
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
-        JsonToArray $jsonToArrayConverter
+        JsonToArray $jsonToArrayConverter,
+        \Magento\Framework\App\RequestInterface $request
     ) {
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
+        $this->request = $request;
     }
 
     /**
@@ -61,6 +68,7 @@ class SendContent
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json'
         ];
+
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
         $transfer = $this->httpRequestTransferInterfaceFactory->create([
             'headers' => $headers,
@@ -86,9 +94,9 @@ class SendContent
     /**
      * Prepare data for request
      * and make data understandble for API
-     *
      * @param array $data
      * @return array
+     * @throws LocalizedException
      */
     private function prepareRequest($data)
     {
@@ -108,7 +116,32 @@ class SendContent
                 $request['previous'] = $data['previous'];
             }
         }
+        /**
+         * Get delivery speed for contentor request
+         *
+        */
+        $deliverySpeedData = $this->getDeliverySpeed();
+
+        $request = array_merge($request, $deliverySpeedData);
 
         return $request;
+    }
+
+    /**
+     * @return array
+     */
+    private function getDeliverySpeed(){
+
+        $response = [
+            'preferences' => []
+        ];
+
+        $deliverySpeed = $this->request->getParam('deliverySpeed');
+
+        $response['preferences'][] = [
+            'type'  => 'delivery-speed',
+            'value' => $deliverySpeed
+        ];
+        return $response;
     }
 }

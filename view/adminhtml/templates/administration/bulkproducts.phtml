@@ -15,6 +15,7 @@ $sendURL = $block->getSendUrl();
                         const products = formular.products.value;
                         const source = formular.source.value;
                         const total = formular.total.value;
+                        const deliverySpeed = formular.deliverySpeed.value;
                         let targets;
                         if(formular.targets.type == 'select-multiple') {
                             targets = new Array;
@@ -27,7 +28,7 @@ $sendURL = $block->getSendUrl();
                         } else {
                             targets = formular.targets.value;
                         }
-                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total }, function(data) {
+                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total, deliverySpeed: deliverySpeed }, function(data) {
                             document.getElementById('resultdiv').innerHTML = data;
                             doSend(document.getElementById('progressform'));
                         });
@@ -105,6 +106,24 @@ $sendURL = $block->getSendUrl();
     }
     print '</select>';
     ?>
+</p>
+<p>
+    <h2>Delivery Speed</h2>
+    <i>Express type: your content will be deliveried faster.</i><br><br>
+    <?php
+    $deliveryOptions = $this->helper('Contentor\LocalizationApi\Helper\DeliveryExpressConfig')->getConfig();
+    ?>
+    <select name="deliverySpeed">
+        <?php
+        foreach ($deliveryOptions as $option) {
+            print '<option value="' . $option['value'] . '"';
+            if ($option['value'] == 'normal') {
+                print ' SELECTED';
+            }
+            print '>' . $option['label'] . '</option>';
+        }
+        ?>
+    </select>
 </p>
 </form>
 <br><br>
