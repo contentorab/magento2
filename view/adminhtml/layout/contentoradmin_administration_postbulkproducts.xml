@@ -2,7 +2,10 @@
     <body>
         <referenceContainer name="content">
             <block class="Contentor\LocalizationApi\Block\Adminhtml\Administration\BulkProducts"
-                   name="bulk_block"/>
+                   name="bulk_block">
+                <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/delivery_speed.phtml"
+                       name="contentor.delivery-speed"/>
+            </block>
         </referenceContainer>
     </body>
 </page>

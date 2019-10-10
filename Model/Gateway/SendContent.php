@@ -122,26 +122,24 @@ class SendContent
         */
         $deliverySpeedData = $this->getDeliverySpeed();
 
-        $request = array_merge($request, $deliverySpeedData);
+        if ( !empty($deliverySpeedData) ) {
+            $request['preferences'][] = $deliverySpeedData;
+        }
 
         return $request;
     }
 
     /**
+     * Get Delivery speed from dropdown select
      * @return array
      */
-    private function getDeliverySpeed(){
-
-        $response = [
-            'preferences' => []
-        ];
+    private function getDeliverySpeed() {
 
         $deliverySpeed = $this->request->getParam('deliverySpeed');
 
-        $response['preferences'][] = [
+        return [
             'type'  => 'delivery-speed',
             'value' => $deliverySpeed
         ];
-        return $response;
     }
 }

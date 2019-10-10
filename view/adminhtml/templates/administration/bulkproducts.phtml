@@ -107,24 +107,7 @@ $sendURL = $block->getSendUrl();
     print '</select>';
     ?>
 </p>
-<p>
-    <h2>Delivery Speed</h2>
-    <i>Express type: your content will be deliveried faster.</i><br><br>
-    <?php
-    $deliveryOptions = $this->helper('Contentor\LocalizationApi\Helper\DeliveryExpressConfig')->getConfig();
-    ?>
-    <select name="deliverySpeed">
-        <?php
-        foreach ($deliveryOptions as $option) {
-            print '<option value="' . $option['value'] . '"';
-            if ($option['value'] == 'normal') {
-                print ' SELECTED';
-            }
-            print '>' . $option['label'] . '</option>';
-        }
-        ?>
-    </select>
-</p>
+<?= $block->getChildHtml('contentor.delivery-speed'); ?>
 </form>
 <br><br>
 <p>
