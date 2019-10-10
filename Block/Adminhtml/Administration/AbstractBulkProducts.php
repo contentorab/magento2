@@ -14,6 +14,14 @@ use \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
  */
 abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
 {
+    /**
+     * @var int
+     */
+    protected $_syncType;
+
+    /**
+     * @var string
+     */
     protected $_template = 'administration/bulkproducts.phtml';
     /**
      * @var
@@ -110,6 +118,13 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
      */
     public function getLabelSubmitButton(){
         return $this->_btnSubmitLabel;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSyncType(){
+        return $this->_syncType;
     }
 
     /**

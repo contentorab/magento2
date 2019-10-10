@@ -8,7 +8,7 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab;
 class ContentCreation extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\AbstractTabBlock
 {
     /**
-     * @var string
+     * @var int
      */
     protected $_syncType = \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE;
 

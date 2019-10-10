@@ -20,7 +20,7 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     protected $_template = 'product/edit/contentor_tab.phtml';
 
     /**
-     * @var string
+     * @var int
      */
     protected $_syncType;
 
@@ -169,6 +169,13 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
      */
     public function getLabelSubmitButton(){
         return $this->_submitLabelBtn;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSyncType(){
+        return $this->_syncType;
     }
 
     /**

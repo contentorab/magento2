@@ -81,6 +81,13 @@
         ->setTemplate("Contentor_LocalizationApi::options/delivery_speed.phtml")
         ->toHtml() ?>
 <br><br><br>
+<?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+<?= $this->getLayout()
+    ->createBlock("Magento\Framework\View\Element\Template")
+    ->setTemplate("Contentor_LocalizationApi::options/product_words_amount.phtml")
+    ->toHtml() ?>
+<br><br><br>
+<?php endif;?>
 <p>
  <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for <?= $block->getLabelSubmitButton(); ?></span></button>
  </form>
