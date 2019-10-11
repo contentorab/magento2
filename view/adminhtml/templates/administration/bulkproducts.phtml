@@ -12,38 +12,48 @@ $sendURL = $block->getSendUrl();
             $(function() {
                 doSend = function(formular) {
                     if(!document.getElementsByName("theend").value) {
+
                         const products = formular.products.value;
+
                         const source = formular.source.value;
+
                         const total = formular.total.value;
+
                         const deliverySpeed = formular.deliverySpeed.value;
 
-                        const inputs = document.getElementById('configAttributesContentCreation')
-                            .getElementsByTagName('input');
+                        let inputs = null;
+
+                        if ( document.getElementById('configAttributesContentCreation') ) {
+                             inputs = document.getElementById('configAttributesContentCreation')
+                                .getElementsByTagName('input');
+                        }
 
                         elesContentCreation = new Array;
 
-                        for(var i = 0; i < inputs.length; i++) {
+                        if ( inputs ) {
+                            for(var i = 0; i < inputs.length; i++) {
 
-                            if(inputs[i].name.indexOf('attributesConfig[]') == 0) {
+                                if(inputs[i].name.indexOf('attributesConfig[]') == 0) {
 
-                                let attributeName = '';
+                                    let attributeName = '';
 
-                                //Remove first []
-                                inputs[i].name = inputs[i].name.replace("[]", "");
+                                    //Remove first []
+                                    inputs[i].name = inputs[i].name.replace("[]", "");
 
-                                let matches = inputs[i].name.match(/\[(.*?)\]/);
+                                    let matches = inputs[i].name.match(/\[(.*?)\]/);
 
-                                if (matches) {
-                                    attributeName = matches[1];
-                                }
+                                    if (matches) {
+                                        attributeName = matches[1];
+                                    }
 
-                                if ( attributeName !== '' ) {
+                                    if ( attributeName !== '' ) {
 
-                                    let objConfig = {};
+                                        let objConfig = {};
 
-                                    objConfig[attributeName] = inputs[i].value;
+                                        objConfig[attributeName] = inputs[i].value;
 
-                                    elesContentCreation.push( objConfig );
+                                        elesContentCreation.push( objConfig );
+                                    }
                                 }
                             }
                         }
