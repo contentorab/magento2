@@ -5,6 +5,8 @@
                    name="content_creation_bulk_block" >
                 <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/delivery_speed.phtml"
                        name="contentor.delivery-speed"/>
+                <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/product_words_amount.phtml"
+                       name="contentor.config-words-amount-block"/>
             </block>
         </referenceContainer>
     </body>

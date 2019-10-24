@@ -7,6 +7,12 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
  */
 class ContentCreationBulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administration\AbstractBulkProducts
 {
+
+    /**
+     * @var int
+     */
+    protected $_syncType = \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE;
+
     /**
      * @var string
      */

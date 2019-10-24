@@ -8,6 +8,11 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 class BulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administration\AbstractBulkProducts
 {
     /**
+     * @var int
+     */
+    protected $_syncType = \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE;
+
+    /**
      * @var string
      */
     protected $_btnSubmitLabel = 'Send for localization' ;

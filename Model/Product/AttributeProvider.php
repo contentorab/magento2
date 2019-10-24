@@ -34,15 +34,22 @@ class AttributeProvider
     private $syncType;
 
     /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    private $request;
+
+    /**
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param ProductInterface $product
+     * @param \Magento\Framework\App\RequestInterface $request
      * @param array $extraFields
      * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         ProductInterface $product,
+        \Magento\Framework\App\RequestInterface $request,
         array $extraFields = [],
         $syncType = null
     ) {
@@ -50,6 +57,7 @@ class AttributeProvider
         $this->product = $product;
         $this->extraFields = $extraFields;
         $this->syncType = $syncType;
+        $this->request = $request;
     }
 
     /**
@@ -138,6 +146,18 @@ class AttributeProvider
             //content creation feature
             if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE  ) {
                 //Value has to be null for creatable field
+
+                /**
+                 * Override WordAmount configs from request
+                 */
+                $configWordsAmount = $this->_getWordAmountConfigs();
+                if (
+                    !empty($configWordsAmount)
+                    && array_key_exists($field['attribute'], $configWordsAmount)
+                ) {
+                    $field['word_count'] = $configWordsAmount[$field['attribute']];
+                }
+
                 $fields[] = [
                     'id' => $id,
                     'name' => $name,
@@ -154,5 +174,27 @@ class AttributeProvider
         }
 
         return $fields;
+    }
+
+
+    /**
+     * Get Words Amount config from request
+     * @return array
+     */
+    private function _getWordAmountConfigs() {
+
+        $response = [];
+
+        $configWordsAmount = $this->request->getParam('attributesConfig');
+
+        if ( !empty($configWordsAmount) ) {
+            foreach ($configWordsAmount as $arrayAttributeConfig) {
+                foreach ( $arrayAttributeConfig as $attribute => $value ) {
+                    $response[$attribute] = $value;
+                }
+            }
+        }
+
+        return $response;
     }
 }
