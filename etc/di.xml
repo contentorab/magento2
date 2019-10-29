@@ -15,25 +15,31 @@
     <preference for="Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface"
                 type="Contentor\LocalizationApi\Model\Http\Transfer" />
 
-    <preference for="\Contentor\LocalizationApi\Api\Data\ProductInterface"
+    <preference for="Contentor\LocalizationApi\Api\Data\ProductInterface"
                 type="Contentor\LocalizationApi\Model\Product" />
 
-    <preference for="\Contentor\LocalizationApi\Api\Data\CategoryInterface"
+    <preference for="Contentor\LocalizationApi\Api\Data\CategoryInterface"
                 type="Contentor\LocalizationApi\Model\Category" />
 
-    <preference for="\Contentor\LocalizationApi\Api\Data\StatusInterface"
+    <preference for="Contentor\LocalizationApi\Api\Data\StatusInterface"
                 type="Contentor\LocalizationApi\Model\Status" />
 
-    <preference for="\Contentor\LocalizationApi\Api\Data\TypeInterface"
+    <preference for="Contentor\LocalizationApi\Api\Data\TypeInterface"
                 type="Contentor\LocalizationApi\Model\Type" />
 
-    <preference for="\Contentor\LocalizationApi\Api\ProductRepositoryInterface"
+    <preference for="Contentor\LocalizationApi\Api\ProductRepositoryInterface"
                 type="Contentor\LocalizationApi\Model\ProductRepository" />
 
-    <preference for="\Contentor\LocalizationApi\Api\StatusRepositoryInterface"
+    <preference for="Contentor\LocalizationApi\Api\StatusRepositoryInterface"
                 type="Contentor\LocalizationApi\Model\StatusRepository" />
 
-    <preference for="\Contentor\LocalizationApi\Api\TypeRepositoryInterface"
+    <preference for="Contentor\LocalizationApi\Api\TypeRepositoryInterface"
                 type="Contentor\LocalizationApi\Model\TypeRepository" />
+
+    <!-- Category Injection -->
+    <preference for="Contentor\LocalizationApi\Api\CategoryRepositoryInterface"
+                type="Contentor\LocalizationApi\Model\CategoryRepository" />
+
+    <!-- End Category Injection -->
 
 </config>

@@ -210,7 +210,7 @@ class AbstractProductSendContent
             }
         } catch (LocalizedException $localizedException) {
             $this->logger->critical(
-                sprintf('Exception for product %s , message :',
+                sprintf('Exception for product %s , message : %s',
                     $product->getSku(),
                     $localizedException->getMessage()
                 )

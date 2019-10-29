@@ -1,10 +1,9 @@
 <?php
 namespace Contentor\LocalizationApi\Model\Service;
 
-use Contentor\LocalizationApi\Api\Data\ProductInterface as ContentorProductInterface;
 use Contentor\LocalizationApi\Api\Data\CategoryInterface as ContentorCategoryInterface;
-use Contentor\LocalizationApi\Api\Data\ProductInterfaceFactory;
-use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
+use Contentor\LocalizationApi\Api\Data\CategoryInterfaceFactory;
+use Contentor\LocalizationApi\Api\CategoryRepositoryInterface;
 use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
 use Contentor\LocalizationApi\Model\Logger\Logger;
@@ -16,6 +15,10 @@ use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
+/**
+ * Class AbstractCategorySendContent
+ * @package Contentor\LocalizationApi\Model\Service
+ */
 class AbstractCategorySendContent
 {
     /**
@@ -46,7 +49,7 @@ class AbstractCategorySendContent
     /**
      * @var ProductRepositoryInterface
      */
-    protected $contentorProductRepository;
+    protected $contentorCategoryRepository;
 
     /**
      * @var SendContent
@@ -54,9 +57,9 @@ class AbstractCategorySendContent
     protected $sendContent;
 
     /**
-     * @var ProductInterfaceFactory
+     * @var CategoryInterfaceFactory
      */
-    protected $productInterfaceFactory;
+    protected $categoryInterfaceFactory;
 
     /**
      * @var DataObjectHelper
@@ -88,13 +91,13 @@ class AbstractCategorySendContent
     protected $request;
 
     /**
-     * AbstractProductSendContent constructor.
+     * AbstractCategorySendContent constructor.
      * @param Logger $logger
      * @param AttributeProviderFactory $attributeProviderFactory
      * @param ConfigurationService $configurationService
-     * @param ProductRepositoryInterface $contentorProductRepository
+     * @param CategoryRepositoryInterface $contentorCategoryRepository
      * @param SendContent $sendContent
-     * @param ProductInterfaceFactory $productInterfaceFactory
+     * @param CategoryInterfaceFactory $categoryInterfaceFactory
      * @param DataObjectHelper $dataObjectHelper
      * @param DateTime $date
      * @param TypeRepositoryInterface $typeRepository
@@ -106,9 +109,9 @@ class AbstractCategorySendContent
         Logger $logger,
         AttributeProviderFactory $attributeProviderFactory,
         ConfigurationService $configurationService,
-        ProductRepositoryInterface $contentorProductRepository,
+        CategoryRepositoryInterface $contentorCategoryRepository,
         SendContent $sendContent,
-        ProductInterfaceFactory $productInterfaceFactory,
+        CategoryInterfaceFactory $categoryInterfaceFactory,
         DataObjectHelper $dataObjectHelper,
         DateTime $date,
         TypeRepositoryInterface $typeRepository,
@@ -120,9 +123,9 @@ class AbstractCategorySendContent
         $this->attributeProviderFactory = $attributeProviderFactory;
         $this->configurationService = $configurationService;
         $this->logger = $logger;
-        $this->contentorProductRepository = $contentorProductRepository;
+        $this->contentorCategoryRepository = $contentorCategoryRepository;
         $this->sendContent = $sendContent;
-        $this->productInterfaceFactory = $productInterfaceFactory;
+        $this->categoryInterfaceFactory = $categoryInterfaceFactory;
         $this->dataObjectHelper = $dataObjectHelper;
         $this->date = $date;
         $this->typeRepository = $typeRepository;
@@ -132,7 +135,12 @@ class AbstractCategorySendContent
     }
 
 
-    public function execute(CategoryInterface $category, $sourceLocale,  $targetLocales)
+    /**
+     * @param CategoryInterface $category
+     * @param $sourceLocale
+     * @param $targetLocales
+     */
+    public function execute(CategoryInterface $category, $sourceLocale, $targetLocales)
     {
         $data = $this->getFields($category);
         if (empty($data)) {
@@ -143,7 +151,7 @@ class AbstractCategorySendContent
         }
 
         try {
-            $this->logger->info('Sending categoryId ' . $category->getId() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
+            $this->logger->info('Sending categoryId: ' . $category->getId() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
 
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
@@ -154,8 +162,8 @@ class AbstractCategorySendContent
                      * When versioning is active try to resolve the last update
                      * of this product and locale combination.
                      */
-                    $update = $this->contentorProductRepository->getLastUpdateByLocale(
-                        $product->getSku(),
+                    $update = $this->contentorCategoryRepository->getLastUpdateByLocale(
+                        $category->getId(),
                         $targetLocale,
                         $sourceLocale,
                         $this->_syncType
@@ -176,7 +184,7 @@ class AbstractCategorySendContent
                 ]);
 
                 if ($contentorId) {
-                    $this->saveEntity($contentorId, $product->getSku(), $sourceLocale, $targetLocale, $targetId, $type);
+                    $this->saveEntity($contentorId, $category->getId(), $sourceLocale, $targetLocale, $targetId, $type);
                     $this->saveTypeEntity($contentorId);
                     $this->saveStatusEntity(
                         $contentorId,
@@ -184,20 +192,20 @@ class AbstractCategorySendContent
                     );
 
                     if ($type == 'update') {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
+                        $this->logger->info('category: '.$category->getId() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
                     } else {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
+                        $this->logger->info('category: '.$category->getId() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
                     }
                 } else {
                     $this->logger->critical(
-                        sprintf('Api returns empty Contentor ID. Skip product %s', $product->getSku())
+                        sprintf('Api returns empty Contentor ID. Skip categoryId %s', $category->getId())
                     );
                 }
             }
         } catch (LocalizedException $localizedException) {
             $this->logger->critical(
-                sprintf('Exception for product %s , message :',
-                    $product->getSku(),
+                sprintf('Exception for categoryId %s , message : %s',
+                    $category->getId(),
                     $localizedException->getMessage()
                 )
             );
@@ -206,34 +214,34 @@ class AbstractCategorySendContent
 
     /**
      * @param int $contentorId
-     * @param string $sku
+     * @param int $categoryId
      * @param string $sourceLocale
      * @param string $targetLocale
      * @param string $targetId
      * @param string $type
      */
-    protected function saveEntity($contentorId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
+    protected function saveEntity($contentorId, $categoryId, $sourceLocale, $targetLocale, $targetId, $type)
     {
-        /** @var ContentorProductInterface $product */
-        $product = $this->productInterfaceFactory->create();
+        /** @var ContentorCategoryInterface $category */
+        $category = $this->categoryInterfaceFactory->create();
         $this->dataObjectHelper->populateWithArray(
-            $product,
+            $category,
             [
-                ContentorProductInterface::CONTENTOR_ID => $contentorId,
-                ContentorProductInterface::SKU => $sku,
-                ContentorProductInterface::SOURCE_LOCALE => $sourceLocale,
-                ContentorProductInterface::TARGET_LOCALE => $targetLocale,
-                ContentorProductInterface::TARGET_STORE => $targetId,
-                ContentorProductInterface::TYPE => $type,
-                ContentorProductInterface::STATE => 'pending',
-                ContentorProductInterface::SENT_TIME => $this->date->gmtDate(),
-                ContentorProductInterface::SYNCHRONIZE_TYPE => $this->_syncType,
-                ContentorProductInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed')
+                ContentorCategoryInterface::CONTENTOR_ID => $contentorId,
+                ContentorCategoryInterface::CATEGORY_ID => $categoryId,
+                ContentorCategoryInterface::SOURCE_LOCALE => $sourceLocale,
+                ContentorCategoryInterface::TARGET_LOCALE => $targetLocale,
+                ContentorCategoryInterface::TARGET_STORE => $targetId,
+                ContentorCategoryInterface::TYPE => $type,
+                ContentorCategoryInterface::STATE => 'pending',
+                ContentorCategoryInterface::SENT_TIME => $this->date->gmtDate(),
+                ContentorCategoryInterface::SYNCHRONIZE_TYPE => $this->_syncType,
+                ContentorCategoryInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed')
             ],
-            ContentorProductInterface::class
+            ContentorCategoryInterface::class
         );
 
-        $this->contentorProductRepository->save($product);
+        $this->contentorCategoryRepository->save($category);
     }
 
     /**
@@ -254,6 +262,10 @@ class AbstractCategorySendContent
         $this->statusRepository->saveStatus($contentorId, $status);
     }
 
+    /**
+     * @param CategoryInterface $category
+     * @return array
+     */
     protected function getFields(CategoryInterface $category)
     {
         $attributeProvider = $this->attributeProviderFactory->create([
