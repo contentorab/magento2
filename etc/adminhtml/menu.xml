@@ -1,7 +1,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Contentor_LocalizationApi::reports"
-             title="Contentor"
+        <add id="Contentor_LocalizationApi::parent_productsreports"
+             title="Contentor - Localization Synchronize"
              module="Contentor_LocalizationApi"
              sortOrder="9999"
              resource="Magento_Backend::content"
@@ -9,23 +9,52 @@
              parent="Magento_Reports::report"
             />
 
+        <add id="Contentor_LocalizationApi::parent_categoryreports"
+             title="Contentor - Content Creation Synchronize"
+             module="Contentor_LocalizationApi"
+             sortOrder="10000"
+             resource="Magento_Backend::content"
+
+             parent="Magento_Reports::report"
+        />
+
         <add id="Contentor_LocalizationApi::productreport"
-             title="Product Report | Localization Synchronize"
+             title="Product Report"
              module="Contentor_LocalizationApi"
              sortOrder="10"
              resource="Magento_Backend::content"
 
-             parent="Contentor_LocalizationApi::reports"
+             parent="Contentor_LocalizationApi::parent_productsreports"
              action="contentor/reports/productreport"
             />
 
-        <add id="Contentor_LocalizationApi::productreportcontentcreation"
-             title="Product Report | Content Creation Synchronize"
+        <add id="Contentor_LocalizationApi::categoryreport"
+             title="Category Report"
              module="Contentor_LocalizationApi"
              sortOrder="20"
              resource="Magento_Backend::content"
 
-             parent="Contentor_LocalizationApi::reports"
+             parent="Contentor_LocalizationApi::parent_productsreports"
+             action="contentor/reports/productreport"
+        />
+
+        <add id="Contentor_LocalizationApi::productreportcontentcreation"
+             title="Product Report"
+             module="Contentor_LocalizationApi"
+             sortOrder="30"
+             resource="Magento_Backend::content"
+
+             parent="Contentor_LocalizationApi::parent_categoryreports"
+             action="contentor/reports/contentcreation_productreport"
+        />
+
+        <add id="Contentor_LocalizationApi::categoryreportcontentcreation"
+             title="Category Report"
+             module="Contentor_LocalizationApi"
+             sortOrder="40"
+             resource="Magento_Backend::content"
+
+             parent="Contentor_LocalizationApi::parent_categoryreports"
              action="contentor/reports/contentcreation_productreport"
         />
     </menu>
