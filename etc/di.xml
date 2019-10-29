@@ -18,9 +18,6 @@
     <preference for="Contentor\LocalizationApi\Api\Data\ProductInterface"
                 type="Contentor\LocalizationApi\Model\Product" />
 
-    <preference for="Contentor\LocalizationApi\Api\Data\CategoryInterface"
-                type="Contentor\LocalizationApi\Model\Category" />
-
     <preference for="Contentor\LocalizationApi\Api\Data\StatusInterface"
                 type="Contentor\LocalizationApi\Model\Status" />
 
@@ -39,6 +36,9 @@
     <!-- Category Injection -->
     <preference for="Contentor\LocalizationApi\Api\CategoryRepositoryInterface"
                 type="Contentor\LocalizationApi\Model\CategoryRepository" />
+
+    <preference for="Contentor\LocalizationApi\Api\Data\CategoryInterface"
+                type="Contentor\LocalizationApi\Model\Category" />
 
     <!-- End Category Injection -->
 

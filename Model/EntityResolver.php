@@ -2,7 +2,9 @@
 namespace Contentor\LocalizationApi\Model;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface;
+use Contentor\LocalizationApi\Api\Data\CategoryInterface;
 use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
+use Contentor\LocalizationApi\Api\CategoryRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
 use Contentor\LocalizationApi\Model\Spi\ContentEntityLoaderInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -24,7 +26,8 @@ class EntityResolver
      * @var array
      */
     private $repositoriesMap = [
-        ProductInterface::TYPE_CODE => ProductRepositoryInterface::class
+        ProductInterface::TYPE_CODE => ProductRepositoryInterface::class,
+        CategoryInterface::TYPE_CODE => CategoryRepositoryInterface::class
     ];
 
     /**

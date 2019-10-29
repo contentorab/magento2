@@ -128,19 +128,20 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param string $sku
+     * @param string $id
      * @return array
      */
-    public function getRequestStatus($sku)
+    public function getRequestStatus($id)
     {
         $connection = $this->_resource->getConnection('core_read');
         $statustable = $table = $this->_resource->getTableName('contentor_status');
-        $producttable = $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `" . $producttable . "`.`contentor_id`, `" . $producttable . "`.`target_store`, `" . $producttable . "`.`sent_time`, `" . $producttable . "`.`completed_time`, `" . $producttable . "`.`canceled_time`, `" . $statustable . "`.`status_time`, `" . $statustable . "`.`status`, `" . $producttable . "`.`state`, `" . $producttable . "`.`type` FROM `" . $producttable . "` LEFT JOIN `" . $statustable . "` ON `" . $producttable . "`.`contentor_id`= `" . $statustable . "`.`contentor_id` WHERE `" . $producttable . "`.`sku` = :this_sku AND `synchronize_type` = :this_synchronize_type ORDER BY `" . $producttable . "`.`contentor_id` DESC, `" . $statustable . "`.`status_time`";
+        $categoryTable = $table = $this->_resource->getTableName('contentor_category');
+        $query = "SELECT `" . $categoryTable . "`.`contentor_id`, `" . $categoryTable . "`.`target_store`, `" . $categoryTable . "`.`sent_time`, `" . $categoryTable . "`.`completed_time`, `" . $categoryTable . "`.`canceled_time`, `" . $statustable . "`.`status_time`, `" . $statustable . "`.`status`, `" . $categoryTable . "`.`state`, `" . $categoryTable . "`.`type` FROM `" . $categoryTable . "` LEFT JOIN `" . $statustable . "` ON `" . $categoryTable . "`.`contentor_id`= `" . $statustable . "`.`contentor_id` WHERE `" . $categoryTable . "`.`category_id` = :this_category_id AND `synchronize_type` = :this_synchronize_type ORDER BY `" . $categoryTable . "`.`contentor_id` DESC, `" . $statustable . "`.`status_time`";
         $binds = [
-            'this_sku' => $sku,
+            'this_category_id' => $id,
             'this_synchronize_type' => $this->_syncType
         ];
+
         $status = $connection->fetchAll($query, $binds);
 
         return $status;

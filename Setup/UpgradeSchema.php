@@ -156,7 +156,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         )->addColumn(
             'contentor_id',
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-            10,
+            36,
             [],
             'Contentor ID'
         )->addColumn(

@@ -25,24 +25,18 @@ class CategoryRepository implements CategoryRepositoryInterface, ContentEntityLo
     private $categoryResource;
 
     /**
-     * @var CategoryInterfaceFactory
+     * @var CategoryFactory
      */
-    private $categoryInterfaceFactory;
+    private $categoryFactory;
 
-    /**
-     * CategoryRepository constructor.
-     * @param CollectionFactory $collectionFactory
-     * @param CategoryResource $categoryResource
-     * @param CategoryInterfaceFactory $categoryInterfaceFactory
-     */
     public function __construct(
         CollectionFactory  $collectionFactory,
         CategoryResource $categoryResource,
-        CategoryInterfaceFactory $categoryInterfaceFactory
+        \Contentor\LocalizationApi\Model\CategoryFactory $categoryFactory
     ) {
         $this->collectionFactory = $collectionFactory;
         $this->categoryResource = $categoryResource;
-        $this->categoryInterfaceFactory = $categoryInterfaceFactory;
+        $this->categoryFactory = $categoryFactory;
     }
 
     /**
@@ -79,15 +73,15 @@ class CategoryRepository implements CategoryRepositoryInterface, ContentEntityLo
     }
 
     /**
-     * Returns Product Content Request  by contentor ID
+     * Returns Category Content Request  by contentor ID
      *
-     * @param int $contentorId
+     * @param string $contentorId
      * @return ContentEntityLoaderInterface|CategoryInterface
      */
     public function loadByContentorId($contentorId)
     {
         /** @var Category $model */
-        $model =  $this->categoryInterfaceFactory->create();
+        $model =  $this->categoryFactory->create();
         $model->load($contentorId, CategoryInterface::CONTENTOR_ID);
         return $model;
     }
