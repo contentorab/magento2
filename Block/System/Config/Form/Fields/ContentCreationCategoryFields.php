@@ -5,7 +5,7 @@ namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
  * Class ContentCreationCategoryFields
  * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
  */
-class ContentCreationCategoryFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractLocalizedFields
+class ContentCreationCategoryFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractContentCreationFields
 {
     /**
      * @var string
@@ -15,5 +15,5 @@ class ContentCreationCategoryFields extends \Contentor\LocalizationApi\Block\Sys
     /**
      * @var string
      */
-    protected $_entity = 'Product';
+    protected $_entity = 'Category';
 }

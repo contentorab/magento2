@@ -175,7 +175,7 @@ class AbstractContentCreationFields extends \Magento\Config\Block\System\Config\
         $options = [];
 
         if ($productAttribute) {
-            $options['option_' . $this->getProductAttributeRenderer()->calcOptionHash($productAttribute)] = 'selected="selected"';
+            $options['option_' . $this->getAttributeRenderer()->calcOptionHash($productAttribute)] = 'selected="selected"';
         }
 
         if ($source) {

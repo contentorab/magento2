@@ -5,7 +5,7 @@ namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
  * Class ContentCreationProductFields
  * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
  */
-class ContentCreationProductFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractLocalizedFields
+class ContentCreationProductFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractContentCreationFields
 {
     /**
      * @var string
