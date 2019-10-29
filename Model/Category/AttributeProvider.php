@@ -100,8 +100,11 @@ class AttributeProvider
         $n = [];
 
         foreach ($fieldArray as $field) {
+
             $attribute = $category->getResource()->getAttribute($field['attribute']);
+
             $value = $category->getResource()->getAttributeRawValue($categoryId, $field['attribute'], $field['store']);
+
             $name = $attribute->getFrontendLabel();
 
             if (!isset($n[$field['attribute']])) {
@@ -110,10 +113,12 @@ class AttributeProvider
                 $n[$field['attribute']]++;
             }
 
+
             $id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
 
             //localizable feature
             if ( $this->syncType == \Contentor\LocalizationApi\Model\Category::LOCALIZED_SYNC_TYPE ) {
+
                 if (! empty($value)) {
                     $fields[] = [
                         'id' => $id,

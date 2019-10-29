@@ -8,7 +8,7 @@ use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
 use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Gateway\SendContent;
-use Contentor\LocalizationApi\Model\Product\AttributeProviderFactory;
+use Contentor\LocalizationApi\Model\Category\AttributeProviderFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Framework\Api\DataObjectHelper;
@@ -188,7 +188,7 @@ class AbstractCategorySendContent
                     $this->saveTypeEntity($contentorId);
                     $this->saveStatusEntity(
                         $contentorId,
-                        'Sent for '. $this->_syncName .' to ' . $targetLocale
+                        'Sent category for '. $this->_syncName .' to ' . $targetLocale
                     );
 
                     if ($type == 'update') {
@@ -213,7 +213,7 @@ class AbstractCategorySendContent
     }
 
     /**
-     * @param int $contentorId
+     * @param string $contentorId
      * @param int $categoryId
      * @param string $sourceLocale
      * @param string $targetLocale
@@ -245,7 +245,7 @@ class AbstractCategorySendContent
     }
 
     /**
-     * @param int $contentorId
+     * @param string $contentorId
      * @return void
      */
     protected function saveTypeEntity($contentorId)
@@ -254,7 +254,7 @@ class AbstractCategorySendContent
     }
 
     /**
-     * @param int $contentorId
+     * @param string $contentorId
      * @param string $status
      */
     protected function saveStatusEntity($contentorId, $status)

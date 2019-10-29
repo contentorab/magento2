@@ -77,7 +77,7 @@ class SendContent
             'method' => \Zend_Http_Client::PUT,
             'uri' => 'v1/content'
         ]);
-
+        
         $result = $this->httpClient->sendRequest($transfer);
 
         if($result['code'] !== 200) {
