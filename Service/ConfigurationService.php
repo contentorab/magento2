@@ -260,7 +260,7 @@ class ConfigurationService
     public function getCategoryFields($store = null)
     {
         $data =  $this->scopeConfig->getValue(
-            self::XML_PATH_PRODUCT_FIELDS,
+            self::XML_PATH_CATEGORY_FIELDS,
             ScopeInterface::SCOPE_STORE,
             $store
         );
