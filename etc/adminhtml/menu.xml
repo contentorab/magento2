@@ -35,7 +35,7 @@
              resource="Magento_Backend::content"
 
              parent="Contentor_LocalizationApi::parent_productsreports"
-             action="contentor/reports/productreport"
+             action="contentor/reports/categoryreport"
         />
 
         <add id="Contentor_LocalizationApi::productreportcontentcreation"
@@ -55,7 +55,7 @@
              resource="Magento_Backend::content"
 
              parent="Contentor_LocalizationApi::parent_categoryreports"
-             action="contentor/reports/contentcreation_productreport"
+             action="contentor/reports/contentcreation_categoryreport"
         />
     </menu>
 </config>
