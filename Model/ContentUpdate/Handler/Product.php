@@ -120,7 +120,7 @@ class Product implements ContentUpdateHandlerInterface
         // Show a status message in the log for the product
         $status = 'Order confirmed for delivery';
 
-        $this->statusRepository->saveProductStatus(
+        $this->statusRepository->saveStatus(
             $entity->getContentorId(),
             $status
         );
@@ -142,7 +142,7 @@ class Product implements ContentUpdateHandlerInterface
         // Show a status message in the log for the product
         $status = 'Order canceled';
 
-        $this->statusRepository->saveProductStatus(
+        $this->statusRepository->saveStatus(
             $entity->getContentorId(),
             $status
         );
@@ -207,7 +207,7 @@ class Product implements ContentUpdateHandlerInterface
             . ', completion time: '
             . date("Y-m-d H:i:s", strtotime($data['completed']));
 
-        $this->statusRepository->saveProductStatus(
+        $this->statusRepository->saveStatus(
             $entity->getContentorId(),
             $status
         );

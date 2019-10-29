@@ -18,7 +18,7 @@ interface CategoryInterface
     const CANCELED_TIME = 'canceled_time';
     const STATE = 'state';
     const TYPE = 'type';
-    const TYPE_CODE = 'product';
+    const TYPE_CODE = 'category';
     const SYNCHRONIZE_TYPE = 'synchronize_type';
     const DELIVERY_SPEED = 'delivery_speed';
     /**#@-*/

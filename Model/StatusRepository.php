@@ -55,7 +55,7 @@ class StatusRepository implements StatusRepositoryInterface
      * @return \Contentor\LocalizationApi\Api\Data\StatusInterface
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
-    public function saveProductStatus($contentorId, $status, $date = null)
+    public function saveStatus($contentorId, $status, $date = null)
     {
         if (null === $date) {
             $date = $this->dateTime->gmtDate();

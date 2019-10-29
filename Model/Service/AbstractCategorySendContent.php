@@ -2,6 +2,7 @@
 namespace Contentor\LocalizationApi\Model\Service;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface as ContentorProductInterface;
+use Contentor\LocalizationApi\Api\Data\CategoryInterface as ContentorCategoryInterface;
 use Contentor\LocalizationApi\Api\Data\ProductInterfaceFactory;
 use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
 use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
@@ -10,17 +11,12 @@ use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Gateway\SendContent;
 use Contentor\LocalizationApi\Model\Product\AttributeProviderFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
-use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
-/**
- * Class ProductSendContent
- * @package Contentor\LocalizationApi\Model\Service
- * Abstract class for localizable and creatable features
- */
-class AbstractProductSendContent
+class AbstractCategorySendContent
 {
     /**
      * @var string
@@ -136,28 +132,18 @@ class AbstractProductSendContent
     }
 
 
-    /**
-     * Send content request to contentor.
-     *
-     * Normalize magento product attributes, search localizable/created  attributes and prepare data for API
-     *
-     * @param ProductInterface $product
-     * @param string $sourceLocale
-     * @param array $targetLocales
-     * @return void
-     */
-    public function execute(ProductInterface $product, $sourceLocale,  $targetLocales)
+    public function execute(CategoryInterface $category, $sourceLocale,  $targetLocales)
     {
-        $data = $this->getFields($product);
+        $data = $this->getFields($category);
         if (empty($data)) {
             $this->logger->critical(
-                sprintf('Empty attributes map. Skip product %s', $product->getSku())
+                sprintf('Empty attributes map. Skip category %s', $category->getId())
             );
             return;
         }
 
         try {
-            $this->logger->info('Sending ' . $product->getSku() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
+            $this->logger->info('Sending categoryId ' . $category->getId() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
 
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
@@ -256,7 +242,7 @@ class AbstractProductSendContent
      */
     protected function saveTypeEntity($contentorId)
     {
-        $this->typeRepository->saveContentRequest($contentorId);
+        $this->typeRepository->saveContentRequest($contentorId,ContentorCategoryInterface::TYPE_CODE);
     }
 
     /**
@@ -268,16 +254,12 @@ class AbstractProductSendContent
         $this->statusRepository->saveStatus($contentorId, $status);
     }
 
-    /**
-     * @param ProductInterface $product
-     * @return array
-     */
-    protected function getFields(ProductInterface $product)
+    protected function getFields(CategoryInterface $category)
     {
         $attributeProvider = $this->attributeProviderFactory->create([
-            'product' => $product,
+            'category'    => $category,
             'extraFields' => [],
-            'syncType' => $this->_syncType
+            'syncType'    => $this->_syncType
         ]);
 
         return $attributeProvider->getList();

@@ -16,5 +16,5 @@ interface StatusRepositoryInterface
      * @param null $date
      * @return \Contentor\LocalizationApi\Api\Data\StatusInterface
      */
-    public function saveProductStatus($contentorId, $status, $date = null);
+    public function saveStatus($contentorId, $status, $date = null);
 }
