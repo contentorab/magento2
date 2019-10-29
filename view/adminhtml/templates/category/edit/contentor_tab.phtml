@@ -84,6 +84,7 @@
 <?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
 <?= $this->getLayout()
     ->createBlock("Magento\Framework\View\Element\Template")
+    ->setIsCategory(true)
     ->setTemplate("Contentor_LocalizationApi::options/product_words_amount.phtml")
     ->toHtml() ?>
 <br><br><br>

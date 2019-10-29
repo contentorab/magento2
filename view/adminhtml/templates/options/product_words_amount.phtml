@@ -1,7 +1,15 @@
 <?php
 
+$isCategory = $block->getIsCategory();
+
+if ( $isCategory ) {
+    $path = \Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS;
+} else {
+    $path = \Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CONTENT_CREATION_FIELDS;
+}
+
 $contentCreationAttributesConfig = $this->helper('Contentor\LocalizationApi\Helper\Data')
-    ->getConfig(\Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CONTENT_CREATION_FIELDS);
+    ->getConfig($path);
 
 $contentCreationAttributesConfig = json_decode($contentCreationAttributesConfig, true);
 $id = time();
@@ -17,7 +25,7 @@ $id = time();
     <tbody id="configAttributesContentCreation">
         <?php foreach ( $contentCreationAttributesConfig as $key => $config ): ?>
             <tr id="_<?= $key ?>">
-                <td> <p><?= $config['attribute']; ?></p> </td>
+                <td> <p><?= ucfirst($config['attribute']); ?></p> </td>
                 <td>
                     <input type="text" id="<?= $key ?>_word_count"
                            name="attributesConfig[][<?= $config['attribute'] ?>]" value="<?= $config['word_count']; ?>" class="required-entry">

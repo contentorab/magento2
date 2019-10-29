@@ -59,47 +59,53 @@ class AbstractPostCategory extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $targets = [];
+        try {
+            $targets = [];
 
-        $request = $this->request;
+            $request = $this->request;
 
-        $categoryId = $request->getParam('categoryid');
+            $categoryId = $request->getParam('categoryid');
 
-        $category = $this->categoryFactory->get($categoryId);
+            $category = $this->categoryFactory->get($categoryId);
 
-        $sourceLocale = $request->getParam('source');
+            $sourceLocale = $request->getParam('source');
 
-        $targetList = $request->getParam('targets');
+            $targetList = $request->getParam('targets');
 
-        foreach ($targetList as $targetData) {
-            list($id, $locale) = explode(':', $targetData);
-            $targets[$id] = $locale;
-        }
-
-        if (!count($targets)) {
-            // No target selected
-        } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
-            // Source locale in targets
-        } else {
-            /**
-             * Declare $categorySendContent in etc/adminhtml/di.xml as argument to reusable
-             */
-            if ( array_key_exists('instance', $this->categorySendContent) ) {
-                $this->_objectManager->create($this->categorySendContent['instance'])
-                    ->execute(
-                        $category,
-                        $sourceLocale,
-                        $targets
-                );
+            foreach ($targetList as $targetData) {
+                list($id, $locale) = explode(':', $targetData);
+                $targets[$id] = $locale;
             }
+
+            if (!count($targets)) {
+                // No target selected
+            } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
+                // Source locale in targets
+            } else {
+                /**
+                 * Declare $categorySendContent in etc/adminhtml/di.xml as argument to reusable
+                 */
+                if ( array_key_exists('instance', $this->categorySendContent) ) {
+                    $this->_objectManager->create($this->categorySendContent['instance'])
+                        ->execute(
+                            $category,
+                            $sourceLocale,
+                            $targets
+                        );
+                }
+            }
+
+            $url = $this->getUrl(
+                'catalog/category/edit',
+                ['id' => $categoryId]
+            );
+
+            $this->messageManager->addSuccess(__('Sent request to Contentor platform successfully.'));
+
+        }catch ( \Exception $e) {
+            $this->messageManager->addSuccess(__($e->getMessage()));
         }
 
-        $url = $this->getUrl(
-            'catalog/category/edit',
-            ['id' => $categoryId]
-        );
-
-        $this->messageManager->addSuccess(__('Sent request to localization '));
 
         $this->getResponse()->setRedirect($url)->sendResponse();
     }

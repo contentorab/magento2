@@ -33,6 +33,12 @@
             <argument name="productSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
         </arguments>
     </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\PostCategory">
+        <arguments>
+            <argument name="categorySendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationCategorySendContent</argument>
+        </arguments>
+    </type>
     <!-- End Content Creation Send Request Controller -->
 
 </config>

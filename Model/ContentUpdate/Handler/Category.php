@@ -181,9 +181,9 @@ class Category implements ContentUpdateHandlerInterface
             }
         }
 
-        if ($this->configurationService->isAutomationEnabled()) {
-            // If the product should go live when received back update its status
-            $category->setStatus(1);
+        if ($this->configurationService->isCategoryAutomationEnabled()) {
+            // If the category should go live when received back update its status
+            $category->setIsActive(1);
         }
 
         // Save the product with the updated attributes
