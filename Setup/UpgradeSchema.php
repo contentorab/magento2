@@ -5,8 +5,17 @@ use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
+/**
+ * Class UpgradeSchema
+ * @package Contentor\LocalizationApi\Setup
+ */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     * @throws \Zend_Db_Exception
+     */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
@@ -125,6 +134,126 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        /**
+         *  Create category contentor synchronize table
+         */
+        if (version_compare($context->getVersion(), '0.6.0') < 0) {
+            $this->_createCategoryContentorProducts($setup);
+        }
+
         $setup->endSetup();
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @return $this
+     * @throws \Zend_Db_Exception
+     */
+    private function _createCategoryContentorProducts(SchemaSetupInterface $setup) {
+
+        $syncCategoryTable = $setup->getConnection()->newTable(
+            $setup->getTable('contentor_category')
+        )->addColumn(
+            'contentor_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            10,
+            [],
+            'Contentor ID'
+        )->addColumn(
+            'category_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            10,
+            [],
+            'Category Id'
+        )->addColumn(
+            'source_locale',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            16,
+            [],
+            'Source Locale'
+        )->addColumn(
+            'target_locale',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            16,
+            [],
+            'Target Locale'
+        )->addColumn(
+            'target_store',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            5,
+            [],
+            'Target Store'
+        )->addColumn(
+            'sent_time',
+            \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+            0,
+            [],
+            'Sent Time'
+        )->addColumn(
+            'completed_time',
+            \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+            0,
+            [],
+            'Completed Time'
+        )->addColumn(
+            'deadline_time',
+            \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+            0,
+            [],
+            'Deadline Time'
+        )->addColumn(
+            'canceled_time',
+            \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+            0,
+            [],
+            'Canceled Time'
+        )->addColumn(
+            'state',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            16,
+            [],
+            'State'
+        )->addColumn(
+            'type',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            16,
+            [],
+            'Type'
+        )->addColumn(
+            'synchronize_type',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            10,
+            [
+                'default' => 0
+            ],
+            'Synchronize Type'
+        )
+        ->addColumn(
+            'delivery_speed',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            36,
+            [
+                'nullable' => true,
+                'default' => null,
+            ],
+            'Delivery Speed'
+        )
+        ->addIndex(
+            $setup->getIdxName('contentor_category', ['synchronize_type']),
+            ['synchronize_type']
+        )
+        ->addIndex(
+            $setup->getIdxName('contentor_category', ['delivery_speed']),
+            ['delivery_speed']
+        )
+        ->addIndex(
+            $setup->getIdxName('contentor_category', ['category_id']),
+            ['category_id']
+        )
+        ->setComment(
+            'Sync Category Contentor Table'
+        );
+        $setup->getConnection()->createTable($syncCategoryTable);
+        return $this;
     }
 }
