@@ -18,6 +18,9 @@
     <preference for="\Contentor\LocalizationApi\Api\Data\ProductInterface"
                 type="Contentor\LocalizationApi\Model\Product" />
 
+    <preference for="\Contentor\LocalizationApi\Api\Data\CategoryInterface"
+                type="Contentor\LocalizationApi\Model\Category" />
+
     <preference for="\Contentor\LocalizationApi\Api\Data\StatusInterface"
                 type="Contentor\LocalizationApi\Model\Status" />
 
