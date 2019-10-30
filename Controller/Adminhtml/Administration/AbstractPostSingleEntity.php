@@ -4,7 +4,6 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
 
-
 /**
  * Class AbstractPostSingleEntity
  * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration

@@ -34,22 +34,22 @@ class AttributeProvider
     private $syncType;
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var \Contentor\LocalizationApi\Service\GetWordAmountConfigService
      */
-    private $request;
+    private $getWordAmountConfigService;
 
     /**
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param ProductInterface $product
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService
      * @param array $extraFields
      * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         ProductInterface $product,
-        \Magento\Framework\App\RequestInterface $request,
+        \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService,
         array $extraFields = [],
         $syncType = null
     ) {
@@ -57,7 +57,7 @@ class AttributeProvider
         $this->product = $product;
         $this->extraFields = $extraFields;
         $this->syncType = $syncType;
-        $this->request = $request;
+        $this->getWordAmountConfigService = $getWordAmountConfigService;
     }
 
     /**
@@ -129,13 +129,17 @@ class AttributeProvider
 
             //localizable feature
             if ( $this->syncType == \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE ) {
+
                 if (! empty($value)) {
+
                     $fields[] = [
                         'id' => $id,
                         'name' => $name,
                         'type' => $field['type'],
                         'data' => $field['data'],
-                        'value' => $value];
+                        'value' => $value
+                    ];
+
                 } else {
                     if (isset($fields['required'])) {
                         $messages[] = 'Required field: [' . $field['attribute'] . '] empty';
@@ -150,7 +154,7 @@ class AttributeProvider
                 /**
                  * Override WordAmount configs from request
                  */
-                $configWordsAmount = $this->_getWordAmountConfigs();
+                $configWordsAmount = $this->getWordAmountConfigService->execute();
                 if (
                     !empty($configWordsAmount)
                     && array_key_exists($field['attribute'], $configWordsAmount)
@@ -174,27 +178,5 @@ class AttributeProvider
         }
 
         return $fields;
-    }
-
-
-    /**
-     * Get Words Amount config from request
-     * @return array
-     */
-    private function _getWordAmountConfigs() {
-
-        $response = [];
-
-        $configWordsAmount = $this->request->getParam('attributesConfig');
-
-        if ( !empty($configWordsAmount) ) {
-            foreach ($configWordsAmount as $arrayAttributeConfig) {
-                foreach ( $arrayAttributeConfig as $attribute => $value ) {
-                    $response[$attribute] = $value;
-                }
-            }
-        }
-
-        return $response;
     }
 }
