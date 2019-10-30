@@ -1,25 +1,35 @@
 <?php
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
 
+
 /**
- * Class AbstractPostCategory
+ * Class AbstractPostSingleEntity
  * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
  */
-class AbstractPostCategory extends \Magento\Backend\App\Action
+class AbstractPostSingleEntity extends \Magento\Backend\App\Action
 {
+    /**
+     * @var
+     */
+    protected $routeRedirect;
+
+    /**
+     * @var
+     */
+    protected $paramRequestId;
+
+    /**
+     * @var
+     */
+    protected $modelFactory;
+
     /**
      * @var array
      */
-    protected $categorySendContent;
-
-    /**
-     * @var CategoryFactory
-     */
-    protected $categoryFactory;
+    protected $serviceSendContent;
 
     /**
      * @var Http
@@ -33,29 +43,25 @@ class AbstractPostCategory extends \Magento\Backend\App\Action
      */
     protected $shouldValidateTargetAndSource = true;
 
-
     /**
-     * AbstractPostCategory constructor.
+     * AbstractPostSingleEntity constructor.
      * @param Context $context
      * @param Http $request
-     * @param CategoryRepositoryInterface $categoryFactory
-     * @param array $categorySendContent
+     * @param array $serviceSendContent
      */
     public function __construct(
         Context $context,
         Http $request,
-        CategoryRepositoryInterface $categoryFactory,
-        array $categorySendContent = []
+        array $serviceSendContent = []
     ) {
         parent::__construct($context);
-        $this->categoryFactory = $categoryFactory;
-        $this->categorySendContent = $categorySendContent;
+        $this->serviceSendContent = $serviceSendContent;
         $this->request = $request;
     }
 
     /**
+     * @inheritdoc
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
@@ -64,9 +70,14 @@ class AbstractPostCategory extends \Magento\Backend\App\Action
 
             $request = $this->request;
 
-            $categoryId = $request->getParam('categoryid');
+            $idRequest = $request->getParam($this->paramRequestId);
 
-            $category = $this->categoryFactory->get($categoryId);
+            /**
+             *  Initial modelFactory from ObjectManager
+             */
+            $this->modelFactory = $this->_objectManager->create($this->modelFactory);
+
+            $entity = $this->modelFactory->create()->load($idRequest);
 
             $sourceLocale = $request->getParam('source');
 
@@ -83,12 +94,12 @@ class AbstractPostCategory extends \Magento\Backend\App\Action
                 // Source locale in targets
             } else {
                 /**
-                 * Declare $categorySendContent in etc/adminhtml/di.xml as argument to reusable
+                 * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                if ( array_key_exists('instance', $this->categorySendContent) ) {
-                    $this->_objectManager->create($this->categorySendContent['instance'])
+                if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                    $this->_objectManager->create($this->serviceSendContent['instance'])
                         ->execute(
-                            $category,
+                            $entity,
                             $sourceLocale,
                             $targets
                         );
@@ -96,16 +107,14 @@ class AbstractPostCategory extends \Magento\Backend\App\Action
             }
 
             $url = $this->getUrl(
-                'catalog/category/edit',
-                ['id' => $categoryId]
+                $this->routeRedirect,
+                ['id' => $idRequest]
             );
 
             $this->messageManager->addSuccess(__('Sent request to Contentor platform successfully.'));
-
-        }catch ( \Exception $e) {
-            $this->messageManager->addSuccess(__($e->getMessage()));
+        }catch ( \Exception $e ) {
+            $this->messageManager->addError(__($e->getMessage()));
         }
-
 
         $this->getResponse()->setRedirect($url)->sendResponse();
     }

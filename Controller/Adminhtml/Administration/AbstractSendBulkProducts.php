@@ -17,7 +17,7 @@ class AbstractSendBulkProducts extends Action
     /**
      * @var array
      */
-    protected $productSendContent;
+    protected $serviceSendContent;
 
     /**
      * @var ConfigurationService
@@ -53,7 +53,7 @@ class AbstractSendBulkProducts extends Action
      * @param ProductFactory $productFactory
      * @param PageFactory $pageFactory
      * @param ConfigurationService $configurationService
-     * @param array $productSendContent
+     * @param array $serviceSendContent
      */
     public function __construct(
         Context $context,
@@ -61,14 +61,14 @@ class AbstractSendBulkProducts extends Action
         ProductFactory $productFactory,
         PageFactory $pageFactory,
         ConfigurationService $configurationService,
-        array $productSendContent = []
+        array $serviceSendContent = []
     ) {
         parent::__construct($context);
         $this->request = $request;
         $this->productFactory = $productFactory;
         $this->pageFactory = $pageFactory;
         $this->configurationService = $configurationService;
-        $this->productSendContent = $productSendContent;
+        $this->serviceSendContent = $serviceSendContent;
     }
 
     /**
@@ -114,10 +114,10 @@ class AbstractSendBulkProducts extends Action
                 $product = $this->productFactory->create()->load($prodID);
 
                 /**
-                 * Declare $productSendContent in etc/adminhtml/di.xml as argument to reusable
+                 * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                if ( array_key_exists('instance', $this->productSendContent) ) {
-                    $this->_objectManager->create($this->productSendContent['instance'])
+                if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                    $this->_objectManager->create($this->serviceSendContent['instance'])
                         ->execute(
                             $product,
                             $sourceLocale,

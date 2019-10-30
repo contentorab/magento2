@@ -11,6 +11,11 @@ use Magento\Catalog\Model\CategoryFactory;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
+ *
+ * Category Content update handler.
+ * Responsibility : process content updates returned by API.
+ * Each Content Entity should have own handler with related to specific
+ * Magento entity logic (Product,Category,Cms)
  * Class Category
  * @package Contentor\LocalizationApi\Model\ContentUpdate\Handler
  */
