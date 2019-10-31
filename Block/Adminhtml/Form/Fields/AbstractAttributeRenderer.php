@@ -11,6 +11,17 @@ use \Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Select
 {
     /**
+     * Allow attributes which have these frontendInput
+     * @var array
+     */
+    protected $frontendInput = ['text', 'textarea'];
+
+    /**
+     * Allow attributes which have these backendType
+     * @var array
+     */
+    protected $backendType = ['varchar', 'text'];
+    /**
      * @var
      */
     protected $entityType;
@@ -56,8 +67,6 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
     {
         if (!$this->getOptions()) {
 
-            $allowed = ['text', 'textarea'];
-
             $attributeInfo = $this->_attributeFactory->getCollection()
                 ->addFieldToFilter(\Magento\Eav\Model\Entity\Attribute\Set::KEY_ENTITY_TYPE_ID, $this->getEntityTypeId());
 
@@ -68,12 +77,21 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
             }
 
             foreach ($attributeInfo as $attribute) {
+
                 $label = $attribute->getData('frontend_label');
+
                 $type = $attribute->getFrontendInput();
+
                 $code = $attribute->getAttributeCode();
-                if (!empty($label) && in_array($type, $allowed)) {
+
+                $backendType = $attribute->getBackEndType();
+
+                if ( !empty($label) && in_array($type, $this->frontendInput) && in_array($backendType, $this->backendType) ) {
+
                     $name = $label . ' (' . $type . ')';
+
                     $this->addOption($code, $name);
+
                 }
             }
         }
