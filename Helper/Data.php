@@ -8,7 +8,10 @@ namespace Contentor\LocalizationApi\Helper;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
+    /**
+     * @param $configPath
+     * @return mixed
+     */
     public function getConfig($configPath)
     {
         return $this->scopeConfig->getValue(

@@ -3,10 +3,22 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
 use \Magento\Framework\View\Element\Context;
 
+/**
+ * Class FieldDataTypeRenderer
+ * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
+ */
 class FieldDataTypeRenderer extends \Magento\Framework\View\Element\Html\Select
 {
+    /**
+     * @var array
+     */
     protected $fieldDataTypes;
 
+    /**
+     * FieldDataTypeRenderer constructor.
+     * @param Context $context
+     * @param array $data
+     */
     public function __construct(Context $context, array $data = [])
     {
         parent::__construct($context, $data);

@@ -1,17 +1,18 @@
 <?php
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
+/**
+ * Class RequiredRenderer
+ * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
+ */
 class RequiredRenderer extends \Magento\Framework\View\Element\AbstractBlock
 {
-
+    /**
+     * @return string
+     */
     protected function _toHtml()
     {
-        $elId = $this->getInputId();
-        $elName = $this->getInputName();
-        $colName = $this->getColumnName();
         $column = $this->getColumn();
-        $val = $this->getValue();
-
         $return =  '<input type="checkbox" value="1" <%= option_extra_attrs.required %> ' .
         ' name="groups[fieldDetails][fields][productFieldDetails][value][<%- _id %>][required]"' .
         ($column['size'] ? 'size="' . $column['size'] . '"' : '') .
@@ -22,6 +23,10 @@ class RequiredRenderer extends \Magento\Framework\View\Element\AbstractBlock
         return $return;
     }
 
+    /**
+     * @param $value
+     * @return mixed
+     */
     public function setInputName($value)
     {
         return $this->setName($value);
