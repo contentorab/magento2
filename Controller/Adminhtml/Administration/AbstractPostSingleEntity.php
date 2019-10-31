@@ -10,6 +10,7 @@ use Magento\Framework\App\Request\Http;
  */
 class AbstractPostSingleEntity extends \Magento\Backend\App\Action
 {
+    protected $entityName;
     /**
      * @var
      */
@@ -110,7 +111,7 @@ class AbstractPostSingleEntity extends \Magento\Backend\App\Action
                 ['id' => $idRequest]
             );
 
-            $this->messageManager->addSuccess(__('Sent request to Contentor platform successfully.'));
+            $this->messageManager->addSuccess(__(sprintf('Sent %s request to Contentor platform successfully.', $this->entityName )));
         }catch ( \Exception $e ) {
             $this->messageManager->addError(__($e->getMessage()));
         }

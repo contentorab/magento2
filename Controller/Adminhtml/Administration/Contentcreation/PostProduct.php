@@ -8,6 +8,7 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentc
  */
 class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity
 {
+    protected $entityName = 'content creation product';
     /**
      * Creatable - content creation should be sent even if source and locale is same
      * @var bool
