@@ -7,7 +7,11 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
  */
 class PostCategory extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity
 {
+    /**
+     * @var string
+     */
     protected $entityName = 'localization category';
+
     /**
      * @var string
      */

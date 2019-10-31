@@ -7,7 +7,11 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
  */
 class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity
 {
+    /**
+     * @var string
+     */
     protected $entityName = 'localization product';
+
     /**
      * @var string
      */

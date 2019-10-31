@@ -7,7 +7,11 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentc
  */
 class PostCategory extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity
 {
+    /**
+     * @var string
+     */
     protected $entityName = 'content creation category';
+
     /**
      * Creatable - content creation should be sent even if source and locale is same
      * @var bool
