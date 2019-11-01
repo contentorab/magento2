@@ -24,7 +24,8 @@ class GetWordAmountConfigService
     }
 
     /**
-     * Service Getting word amount config from request
+     * Override value of word amounts which are sent from request.
+     * Service getting word amount config from request
      * @return array
      */
     public function execute() {
