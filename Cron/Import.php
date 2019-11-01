@@ -77,6 +77,11 @@ class Import
         return $this;
     }
 
+    /**
+     * @param $connection
+     * @param $key
+     * @return null
+     */
     private function get($connection, $key) {
         $table = $this->resource->getTableName('contentor_config');
         $query = "SELECT `value` FROM `" . $table . "` WHERE `key` = :key";
@@ -91,6 +96,12 @@ class Import
         }
     }
 
+    /**
+     * @param $connection
+     * @param $key
+     * @param $value
+     * @param $previous
+     */
     private function update($connection, $key, $value, $previous) {
         $table = $this->resource->getTableName('contentor_config');
         if (empty($previous)) {
