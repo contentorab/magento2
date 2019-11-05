@@ -25,6 +25,7 @@ class ConfigurationService
     const XML_PATH_API_BASE_URL = 'contentor_options/contentor_options/api_base_url';
     const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
     const XML_PATH_MAIN_LOCALE = 'general/locale/code';
+    const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
     /**#@-*/
 
     /**
@@ -44,7 +45,7 @@ class ConfigurationService
 
     public function getVersion() {
         // TODO: Maybe move this into the config file or pull it from the runtime somehow
-        return '0.3.1';
+        return '0.4.0';
     }
 
     /**
@@ -195,6 +196,32 @@ class ConfigurationService
     }
 
     /**
+     * Returns Product attributes map from magento config for content creation
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getContentCreationProductFields($store = null)
+    {
+        $data =  $this->scopeConfig->getValue(
+            self::XML_PATH_CONTENT_CREATION_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        $result = json_decode($data, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+
+        return $result;
+    }
+
+    /**
      * Basic config validation.
      * Check required API fields before make real api request.
      *
@@ -233,5 +260,46 @@ class ConfigurationService
         }
 
        return $result;
+    }
+
+    /**
+     * Basic config validation.
+     * Check required API fields before make real api request.
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function validateContentCreationConfiguration($store = null)
+    {
+        $result = [
+            'error' => false,
+            'messages' => []
+        ];
+        if (empty($this->getToken($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Token';
+        }
+
+        if (empty($this->getApiBaseUrl($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Contentor base API Url';
+        }
+
+        if (empty($this->getContentCreationProductFields($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Product Attribute configuration';
+        }
+
+        if (empty($this->getSourceLocale($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Source locale';
+        }
+
+        if (empty($this->getTargetStoreViews($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Target store views';
+        }
+
+        return $result;
     }
 }

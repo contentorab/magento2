@@ -1,6 +1,3 @@
-<?php
-/** @var \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\Localization $block */
-?>
 <?php if (!$block->isReady()) :?>
     <?php
     $configUrl = $this->getUrl(
@@ -13,7 +10,7 @@
     );
 
     echo sprintf(
-        '</br> Please configure your localization API <a href="%s">here</a> ',
+        '</br> Please configure your Contentor API <a href="%s">here</a> ',
         $configUrl
     );
     ?>
@@ -21,7 +18,7 @@
 <?php else: ?>
 
 <p>
-    <form method="post" action="<?php print $this->getUrl("contentor/administration/postproduct/"); ?>" name="contentorproducts">
+    <form method="post" action="<?php print $block->getSubmitUrl(); ?>" name="contentorproducts">
     <input type="hidden" name="returnurl" value ="<?php print $this->getProduct()->getProductUrl(); ?>">
     <input type="hidden" name="productid" value ="<?php print $this->getProduct()->getId(); ?>">
     <?= $block->getBlockHtml('formkey') ?>
@@ -79,8 +76,20 @@
             ?>
 </p>
 <br><br><br>
+<?= $this->getLayout()
+        ->createBlock("Magento\Framework\View\Element\Template")
+        ->setTemplate("Contentor_LocalizationApi::options/delivery_speed.phtml")
+        ->toHtml() ?>
+<br><br><br>
+<?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+<?= $this->getLayout()
+    ->createBlock("Magento\Framework\View\Element\Template")
+    ->setTemplate("Contentor_LocalizationApi::options/product_words_amount.phtml")
+    ->toHtml() ?>
+<br><br><br>
+<?php endif;?>
 <p>
- <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for localization</span></button>
+ <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for <?= $block->getLabelSubmitButton(); ?></span></button>
  </form>
 </p>
 <br><br><br>

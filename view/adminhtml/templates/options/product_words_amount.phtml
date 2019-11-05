@@ -1,0 +1,30 @@
+<?php
+
+$contentCreationAttributesConfig = $this->helper('Contentor\LocalizationApi\Helper\Data')
+    ->getConfig(\Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CONTENT_CREATION_FIELDS);
+
+$contentCreationAttributesConfig = json_decode($contentCreationAttributesConfig, true);
+$id = time();
+?>
+
+<table class="admin__control-table" id="contentor_options_contentCreation_fieldDetails">
+    <thead>
+        <tr>
+            <th>Attributes</th>
+            <th>Amount Of Words</th>
+        </tr>
+    </thead>
+    <tbody id="configAttributesContentCreation">
+        <?php foreach ( $contentCreationAttributesConfig as $key => $config ): ?>
+            <tr id="_<?= $key ?>">
+                <td> <p><?= $config['attribute']; ?></p> </td>
+                <td>
+                    <input type="text" id="<?= $key ?>_word_count"
+                           name="attributesConfig[][<?= $config['attribute'] ?>]" value="<?= $config['word_count']; ?>" class="required-entry">
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+

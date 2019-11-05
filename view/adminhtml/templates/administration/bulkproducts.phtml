@@ -2,7 +2,7 @@
 
 // If settings set then loop products and target(s) to send like on single product page
 $data = $this->getRequest()->getParams();
-$sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
+$sendURL = $block->getSendUrl();
 ?>
 
 <script type="text/javascript">
@@ -12,10 +12,54 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
             $(function() {
                 doSend = function(formular) {
                     if(!document.getElementsByName("theend").value) {
+
                         const products = formular.products.value;
+
                         const source = formular.source.value;
+
                         const total = formular.total.value;
+
+                        const deliverySpeed = formular.deliverySpeed.value;
+
+                        let inputs = null;
+
+                        if ( document.getElementById('configAttributesContentCreation') ) {
+                             inputs = document.getElementById('configAttributesContentCreation')
+                                .getElementsByTagName('input');
+                        }
+
+                        elesContentCreation = new Array;
+
+                        if ( inputs ) {
+                            for(var i = 0; i < inputs.length; i++) {
+
+                                if(inputs[i].name.indexOf('attributesConfig[]') == 0) {
+
+                                    let attributeName = '';
+
+                                    //Remove first []
+                                    inputs[i].name = inputs[i].name.replace("[]", "");
+
+                                    let matches = inputs[i].name.match(/\[(.*?)\]/);
+
+                                    if (matches) {
+                                        attributeName = matches[1];
+                                    }
+
+                                    if ( attributeName !== '' ) {
+
+                                        let objConfig = {};
+
+                                        objConfig[attributeName] = inputs[i].value;
+
+                                        elesContentCreation.push( objConfig );
+                                    }
+                                }
+                            }
+                        }
+
                         let targets;
+
                         if(formular.targets.type == 'select-multiple') {
                             targets = new Array;
                             for(x=0;x<formular.targets.length;x++) {
@@ -27,7 +71,7 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
                         } else {
                             targets = formular.targets.value;
                         }
-                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total }, function(data) {
+                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total, deliverySpeed: deliverySpeed, attributesConfig: elesContentCreation }, function(data) {
                             document.getElementById('resultdiv').innerHTML = data;
                             doSend(document.getElementById('progressform'));
                         });
@@ -106,10 +150,17 @@ $sendURL = $this->getUrl("contentor/administration/sendbulkproducts/");
     print '</select>';
     ?>
 </p>
+<?= $block->getChildHtml('contentor.delivery-speed'); ?><br>
+
+<?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+    <?= $block->getChildHtml('contentor.config-words-amount-block'); ?>
+<br>
+<?php endif;?>
+
 </form>
 <br><br>
 <p>
-    <button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span>Send for localization</span></button>
+    <button name="submitme" class="action-secondary" onClick="doSend(document.getElementById('productform'));"><span><?= $block->getLabelSubmitButton(); ?></span></button>
 </p>
 <br><br>
 <p>

@@ -14,6 +14,15 @@ use Magento\Framework\Model\AbstractModel;
  */
 class Product extends AbstractModel implements ProductInterface , ContentEntityInterface
 {
+    /**#@+
+     * Column names
+     * @var string
+     */
+    CONST LOCALIZED_SYNC_TYPE        = 0;
+
+    CONST CONTENT_CREATION_SYNC_TYPE = 1;
+    /**#@-*/
+
     /**
      * @void
      * @inheritdoc
@@ -249,5 +258,37 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     public function getContentCode()
     {
         return self::TYPE_CODE;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSynchronizeType()
+    {
+        return $this->getData(self::SYNCHRONIZE_TYPE);
+    }
+
+    /**
+     * @param int $type
+     */
+    public function setSynchronizeType($type)
+    {
+        $this->setData(self::SYNCHRONIZE_TYPE, $type);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeliverySpeed()
+    {
+        return $this->getData(self::DELIVERY_SPEED);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setDeliverySpeed($value)
+    {
+        $this->setData(self::DELIVERY_SPEED, $value);
     }
 }

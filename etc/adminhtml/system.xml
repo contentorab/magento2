@@ -1,66 +1,76 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="contentorconfig" translate="label" sortOrder="999999">
             <label>Contentor API</label>
         </tab>
 
-<section id="contentor_options" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-	<label>API Config Options</label>
-	<tab>contentorconfig</tab>
-	<resource>Contentor_LocalizationApi::contentor_localizationapi</resource>
+        <section id="contentor_options" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>API Config Options</label>
+            <tab>contentorconfig</tab>
+            <resource>Contentor_LocalizationApi::contentor_localizationapi</resource>
 
-	<group id="token" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>API Token</label>
-		<field id="apitoken" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Contentor Token</label>
-		</field>
-	</group>
+            <group id="token" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>API Token</label>
+                <field id="apitoken" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Contentor Token</label>
+                </field>
+            </group>
 
-	<group id="automation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>Automation Settings</label>
-		<field id="import" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Set product enabled on import</label>
-			<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-			<comment>
+            <group id="automation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Automation Settings</label>
+                <field id="import" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Set product enabled on import</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
 
-			</comment>
-		</field>
-	</group>
+                    </comment>
+                </field>
+            </group>
 
-    <group id="versioning" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>Versioning</label>
-		<field id="versioning_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Enable Versioning</label>
-			<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-		</field>
-	</group>
+            <group id="versioning" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Versioning</label>
+                <field id="versioning_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Versioning</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
 
-	<group id="source" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>Source Language</label>
-		<field id="sourcelocale" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Source language</label>
-			<source_model>Magento\Config\Model\Config\Source\Locale</source_model>
-		</field>
-	</group>
+            <group id="source" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Source Language</label>
+                <field id="sourcelocale" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Source language</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale</source_model>
+                </field>
+            </group>
 
-	<group id="targets" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>Target Store Views</label>
-		<field id="targetviews" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Target store views</label>
-			<source_model>Magento\Store\Model\System\Store</source_model>
-		</field>
-	</group>
+            <group id="targets" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Target Store Views</label>
+                <field id="targetviews" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Target store views</label>
+                    <source_model>Magento\Store\Model\System\Store</source_model>
+                </field>
+            </group>
 
-	<group id="fieldDetails" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-		<label>Field Configuration</label>
-		<field id="productFieldDetails" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-			<label>Product field details</label>
-			<frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ProductFields</frontend_model>
-			<backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-		</field>
-	</group>
-</section>
+            <group id="fieldDetails" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Field Configuration</label>
+                <field id="productFieldDetails" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Product field details</label>
+                    <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ProductFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+            </group>
+
+            <group id="contentCreation" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Content Creation Configuration</label>
+                <field id="fieldDetails" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Content creation field configuration</label>
+                    <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ContentCreationProductFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+                <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
+            </group>
+        </section>
 
     </system>
 </config>

@@ -13,9 +13,10 @@ interface ProductRepositoryInterface
      * @param string $sku
      * @param string $targetLocale
      * @param string $sourceLocale
+     * @param int $synchronizeType
      * @return ProductInterface
      */
-    public function getLastUpdateByLocale($sku , $targetLocale, $sourceLocale);
+    public function getLastUpdateByLocale($sku , $targetLocale, $sourceLocale, $synchronizeType);
 
     /**
      * @param ProductInterface $product
