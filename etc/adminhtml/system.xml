@@ -17,6 +17,22 @@
                 </field>
             </group>
 
+            <group id="limitation" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Limit request sent to Contentor</label>
+                <field id="requests" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Maximum requests sent to Contentor per time</label>
+                    <validate>validate-number validate-not-negative-number</validate>
+                </field>
+            </group>
+
+            <group id="versioning" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Versioning</label>
+                <field id="versioning_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Versioning</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
             <group id="automation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Automation Settings</label>
                 <field id="import" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -31,13 +47,6 @@
                 </field>
             </group>
 
-            <group id="versioning" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Versioning</label>
-                <field id="versioning_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable Versioning</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-            </group>
 
             <group id="source" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Source Language</label>
