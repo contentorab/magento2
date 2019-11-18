@@ -77,7 +77,7 @@ class AbstractSendBulkProducts extends Action
     public function execute()
     {
         // Get product list and send 10/50/100? first, then print form with the rest
-        $max = $this->configurationService->getLimitRequests();
+        $max = 10;
         $data = $this->_request->getParams();
 
         $productlist = explode(',', $data['products']);

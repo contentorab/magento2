@@ -26,7 +26,6 @@ class ConfigurationService
     const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
     const XML_PATH_MAIN_LOCALE = 'general/locale/code';
     const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
-    const XML_LIMITATION_REQUESTS = 'contentor_options/limitation/requests';
     /**#@-*/
 
     /**#@+
@@ -221,21 +220,6 @@ class ConfigurationService
     {
         return (array) $this->scopeConfig->getValue(
             self::XML_PATH_CATEGORY_TARGET_STORE_VIEWS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Returns Limitation of requests sent to Contentor
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getLimitRequests($store = null)
-    {
-        return (array) $this->scopeConfig->getValue(
-            self::XML_LIMITATION_REQUESTS,
             ScopeInterface::SCOPE_STORE,
             $store
         );
