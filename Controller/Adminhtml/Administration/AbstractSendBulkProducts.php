@@ -145,9 +145,20 @@ class AbstractSendBulkProducts extends Action
             $returnData .= "<form id=\"progressform\">";
             if ($productsLeft > 0) {
                 $returnData .= "<input type=\"hidden\" name=\"total\" value=\"" . $total . "\">";
+                $returnData .= "<input type=\"hidden\" name=\"deliverySpeed\" value=\"" . $data['deliverySpeed'] . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"products\" value=\"" . join(',', $productlist) . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"source\" value=\"" . $sourceLocale . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIDs) . "\">";
+                if ( !empty($data['attributesConfig']) ) {
+                    $returnData .= '<div id="configAttributesContentCreationResponse">';
+                    foreach ( $data['attributesConfig'] as $configs) {
+                        foreach ($configs as $attributeCode => $wordAmount ) {
+                            $returnData .= "<input type=\"hidden\" name=\"attributesConfig[][$attributeCode]\" value=\"" . $wordAmount . "\">";
+                        }
+                    }
+                    $returnData .= "</div>";
+                }
+
                 if (!empty($data['contextvalue'])) {
                     $returnData .= "<input type=\"hidden\" name=\"contextvalue\" value=\"" . $data['contextvalue'] . "\">";
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"" . $data['contextname'] . "\">";

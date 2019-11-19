@@ -2,7 +2,6 @@
 namespace Contentor\LocalizationApi\Block\Adminhtml\Reports;
 
 use \Magento\Framework\App\ResourceConnection;
-use \Magento\Framework\View\Element\Template\Context;
 use \Magento\Framework\Locale\ListsInterface;
 use \Magento\Store\Model\StoreRepository;
 use \Magento\Catalog\Model\CategoryFactory;
@@ -12,7 +11,7 @@ use \Magento\Framework\App\Request\Http;
  * Class AbstractCategoryReportBlock
  * @package Contentor\LocalizationApi\Block\Adminhtml\Reports
  */
-class AbstractCategoryReportBlock extends \Magento\Framework\View\Element\Template
+class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
 {
     /**
      * @var
@@ -40,30 +39,32 @@ class AbstractCategoryReportBlock extends \Magento\Framework\View\Element\Templa
     protected $_categoryFactory;
 
     /**
-     * ProductReportBlock constructor.
-     * @param Context $context
+     * AbstractCategoryReportBlock constructor.
+     * @param \Magento\Backend\Block\Template\Context $context
      * @param ResourceConnection $resource
      * @param ListsInterface $localeList
      * @param StoreRepository $storeRepository
      * @param CategoryFactory $productFactory
      * @param Http $request
+     * @param array $data
      */
     public function __construct(
-        Context $context,
+        \Magento\Backend\Block\Template\Context $context,
         ResourceConnection $resource,
         ListsInterface $localeList,
         StoreRepository $storeRepository,
         CategoryFactory $productFactory,
-        Http $request
-    ) {
+        Http $request,
+        array $data = []
+    )
+    {
         $this->_logger = $context->getLogger();
         $this->_resource = $resource;
         $this->_localeList = $localeList;
         $this->_storeRepository = $storeRepository;
         $this->_categoryFactory = $productFactory;
         $this->_request = $request;
-
-        parent::__construct($context);
+        parent::__construct($context, $data);
     }
 
     /**
@@ -146,6 +147,6 @@ class AbstractCategoryReportBlock extends \Magento\Framework\View\Element\Templa
      * @return string
      */
     public function getPage($page) {
-        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page ]);
+        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page, 'key' => $this->_request->getParam('key') ]);
     }
 }

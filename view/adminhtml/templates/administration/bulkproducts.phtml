@@ -24,8 +24,11 @@ $sendURL = $block->getSendUrl();
                         let inputs = null;
 
                         if ( document.getElementById('configAttributesContentCreation') ) {
-                             inputs = document.getElementById('configAttributesContentCreation')
-                                .getElementsByTagName('input');
+                             inputs = document.getElementById('configAttributesContentCreation').getElementsByTagName('input');
+                        }
+
+                        if ( document.getElementById('configAttributesContentCreationResponse') ) {
+                            inputs = document.getElementById('configAttributesContentCreationResponse').getElementsByTagName('input');
                         }
 
                         elesContentCreation = new Array;
