@@ -28,6 +28,17 @@ class ConfigurationService
     const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
     /**#@-*/
 
+    /**#@+
+     * Category config XML Path constants
+     * @var string
+     */
+    const XML_PATH_CATEGORY_AUTOMATION_ENABLE  = 'contentor_options/automation/category_import';
+    const XML_PATH_CATEGORY_SOURCE_LOCALE      = 'contentor_options/source/category_sourcelocale';
+    const XML_PATH_CATEGORY_TARGET_STORE_VIEWS = 'contentor_options/targets/category_targetviews';
+    const XML_PATH_CATEGORY_FIELDS             = 'contentor_options/fieldDetails/categoryFieldDetails';
+    const XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS   = 'contentor_options/contentCreation/categoryFieldDetails';
+    /**#@-*/
+
     /**
      * @var ScopeConfigInterface
      */
@@ -73,6 +84,21 @@ class ConfigurationService
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_AUTOMATION_ENABLE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns category automation enabled flag
+     *
+     * @param string|null $store
+     * @return bool
+     */
+    public function isCategoryAutomationEnabled($store = null)
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_CATEGORY_AUTOMATION_ENABLE,
             ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -155,6 +181,21 @@ class ConfigurationService
     }
 
     /**
+     * Returns Category Source locale from magento config
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getCategorySourceLocale($store = null)
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_SOURCE_LOCALE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
      * Returns Product target store views from magento config
      *
      * @param string|null $store
@@ -164,6 +205,21 @@ class ConfigurationService
     {
         return (array) $this->scopeConfig->getValue(
             self::XML_PATH_TARGET_STORE_VIEWS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns Category target store views from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getCategoryTargetStoreViews($store = null)
+    {
+        return (array) $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_TARGET_STORE_VIEWS,
             ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -196,6 +252,32 @@ class ConfigurationService
     }
 
     /**
+     * Returns category attributes map from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getCategoryFields($store = null)
+    {
+        $data =  $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        $result = json_decode($data, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns Product attributes map from magento config for content creation
      *
      * @param string|null $store
@@ -205,6 +287,32 @@ class ConfigurationService
     {
         $data =  $this->scopeConfig->getValue(
             self::XML_PATH_CONTENT_CREATION_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        $result = json_decode($data, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns category attributes map from magento config for content creation
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getContentCreationCategoryFields($store = null)
+    {
+        $data =  $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS,
             ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -263,6 +371,47 @@ class ConfigurationService
     }
 
     /**
+     * Basic config validation for category
+     * Check required API fields before make real api request.
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function validateCategoryConfiguration($store = null)
+    {
+        $result = [
+            'error' => false,
+            'messages' => []
+        ];
+        if (empty($this->getToken($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Token';
+        }
+
+        if (empty($this->getApiBaseUrl($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Contentor base API Url';
+        }
+
+        if (empty($this->getCategoryFields($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Category Attribute configuration';
+        }
+
+        if (empty($this->getCategorySourceLocale($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Category Source locale';
+        }
+
+        if (empty($this->getCategoryTargetStoreViews($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Category Target store views';
+        }
+
+        return $result;
+    }
+
+    /**
      * Basic config validation.
      * Check required API fields before make real api request.
      *
@@ -287,17 +436,58 @@ class ConfigurationService
 
         if (empty($this->getContentCreationProductFields($store))) {
             $result['error'] = true;
-            $result['messages'][] = '[Contentor]  Empty Product Attribute configuration';
+            $result['messages'][] = '[Contentor]  Empty Product Attribute configuration - content creation';
         }
 
         if (empty($this->getSourceLocale($store))) {
             $result['error'] = true;
-            $result['messages'][] = '[Contentor]  Empty Source locale';
+            $result['messages'][] = '[Contentor]  Empty Source locale - content creation';
         }
 
         if (empty($this->getTargetStoreViews($store))) {
             $result['error'] = true;
-            $result['messages'][] = '[Contentor] Empty Target store views';
+            $result['messages'][] = '[Contentor] Empty Target store views - content creation';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Basic config validation for category content creation
+     * Check required API fields before make real api request.
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function validateCategoryContentCreationConfiguration($store = null)
+    {
+        $result = [
+            'error' => false,
+            'messages' => []
+        ];
+        if (empty($this->getToken($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Token';
+        }
+
+        if (empty($this->getApiBaseUrl($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Contentor base API Url';
+        }
+
+        if (empty($this->getContentCreationCategoryFields($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Category Attribute configuration - content creation';
+        }
+
+        if (empty($this->getCategorySourceLocale($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor]  Empty Category Source locale - content creation';
+        }
+
+        if (empty($this->getCategoryTargetStoreViews($store))) {
+            $result['error'] = true;
+            $result['messages'][] = '[Contentor] Empty Category Target store views - content creation';
         }
 
         return $result;

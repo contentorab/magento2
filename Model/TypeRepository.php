@@ -46,7 +46,7 @@ class TypeRepository implements TypeRepositoryInterface
      * @return \Contentor\LocalizationApi\Api\Data\TypeInterface
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
-    public function saveProductContentRequest($contentorId, $typeCode = ProductInterface::TYPE_CODE)
+    public function saveContentRequest($contentorId, $typeCode = ProductInterface::TYPE_CODE)
     {
         /** @var \Contentor\LocalizationApi\Api\Data\TypeInterface $type */
         $type = $this->typeInterfaceFactory->create();

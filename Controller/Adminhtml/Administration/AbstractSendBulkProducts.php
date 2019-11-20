@@ -17,7 +17,7 @@ class AbstractSendBulkProducts extends Action
     /**
      * @var array
      */
-    protected $productSendContent;
+    protected $serviceSendContent;
 
     /**
      * @var ConfigurationService
@@ -53,7 +53,7 @@ class AbstractSendBulkProducts extends Action
      * @param ProductFactory $productFactory
      * @param PageFactory $pageFactory
      * @param ConfigurationService $configurationService
-     * @param array $productSendContent
+     * @param array $serviceSendContent
      */
     public function __construct(
         Context $context,
@@ -61,14 +61,14 @@ class AbstractSendBulkProducts extends Action
         ProductFactory $productFactory,
         PageFactory $pageFactory,
         ConfigurationService $configurationService,
-        array $productSendContent = []
+        array $serviceSendContent = []
     ) {
         parent::__construct($context);
         $this->request = $request;
         $this->productFactory = $productFactory;
         $this->pageFactory = $pageFactory;
         $this->configurationService = $configurationService;
-        $this->productSendContent = $productSendContent;
+        $this->serviceSendContent = $serviceSendContent;
     }
 
     /**
@@ -114,10 +114,10 @@ class AbstractSendBulkProducts extends Action
                 $product = $this->productFactory->create()->load($prodID);
 
                 /**
-                 * Declare $productSendContent in etc/adminhtml/di.xml as argument to reusable
+                 * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                if ( array_key_exists('instance', $this->productSendContent) ) {
-                    $this->_objectManager->create($this->productSendContent['instance'])
+                if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                    $this->_objectManager->create($this->serviceSendContent['instance'])
                         ->execute(
                             $product,
                             $sourceLocale,
@@ -145,9 +145,20 @@ class AbstractSendBulkProducts extends Action
             $returnData .= "<form id=\"progressform\">";
             if ($productsLeft > 0) {
                 $returnData .= "<input type=\"hidden\" name=\"total\" value=\"" . $total . "\">";
+                $returnData .= "<input type=\"hidden\" name=\"deliverySpeed\" value=\"" . $data['deliverySpeed'] . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"products\" value=\"" . join(',', $productlist) . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"source\" value=\"" . $sourceLocale . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIDs) . "\">";
+                if ( !empty($data['attributesConfig']) ) {
+                    $returnData .= '<div id="configAttributesContentCreationResponse">';
+                    foreach ( $data['attributesConfig'] as $configs) {
+                        foreach ($configs as $attributeCode => $wordAmount ) {
+                            $returnData .= "<input type=\"hidden\" name=\"attributesConfig[][$attributeCode]\" value=\"" . $wordAmount . "\">";
+                        }
+                    }
+                    $returnData .= "</div>";
+                }
+
                 if (!empty($data['contextvalue'])) {
                     $returnData .= "<input type=\"hidden\" name=\"contextvalue\" value=\"" . $data['contextvalue'] . "\">";
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"" . $data['contextname'] . "\">";

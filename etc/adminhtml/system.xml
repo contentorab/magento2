@@ -22,9 +22,12 @@
                 <field id="import" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Set product enabled on import</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-
-                    </comment>
+                    <comment>Products will be enabled when they was updated from Contentor.</comment>
+                </field>
+                <field id="category_import" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Set category enabled on import</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Categories will be enabled when they was updated from Contentor.</comment>
                 </field>
             </group>
 
@@ -39,7 +42,11 @@
             <group id="source" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Source Language</label>
                 <field id="sourcelocale" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Source language</label>
+                    <label>Product Source language</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale</source_model>
+                </field>
+                <field id="category_sourcelocale" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Category Source language</label>
                     <source_model>Magento\Config\Model\Config\Source\Locale</source_model>
                 </field>
             </group>
@@ -47,7 +54,11 @@
             <group id="targets" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Target Store Views</label>
                 <field id="targetviews" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Target store views</label>
+                    <label>Product Target store views</label>
+                    <source_model>Magento\Store\Model\System\Store</source_model>
+                </field>
+                <field id="category_targetviews" translate="label" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Category Target store views</label>
                     <source_model>Magento\Store\Model\System\Store</source_model>
                 </field>
             </group>
@@ -59,16 +70,30 @@
                     <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ProductFields</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                 </field>
+
+                <field id="categoryFieldDetails" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Category field details</label>
+                    <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\CategoryFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
             </group>
 
             <group id="contentCreation" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Content Creation Configuration</label>
                 <field id="fieldDetails" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Content creation field configuration</label>
+                    <label>Product Content creation field configuration</label>
                     <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ContentCreationProductFields</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
                 </field>
-                <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
+
+                <field id="categoryFieldDetails" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Category Content creation field configuration</label>
+                    <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ContentCreationCategoryFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
+                </field>
+
             </group>
         </section>
 

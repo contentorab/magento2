@@ -15,7 +15,7 @@ interface TypeRepositoryInterface
      * @param string $typeCode
      * @return Data\TypeInterface
      */
-    public function saveProductContentRequest($contentorId, $typeCode = Data\ProductInterface::TYPE_CODE);
+    public function saveContentRequest($contentorId, $typeCode = Data\ProductInterface::TYPE_CODE);
 
     /**
      * Returns content type code by contentorID

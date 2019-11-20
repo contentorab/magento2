@@ -210,7 +210,7 @@ class AbstractProductSendContent
             }
         } catch (LocalizedException $localizedException) {
             $this->logger->critical(
-                sprintf('Exception for product %s , message :',
+                sprintf('Exception for product %s , message : %s',
                     $product->getSku(),
                     $localizedException->getMessage()
                 )
@@ -256,7 +256,7 @@ class AbstractProductSendContent
      */
     protected function saveTypeEntity($contentorId)
     {
-        $this->typeRepository->saveProductContentRequest($contentorId);
+        $this->typeRepository->saveContentRequest($contentorId);
     }
 
     /**
@@ -265,7 +265,7 @@ class AbstractProductSendContent
      */
     protected function saveStatusEntity($contentorId, $status)
     {
-        $this->statusRepository->saveProductStatus($contentorId, $status);
+        $this->statusRepository->saveStatus($contentorId, $status);
     }
 
     /**

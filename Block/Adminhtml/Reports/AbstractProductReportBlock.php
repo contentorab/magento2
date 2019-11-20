@@ -2,7 +2,6 @@
 namespace Contentor\LocalizationApi\Block\Adminhtml\Reports;
 
 use \Magento\Framework\App\ResourceConnection;
-use \Magento\Framework\View\Element\Template\Context;
 use \Magento\Framework\Locale\ListsInterface;
 use \Magento\Store\Model\StoreRepository;
 use \Magento\Catalog\Model\ProductFactory;
@@ -12,7 +11,7 @@ use \Magento\Framework\App\Request\Http;
  * Class AbstractProductReportBlock
  * @package Contentor\LocalizationApi\Block\Adminhtml\Reports
  */
-class AbstractProductReportBlock extends \Magento\Framework\View\Element\Template
+class AbstractProductReportBlock extends \Magento\Backend\Block\Template
 {
     /**
      * @var
@@ -40,30 +39,32 @@ class AbstractProductReportBlock extends \Magento\Framework\View\Element\Templat
     protected $_productFactory;
 
     /**
-     * ProductReportBlock constructor.
-     * @param Context $context
+     * AbstractProductReportBlock constructor.
+     * @param \Magento\Backend\Block\Template\Context $context
      * @param ResourceConnection $resource
      * @param ListsInterface $localeList
      * @param StoreRepository $storeRepository
      * @param ProductFactory $productFactory
      * @param Http $request
+     * @param array $data
      */
     public function __construct(
-        Context $context,
+        \Magento\Backend\Block\Template\Context $context,
         ResourceConnection $resource,
         ListsInterface $localeList,
         StoreRepository $storeRepository,
         ProductFactory $productFactory,
-        Http $request
-    ) {
+        Http $request,
+        array $data = []
+    )
+    {
         $this->_logger = $context->getLogger();
         $this->_resource = $resource;
         $this->_localeList = $localeList;
         $this->_storeRepository = $storeRepository;
         $this->_productFactory = $productFactory;
         $this->_request = $request;
-
-        parent::__construct($context);
+        parent::__construct($context, $data);
     }
 
     /**
@@ -74,7 +75,7 @@ class AbstractProductReportBlock extends \Magento\Framework\View\Element\Templat
     {
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `sku` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType ." GROUP BY `sku`, `source_locale`";
+        $query = "SELECT `sku` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType. " GROUP BY `sku`, `source_locale`";
         $result = $connection->query($query);
         $total = $result->rowCount();
 
@@ -146,6 +147,6 @@ class AbstractProductReportBlock extends \Magento\Framework\View\Element\Templat
      * @return string
      */
     public function getPage($page) {
-        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page ]);
+        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page, 'key' => $this->_request->getParam('key') ]);
     }
 }

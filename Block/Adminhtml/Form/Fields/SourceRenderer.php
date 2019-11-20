@@ -4,11 +4,28 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 use Magento\Framework\View\Element\Context;
 use Magento\Store\Model\StoreRepository;
 
+/**
+ * Class SourceRenderer
+ * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
+ */
 class SourceRenderer extends \Magento\Framework\View\Element\Html\Select
 {
+    /**
+     * @var StoreRepository
+     */
     protected $_storeRepository;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
 
+    /**
+     * SourceRenderer constructor.
+     * @param Context $context
+     * @param StoreRepository $storeRepository
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         StoreRepository $storeRepository,

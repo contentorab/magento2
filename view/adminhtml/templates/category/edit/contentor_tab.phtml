@@ -1,0 +1,153 @@
+<?php if (!$block->isReady()) :?>
+    <?php
+    $configUrl = $this->getUrl(
+        'adminhtml/system_config/edit/section/contentor_options'
+    );
+
+    echo sprintf(
+        'Current configuration issues  : </br> %s',
+        implode(',</br>', $block->getValidationMessages())
+    );
+
+    echo sprintf(
+        '</br> Please configure your Contentor API for Category <a href="%s">here</a> ',
+        $configUrl
+    );
+    ?>
+
+<?php else: ?>
+
+<p>
+    <form method="post" action="<?php print $block->getSubmitUrl(); ?>" name="contentorproducts">
+    <input type="hidden" name="returnurl" value ="<?php print $this->getCategory()->getUrl(); ?>">
+    <input type="hidden" name="categoryid" value ="<?php print $this->getCategory()->getId(); ?>">
+    <?= $block->getBlockHtml('formkey') ?>
+
+    <h2>Source store locale</h2>
+    <select name="source">
+        <option value="">Choose source language</option>
+            <?php
+            $configLocale = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/source/sourcelocale');
+            $localeList = $this->getLocales();
+            foreach ($localeList as $lang) {
+                print '<option value="' . $lang['value'] . '"';
+                if ($lang['value'] == $configLocale) {
+                    print ' SELECTED';
+                }
+                print '>' . $lang['label'] . '</option>';
+            }
+            ?>
+    </select>
+</p>
+<br><br><br>
+<p>
+    <h2>Target store view(s)</h2>
+            <?php
+
+            // Get stores if sent before
+
+            // Else get default stores
+            $defaultstores = explode(',', $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/targets/targetviews'));
+            $storesStructure = $this->getStoreViews();
+
+            foreach ($storesStructure as $website) {
+                print "<b>";
+                print $website['label'];
+                print "</b><br>";
+                foreach ($website['children'] as $store) {
+                    print "&nbsp;&nbsp;&nbsp;<b><i>";
+                    print $store['label'];
+                    print "</i></b><br>";
+                    foreach ($store['children'] as $storeview) {
+                        $id = $storeview['value'];
+                        $name = $storeview['label'];
+                        $locale = $this->getStoreLocale($id);
+                        //str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
+                        if (in_array($id, $defaultstores)) {
+                            $checked = 'checked';
+                        } else {
+                            $checked = '';
+                        }
+                        print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" name="targets[]" value="' . $id . ':' . $locale . '" id="store_' . $id . '" ' . $checked . '> ' . $name . ' (' . $locale .')</label><br>';
+                    }
+                }
+            }
+
+            ?>
+</p>
+<br><br><br>
+<?= $this->getLayout()
+        ->createBlock("Magento\Framework\View\Element\Template")
+        ->setTemplate("Contentor_LocalizationApi::options/delivery_speed.phtml")
+        ->toHtml() ?>
+<br><br><br>
+<?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+<?= $this->getLayout()
+    ->createBlock("Magento\Framework\View\Element\Template")
+    ->setIsCategory(true)
+    ->setTemplate("Contentor_LocalizationApi::options/product_words_amount.phtml")
+    ->toHtml() ?>
+<br><br><br>
+<?php endif;?>
+<p>
+ <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for <?= $block->getLabelSubmitButton(); ?></span></button>
+ </form>
+</p>
+<br><br><br>
+<p>
+    <h3>Request status</h3>
+            <?php
+            // Get and print log for this product
+            $messages = $this->getRequestStatus($this->getCategory()->getId());
+            $lastId = '';
+            if (count($messages)) {
+                // I have content
+                foreach ($messages as $message) {
+                    if ($message['contentor_id'] != $lastId) {
+                        // If not for the first time ever print the end of prev.
+                        if ($lastId) {
+                            print '</div>';
+                        }
+
+                        // New request, print header and button if needed
+                        if ($message['state'] == 'canceled') {
+                            // Product canceled
+                            print '<div style="background-color:#faebe7; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+                            print '<h4>Canceled</h4>';
+                        } elseif ($message['state'] == 'confirmed') {
+                            print '<div style="background-color:#fffbf0; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+                            print '<h4>Confirmed</h4>';
+                        } elseif ($message['state'] == 'completed') {
+                            // Product completed
+                            print '<div style="background-color:#eff5ea; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+                            print '<h4>Completed ' . $message['completed_time'] . '</h4>';
+                        } else {
+                            print '<div style="background-color:#fffbf0; border: 1px solid black; padding:10px; margin-bottom:10px;">';
+                            print '<h4>Sent ' . $message['sent_time'] . '</h4>';
+                        }
+
+                        print '<p>Target store: ' . $message['target_store'] . '<br>';
+                        if (!empty($message['type'])) {
+                            $type = $message['type'];
+                        } else {
+                            $type = 'standard';
+                        }
+                        print 'Request type: ' . $type . '</p>';
+
+                        // Print the status rows
+                        $lastId = $message['contentor_id'];
+                        print '<hr>';
+                        print '<p><h5>Log messages</h5>';
+                    }
+
+                    // This happens every iteration
+                    print '<i>' . $message['status_time'] . '</i> - ' . $message['status'] . '<br>';
+                }
+                print '</p>';
+            } else {
+                print "<i>(No events to show)</i>";
+            }
+            ?>
+
+</p>
+<?php endif;?>

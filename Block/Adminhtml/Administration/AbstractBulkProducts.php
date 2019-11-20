@@ -7,6 +7,7 @@ use \Magento\Framework\Locale\ListsInterface;
 use \Magento\Store\Model\System\Store;
 use \Magento\Ui\Component\MassAction\Filter;
 use \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Contentor\LocalizationApi\Service\ConfigurationService;
 
 /**
  * Class AbstractBulkProducts
@@ -48,6 +49,8 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
      */
     protected $collectionFactory;
 
+    protected $configurationService;
+
     /**
      * AbstractBulkProducts constructor.
      * @param Context $context
@@ -63,7 +66,8 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
         ListsInterface $localeList,
         Store $systemStores,
         Filter $filter,
-        CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory,
+        ConfigurationService $configurationService
     ) {
 
         $this->_contentorApi = $contentorApi;
@@ -72,6 +76,7 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
         $this->_scopeConfig = $context->getScopeConfig();
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
+        $this->configurationService = $configurationService;
 
         parent::__construct($context);
     }

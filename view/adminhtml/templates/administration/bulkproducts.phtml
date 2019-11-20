@@ -5,6 +5,25 @@ $data = $this->getRequest()->getParams();
 $sendURL = $block->getSendUrl();
 ?>
 
+<?php if (!$block->isReady()) :?>
+    <?php
+    $configUrl = $this->getUrl(
+        'adminhtml/system_config/edit/section/contentor_options'
+    );
+
+    echo sprintf(
+        'Current configuration issues  : </br> %s',
+        implode(',</br>', $block->getValidationMessages())
+    );
+
+    echo sprintf(
+        '</br> Please configure your Contentor API <a href="%s">here</a> ',
+        $configUrl
+    );
+    ?>
+
+<?php else: ?>
+
 <script type="text/javascript">
     require(
         ['jquery'],
@@ -24,8 +43,11 @@ $sendURL = $block->getSendUrl();
                         let inputs = null;
 
                         if ( document.getElementById('configAttributesContentCreation') ) {
-                             inputs = document.getElementById('configAttributesContentCreation')
-                                .getElementsByTagName('input');
+                             inputs = document.getElementById('configAttributesContentCreation').getElementsByTagName('input');
+                        }
+
+                        if ( document.getElementById('configAttributesContentCreationResponse') ) {
+                            inputs = document.getElementById('configAttributesContentCreationResponse').getElementsByTagName('input');
                         }
 
                         elesContentCreation = new Array;
@@ -166,3 +188,4 @@ $sendURL = $block->getSendUrl();
 <p>
     <div id="resultdiv"></div>
 </p>
+<?php endif; ?>

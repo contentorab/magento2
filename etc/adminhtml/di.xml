@@ -4,13 +4,19 @@
     <!-- Localization Send Request Controller -->
     <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\SendBulkProducts">
         <arguments>
-            <argument name="productSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
         </arguments>
     </type>
 
     <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\PostProduct">
         <arguments>
-            <argument name="productSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\PostCategory">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\CategorySendContent</argument>
         </arguments>
     </type>
     <!-- End Localization Send Request Controller -->
@@ -18,13 +24,19 @@
     <!-- Content Creation Send Request Controller -->
     <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\PostProduct">
         <arguments>
-            <argument name="productSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
         </arguments>
     </type>
 
     <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\SendBulkProducts">
         <arguments>
-            <argument name="productSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\PostCategory">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationCategorySendContent</argument>
         </arguments>
     </type>
     <!-- End Content Creation Send Request Controller -->

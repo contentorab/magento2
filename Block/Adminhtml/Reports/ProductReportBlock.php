@@ -11,4 +11,12 @@ class ProductReportBlock extends \Contentor\LocalizationApi\Block\Adminhtml\Repo
      * @var string
      */
     protected $_syncType = \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE;
+
+    /**
+     * @param $page
+     * @return string
+     */
+    public function getPage($page) {
+        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page, 'key' => $this->_request->getParam('key') ]);
+    }
 }

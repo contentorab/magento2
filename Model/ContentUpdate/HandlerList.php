@@ -2,6 +2,7 @@
 namespace Contentor\LocalizationApi\Model\ContentUpdate;
 
 use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Product;
+use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Category;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
@@ -20,14 +21,16 @@ class HandlerList
 
     /**
      * HandlerList constructor.
-     * @param HandlerFactory $handlerFactory
-     * @param array $config
+     * @param Product $product
+     * @param Category $category
      */
     public function __construct(
-        Product $product
+        Product $product,
+        Category $category
     ) {
         $this->handlers = [
-            'product' => $product
+            'product'  => $product,
+            'category' => $category
         ];
     }
 

@@ -24,4 +24,23 @@ class BulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administra
     {
         return $this->getUrl('contentor/administration/sendbulkproducts');
     }
+
+    /**
+     * @return array
+     */
+    public function getValidationMessages()
+    {
+        $result = $this->configurationService->validateConfiguration();
+        return $result['messages'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReady()
+    {
+        $result = $this->configurationService->validateConfiguration();
+        return !$result['error'];
+    }
+
 }
