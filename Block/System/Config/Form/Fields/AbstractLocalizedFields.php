@@ -188,13 +188,13 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
             ]
         );
 
-        $this->addColumn(
-            'required',
-            [
-                'label' => __('Required'),
-                'renderer' => $this->getRequiredRenderer(),
-            ]
-        );
+        // $this->addColumn(
+        //     'required',
+        //     [
+        //         'label' => __('Required'),
+        //         'renderer' => $this->getRequiredRenderer(),
+        //     ]
+        // );
 
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add');
