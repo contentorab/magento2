@@ -64,9 +64,11 @@ class SendContent
      */
     public function execute(array $data)
     {
+        //TODO: Move version
         $headers =  [
             'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json'
+            'Accept'        => 'application/json',
+            'User-Agent'    => 'ContentorMagento2/0.6.0'
         ];
 
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
@@ -77,7 +79,7 @@ class SendContent
             'method' => \Zend_Http_Client::PUT,
             'uri' => 'v1/content'
         ]);
-        
+
         $result = $this->httpClient->sendRequest($transfer);
 
         if($result['code'] !== 200) {
