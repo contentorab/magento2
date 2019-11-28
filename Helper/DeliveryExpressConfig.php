@@ -17,7 +17,7 @@ class DeliveryExpressConfig extends \Magento\Framework\App\Helper\AbstractHelper
         ],
         [
             'value' => 'express',
-            'label' => 'Express ( Contentor will delivery orders faster )'
+            'label' => 'Express'
         ]
     ];
 
