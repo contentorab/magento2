@@ -39,6 +39,7 @@ class FieldTypeRenderer extends \Magento\Framework\View\Element\Html\Select
                 $this->addOption($code, $type);
             }
         }
+        $this->setValue('internal');
         return parent::_toHtml();
     }
     /**

@@ -41,6 +41,7 @@ class FieldDataTypeRenderer extends \Magento\Framework\View\Element\Html\Select
                 $this->addOption($code, $dataType);
             }
         }
+        $this->setValue('string');
         return parent::_toHtml();
     }
 
