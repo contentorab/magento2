@@ -174,6 +174,17 @@ class AttributeProvider
                         ],
                     ]
                 ];
+
+                $value = $product->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
+                if(!empty($value)) {
+                    $fields[] = [
+                        'id' => $id . '_original',
+                        'name' => $name . '_original',
+                        'type' => 'context',
+                        'data' => $field['data'],
+                        'value' => $value
+                    ];
+                }
             }
         }
 
