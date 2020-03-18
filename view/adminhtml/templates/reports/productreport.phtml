@@ -54,8 +54,8 @@ if ($tot > 0) {
         <div class="hor-scroll">
             <table cellspacing=0 >
                 <thead>
-                    <tr class="headings"><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th><th>Delivery Speed</th></tr>
-                    <tr class="headings"><th></th><th></th><th></th>
+                    <tr class="headings"><th>Product Id</th><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th><th>Delivery Speed</th></tr>
+                    <tr class="headings"><th></th><th></th><th></th><th></th>
                 <?php
                 foreach ($storeInfo as $id => $store) {
                     print '<th>' . $store . ' (' . $storeLocale[$id] . ')</th>';
@@ -67,7 +67,7 @@ if ($tot > 0) {
     <?php
     $i = 0;
     foreach ($productList as $prod) {
-        $details = $block->getProduct($prod['sku']);
+        $details = $block->getProduct($prod['m2_product_id']);
         $prodName = $details->getName();
         $url = $this->getUrl('catalog/product/edit', ['id' => $details->getId()]);
         if ($i%2) {
@@ -104,7 +104,9 @@ if ($tot > 0) {
         }
 
         print '<tr title="' . $url . '" style="background-color:' . $even . '; border-bottom:1px solid #aaa;">';
-        print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $prod['sku'] . '</a></td>';
+        print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $prod['m2_product_id'] . '</a></td>';
+        print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $details->getSku() . '</a></td>';
+
         print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $prodName . '</td>';
         print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $prod['source'] . '</td>';
         // Loop stores and print status for them

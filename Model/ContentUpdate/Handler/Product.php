@@ -161,9 +161,10 @@ class Product implements ContentUpdateHandlerInterface
         /** @var \Magento\Catalog\Api\Data\ProductInterface| \Magento\Catalog\Model\Product $product */
         $product = $this->productFactory->create()->setStoreId(
             $entity->getTargetStore()
-        )->loadByAttribute('sku', $entity->getSku());
+        )->loadByAttribute('entity_id', $entity->getM2ProductId());
 
-        if (! $product) {
+
+        if ( !$product && !$product->getId()) {
             // The Magento product represented by this SKU does not exist, abort the update
             return;
         }
@@ -202,10 +203,13 @@ class Product implements ContentUpdateHandlerInterface
         $this->productRepository->save($entity);
 
         // Show a status message in the log for the product
-        $status = 'Received as completed for '
-            . $data['language']['target']
-            . ', completion time: '
-            . date("Y-m-d H:i:s", strtotime($data['completed']));
+
+        $status = sprintf('Product ID: %s - SKU: %s - Contentor ID: %s. Received as completed for %s, completion time: %s',
+            $product->getId(),
+            $product->getSku(),
+            $entity->getContentorId(),
+            $data['language']['target'],
+            date("Y-m-d H:i:s", strtotime($data['completed'])));
 
         $this->statusRepository->saveStatus(
             $entity->getContentorId(),

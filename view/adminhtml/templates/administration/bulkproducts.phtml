@@ -50,17 +50,14 @@ $sendURL = $block->getSendUrl();
                             inputs = document.getElementById('configAttributesContentCreationResponse').getElementsByTagName('input');
                         }
 
-                        elesContentCreation = new Array;
+                        let elesContentCreation = {};
 
                         if ( inputs ) {
                             for(var i = 0; i < inputs.length; i++) {
 
-                                if(inputs[i].name.indexOf('attributesConfig[]') == 0) {
+                                if(inputs[i].name.indexOf('attributesConfig') == 0) {
 
                                     let attributeName = '';
-
-                                    //Remove first []
-                                    inputs[i].name = inputs[i].name.replace("[]", "");
 
                                     let matches = inputs[i].name.match(/\[(.*?)\]/);
 
@@ -69,12 +66,11 @@ $sendURL = $block->getSendUrl();
                                     }
 
                                     if ( attributeName !== '' ) {
-
-                                        let objConfig = {};
-
-                                        objConfig[attributeName] = inputs[i].value;
-
-                                        elesContentCreation.push( objConfig );
+                                        elesContentCreation[attributeName] = {
+                                            word_count: $('#'+attributeName+'_word_count').val(),
+                                            field_type: $('#'+attributeName+'_field_type').val(),
+                                            context_value: $('#'+attributeName+'_context_value').val()
+                                        };
                                     }
                                 }
                             }

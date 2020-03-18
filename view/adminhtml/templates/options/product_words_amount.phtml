@@ -13,6 +13,7 @@ $contentCreationAttributesConfig = $this->helper('Contentor\LocalizationApi\Help
 
 $contentCreationAttributesConfig = json_decode($contentCreationAttributesConfig, true);
 $id = time();
+$fieldTypes = $this->helper('Contentor\LocalizationApi\Helper\Data')->getFieldTypes();
 ?>
 
 <table class="admin__control-table" id="contentor_options_contentCreation_fieldDetails">
@@ -20,6 +21,8 @@ $id = time();
         <tr>
             <th>Attributes</th>
             <th>Amount Of Words</th>
+            <th>Field Type</th>
+            <th>Context Value</th>
         </tr>
     </thead>
     <tbody id="configAttributesContentCreation">
@@ -27,12 +30,29 @@ $id = time();
             <tr id="_<?= $key ?>">
                 <td> <p><?= ucfirst($config['attribute']); ?></p> </td>
                 <td>
-                    <input type="text" id="<?= $key ?>_word_count"
-                           name="attributesConfig[][<?= $config['attribute'] ?>]" value="<?= $config['word_count']; ?>" class="required-entry">
+                    <input type="text" id="<?= $config['attribute'] ?>_word_count"
+                           name="attributesConfig[<?= $config['attribute'] ?>][word_count]" value="<?= $config['word_count']; ?>" class="required-entry">
+                </td>
+                <td>
+                    <select id="<?= $config['attribute'] ?>_field_type" name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry" >
+                        <?php foreach( $fieldTypes as $field ): ?>
+                            <option value="<?= $field['value'] ?>">
+                                    <?= $field['label']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td>
+                    <input type="textarea" id="<?= $config['attribute'] ?>_context_value"
+                           name="attributesConfig[<?= $config['attribute'] ?>][context_value]" value="">
+
                 </td>
             </tr>
         <?php endforeach; ?>
     </tbody>
+    <p>
+        <?= __('Context Value: Contextual information to help writers with localization and content creation. System will take Magento attribute value if the it\'s null.');?>
+    </p>
 </table>
 
 

@@ -2,18 +2,19 @@
 namespace Contentor\LocalizationApi\Service;
 
 /**
- * Class GetWordAmountConfigService
+ * Class GetAttributeConfigService
  * @package Contentor\LocalizationApi\Service
  */
-class GetWordAmountConfigService
+class GetAttributeConfigService
 {
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
     private $request;
 
+
     /**
-     * GetWordAmountConfigService constructor.
+     * GetAttributeConfigService constructor.
      * @param \Magento\Framework\App\RequestInterface $request
      */
     public function __construct(
@@ -30,17 +31,8 @@ class GetWordAmountConfigService
      */
     public function execute() {
 
-        $response = [];
+        $configAttributes = $this->request->getParam('attributesConfig');
 
-        $configWordsAmount = $this->request->getParam('attributesConfig');
-
-        if ( !empty($configWordsAmount) ) {
-            foreach ($configWordsAmount as $arrayAttributeConfig) {
-                foreach ( $arrayAttributeConfig as $attribute => $value ) {
-                    $response[$attribute] = $value;
-                }
-            }
-        }
-        return $response;
+        return $configAttributes;
     }
 }

@@ -12,6 +12,7 @@ interface ProductInterface
      * @var string
      */
     const CONTENTOR_ID = 'contentor_id';
+    const M2_PRODUCT_ID = 'm2_product_id';
     const SKU = 'sku';
     const SOURCE_LOCALE = 'source_locale';
     const TARGET_LOCALE = 'target_locale';
@@ -38,6 +39,16 @@ interface ProductInterface
      */
     public function getContentorId();
 
+    /**
+     * @param  int $m2ProductId
+     * @return void
+     */
+    public function setM2ProductId($m2ProductId);
+
+    /**
+     * @return int
+     */
+    public function getM2ProductId();
 
     /**
      * @param  string $sku
