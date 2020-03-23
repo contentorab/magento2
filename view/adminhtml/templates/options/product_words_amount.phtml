@@ -13,7 +13,6 @@ $contentCreationAttributesConfig = $this->helper('Contentor\LocalizationApi\Help
 
 $contentCreationAttributesConfig = json_decode($contentCreationAttributesConfig, true);
 $id = time();
-$fieldTypes = $this->helper('Contentor\LocalizationApi\Helper\Data')->getFieldTypes();
 ?>
 
 <table class="admin__control-table" id="contentor_options_contentCreation_fieldDetails">
@@ -30,20 +29,16 @@ $fieldTypes = $this->helper('Contentor\LocalizationApi\Helper\Data')->getFieldTy
             <tr id="_<?= $key ?>">
                 <td> <p><?= ucfirst($config['attribute']); ?></p> </td>
                 <td>
-                    <input type="text" id="<?= $config['attribute'] ?>_word_count"
+                    <input <?= $config['field_type'] == 'context' ? "style='display:none'" : '' ?> type="text" id="<?= $config['attribute'] ?>_word_count"
                            name="attributesConfig[<?= $config['attribute'] ?>][word_count]" value="<?= $config['word_count']; ?>" class="required-entry">
                 </td>
                 <td>
-                    <select id="<?= $config['attribute'] ?>_field_type" name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry" >
-                        <?php foreach( $fieldTypes as $field ): ?>
-                            <option value="<?= $field['value'] ?>" <?= ($field['value'] == $config['field_type']) ? 'selected' : '' ?> >
-                                    <?= $field['label']; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input readonly="readonly"  type="text" id="<?= $config['attribute'] ?>_field_type"
+                          name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry"
+                          value="<?= $config['field_type'] ?>"
                 </td>
                 <td>
-                    <input type="textarea" id="<?= $config['attribute'] ?>_context_value"
+                    <input <?= $config['field_type'] != 'context' ? "style='display:none'" :'' ?> type="textarea" id="<?= $config['attribute'] ?>_context_value"
                            name="attributesConfig[<?= $config['attribute'] ?>][context_value]" value="">
 
                 </td>

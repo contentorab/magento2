@@ -211,12 +211,6 @@ class AttributeProvider
                             'name' => $name,
                             'type' => 'context',
                             'data' => $field['data'],
-                            'hints' => [
-                                [
-                                    'type'   => 'word-count',
-                                    'around' => (int) $field['word_count'],
-                                ],
-                            ],
                             'value' => $contextValue
                         ];
                     } else {
