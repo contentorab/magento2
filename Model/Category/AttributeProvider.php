@@ -174,26 +174,17 @@ class AttributeProvider
                         }
 
                         if( !empty($contextValue) ) {
-
                             $fields[] = [
-                                'id' => $id . '_original',
-                                'name' => $name . '_original',
+                                'id' => $id,
+                                'name' => $name,
                                 'type' => 'context',
                                 'data' => $field['data'],
                                 'value' => $contextValue
                             ];
-
                         } else {
                             return [];
                         }
 
-                        $fields[] = [
-                            'id' => $id,
-                            'name' => $name,
-                            'type' => 'context',
-                            'data' => $field['data'],
-                            'value' => $contextValue
-                        ];
                     } else {
                         $fields[] = [
                             'id' => $id,

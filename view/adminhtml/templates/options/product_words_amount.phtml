@@ -33,7 +33,8 @@ $id = time();
                            name="attributesConfig[<?= $config['attribute'] ?>][word_count]" value="<?= $config['word_count']; ?>" class="required-entry">
                 </td>
                 <td>
-                    <input readonly="readonly"  type="text" id="<?= $config['attribute'] ?>_field_type"
+                    <p><?= ucfirst($config['field_type']); ?></p>
+                    <input readonly="readonly"  type="hidden" id="<?= $config['attribute'] ?>_field_type"
                           name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry"
                           value="<?= $config['field_type'] ?>"
                 </td>
