@@ -19,10 +19,10 @@ $fieldTypes = $this->helper('Contentor\LocalizationApi\Helper\Data')->getFieldTy
 <table class="admin__control-table" id="contentor_options_contentCreation_fieldDetails">
     <thead>
         <tr>
-            <th>Attributes</th>
-            <th>Amount Of Words</th>
-            <th>Field Type</th>
-            <th>Context Value</th>
+            <th><?= __('Attributes') ?></th>
+            <th><?= __('Amount Of Words') ?></th>
+            <th><?= __('Field Type') ?></th>
+            <th><?= __('Context Value') ?></th>
         </tr>
     </thead>
     <tbody id="configAttributesContentCreation">
@@ -36,7 +36,7 @@ $fieldTypes = $this->helper('Contentor\LocalizationApi\Helper\Data')->getFieldTy
                 <td>
                     <select id="<?= $config['attribute'] ?>_field_type" name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry" >
                         <?php foreach( $fieldTypes as $field ): ?>
-                            <option value="<?= $field['value'] ?>">
+                            <option value="<?= $field['value'] ?>" <?= ($field['value'] == $config['field_type']) ? 'selected' : '' ?> >
                                     <?= $field['label']; ?>
                             </option>
                         <?php endforeach; ?>
