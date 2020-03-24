@@ -31,22 +31,22 @@ class AttributeProvider
     private $syncType;
 
     /**
-     * @var \Contentor\LocalizationApi\Service\GetWordAmountConfigService
+     * @var \Contentor\LocalizationApi\Service\GetAttributeConfigService
      */
-    private $getWordAmountConfigService;
+    private $getAttributeConfigService;
 
     /**
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param CategoryInterface $category
-     * @param \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService
+     * @param \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService
      * @param array $extraFields
      * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         CategoryInterface $category,
-        \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService,
+        \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService,
         array $extraFields = [],
         $syncType = null
     ) {
@@ -54,7 +54,7 @@ class AttributeProvider
         $this->category = $category;
         $this->extraFields = $extraFields;
         $this->syncType = $syncType;
-        $this->getWordAmountConfigService = $getWordAmountConfigService;
+        $this->getAttributeConfigService = $getAttributeConfigService;
     }
 
     /**
@@ -143,27 +143,70 @@ class AttributeProvider
                 /**
                  * Override WordAmount configs from request
                  */
-                $configWordsAmount = $this->getWordAmountConfigService->execute();
+                $configAttribute = $this->getAttributeConfigService->execute();
 
                 if (
-                    !empty($configWordsAmount)
-                    && array_key_exists($field['attribute'], $configWordsAmount)
+                    !empty($configAttribute)
+                    && array_key_exists($field['attribute'], $configAttribute)
                 ) {
-                    $field['word_count'] = $configWordsAmount[$field['attribute']];
+                    $field['word_count'] = $configAttribute[$field['attribute']]['word_count'];
                 }
 
-                $fields[] = [
-                    'id' => $id,
-                    'name' => $name,
-                    'type' => 'creatable',
-                    'data' => $field['data'],
-                    'hints' => [
-                        [
-                            'type'   => 'word-count',
-                            'around' => (int) $field['word_count'],
-                        ],
-                    ]
-                ];
+                $fieldType = $configAttribute[$field['attribute']]['field_type'];
+
+                if ( !empty($fieldType) ) {
+                    $field['field_type'] = $fieldType;
+                }
+
+                if ( !empty($field['field_type']) ) {
+
+                    /**
+                     * Logic for context field
+                     * Send if there has value only
+                     * Otherwise skip this
+                     */
+                    if ( $field['field_type'] == 'context' ) {
+
+                        $contextValue = $configAttribute[$field['attribute']]['context_value'];
+                        // If context Value is null, take the value from Magento's Attribute
+                        if ( empty($contextValue) ) {
+                            $contextValue = $value;
+                        }
+
+                        if( !empty($contextValue) ) {
+                            $fields[] = [
+                                'id' => $id,
+                                'name' => $name,
+                                'type' => 'context',
+                                'data' => $field['data'],
+                                'value' => $contextValue
+                            ];
+                        } else {
+                            return [];
+                        }
+
+                    } else {
+                        $fields[] = [
+                            'id' => $id,
+                            'name' => $name,
+                            'type' => 'creatable',
+                            'data' => $field['data'],
+                            'hints' => [
+                                [
+                                    'type'   => 'word-count',
+                                    'around' => (int) $field['word_count'],
+                                ],
+                            ]
+                        ];
+                    }
+
+                } else {
+                    /**
+                     * Skip this request due to missing configuration
+                     */
+                    return [];
+                }
+
             }
         }
 

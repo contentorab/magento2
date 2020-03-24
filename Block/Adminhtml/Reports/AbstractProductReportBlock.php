@@ -75,7 +75,7 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
     {
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `sku` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType. " GROUP BY `sku`, `source_locale`";
+        $query = "SELECT `m2_product_id` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType. " GROUP BY `m2_product_id`, `source_locale`";
         $result = $connection->query($query);
         $total = $result->rowCount();
 
@@ -91,14 +91,15 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
     {
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `sku`,
+        $query = "SELECT `m2_product_id`,
+                    `sku`,
                     `delivery_speed` AS deliverySpeed,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
 				FROM `" . $table . "` 
 				WHERE `synchronize_type` = ". $this->_syncType ."
-				GROUP BY `sku`, `source_locale`, `delivery_speed`
+				GROUP BY `m2_product_id`, `source_locale`, `delivery_speed`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 
@@ -108,12 +109,12 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @param $sku
+     * @param $id
      * @return bool|\Magento\Catalog\Model\AbstractModel
      */
-    public function getProduct($sku)
+    public function getProduct($id)
     {
-        return $this->_productFactory->create()->loadByAttribute('sku', $sku);
+        return $this->_productFactory->create()->loadByAttribute('entity_id', $id);
     }
 
     /**

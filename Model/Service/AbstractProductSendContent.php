@@ -157,7 +157,8 @@ class AbstractProductSendContent
         }
 
         try {
-            $this->logger->info('Sending ' . $product->getSku() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
+
+            $this->logger->info(sprintf('Sending product SKU: %s - ID: %s for %s to: %s', $product->getSku(), $product->getId(), $this->_syncName, implode(' ', array_values($targetLocales))));
 
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
@@ -184,65 +185,74 @@ class AbstractProductSendContent
                 $contentorId = $this->sendContent->execute([
                     'sourceLocale' => $sourceLocale,
                     'targetLocale' => $targetLocale,
-                    'fields' => $data,
-                    'type' => $type,
-                    'previous' => $prevID,
+                    'fields'       => $data,
+                    'type'         => $type,
+                    'previous'     => $prevID,
                 ]);
 
-                if ($contentorId) {
-                    $this->saveEntity($contentorId, $product->getSku(), $sourceLocale, $targetLocale, $targetId, $type);
+                if ( $contentorId ) {
+
+                    $this->saveEntity($contentorId, $product->getId(), $product->getSku(), $sourceLocale, $targetLocale, $targetId, $type);
+
                     $this->saveTypeEntity($contentorId);
+
                     $this->saveStatusEntity(
                         $contentorId,
-                        'Sent for '. $this->_syncName .' to ' . $targetLocale
+                        sprintf('SKU: %s - ID: %s sent for %s to %s', $product->getSku(), $product->getId(), $this->_syncName, $targetLocale)
                     );
 
                     if ($type == 'update') {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
+                        $this->logger->info(sprintf('SKU: %s - ID: %s to %s sent as update request to %s , assigned id: %s', $product->getSku(), $product->getId(), $targetLocale, $prevID, $contentorId));
                     } else {
-                        $this->logger->info($product->getSku() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
+
+                        $this->logger->info(sprintf('SKU: %s - ID: %s to %s sent as standard request, assigned id %s', $product->getSku(), $product->getId(), $targetLocale, $contentorId));
                     }
                 } else {
                     $this->logger->critical(
-                        sprintf('Api returns empty Contentor ID. Skip product %s', $product->getSku())
+                        sprintf('Api returns empty Contentor ID. Skip product SKU: %s - ID: %s', $product->getSku(), $product->getId())
                     );
                 }
             }
+
         } catch (LocalizedException $localizedException) {
             $this->logger->critical(
-                sprintf('Exception for product %s , message : %s',
+                sprintf('Exception for product SKU: %s - ID: %s, message : %s',
                     $product->getSku(),
+                    $product->getId(),
                     $localizedException->getMessage()
                 )
             );
         }
     }
 
+
     /**
-     * @param int $contentorId
-     * @param string $sku
-     * @param string $sourceLocale
-     * @param string $targetLocale
-     * @param string $targetId
-     * @param string $type
+     * @param $contentorId
+     * @param $productId
+     * @param $sku
+     * @param $sourceLocale
+     * @param $targetLocale
+     * @param $targetId
+     * @param $type
      */
-    protected function saveEntity($contentorId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
+    protected function saveEntity($contentorId, $productId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
     {
         /** @var ContentorProductInterface $product */
         $product = $this->productInterfaceFactory->create();
         $this->dataObjectHelper->populateWithArray(
             $product,
             [
-                ContentorProductInterface::CONTENTOR_ID => $contentorId,
-                ContentorProductInterface::SKU => $sku,
-                ContentorProductInterface::SOURCE_LOCALE => $sourceLocale,
-                ContentorProductInterface::TARGET_LOCALE => $targetLocale,
-                ContentorProductInterface::TARGET_STORE => $targetId,
-                ContentorProductInterface::TYPE => $type,
-                ContentorProductInterface::STATE => 'pending',
-                ContentorProductInterface::SENT_TIME => $this->date->gmtDate(),
+                ContentorProductInterface::CONTENTOR_ID     => $contentorId,
+                ContentorProductInterface::M2_PRODUCT_ID    => $productId,
+                ContentorProductInterface::SKU              => $sku,
+                ContentorProductInterface::SOURCE_LOCALE    => $sourceLocale,
+                ContentorProductInterface::TARGET_LOCALE    => $targetLocale,
+                ContentorProductInterface::TARGET_STORE     => $targetId,
+                ContentorProductInterface::TYPE             => $type,
+                ContentorProductInterface::STATE            => 'pending',
+                ContentorProductInterface::SENT_TIME        => $this->date->gmtDate(),
                 ContentorProductInterface::SYNCHRONIZE_TYPE => $this->_syncType,
-                ContentorProductInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed')
+                ContentorProductInterface::DELIVERY_SPEED   => $this->request->getParam('deliverySpeed')
             ],
             ContentorProductInterface::class
         );
@@ -275,9 +285,9 @@ class AbstractProductSendContent
     protected function getFields(ProductInterface $product)
     {
         $attributeProvider = $this->attributeProviderFactory->create([
-            'product' => $product,
-            'extraFields' => [],
-            'syncType' => $this->_syncType
+            'product'       => $product,
+            'extraFields'   => [],
+            'syncType'      => $this->_syncType
         ]);
 
         return $attributeProvider->getList();

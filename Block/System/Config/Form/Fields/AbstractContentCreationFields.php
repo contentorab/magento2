@@ -120,6 +120,22 @@ class AbstractContentCreationFields extends \Magento\Config\Block\System\Config\
     }
 
     /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    protected function getFieldTypeRenderer()
+    {
+        if (!$this->_fieldTypeRenderer) {
+            $this->_fieldTypeRenderer = $this->getLayout()->createBlock(
+                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldTypeContentCreationRenderer',
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->_fieldTypeRenderer;
+    }
+
+    /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _prepareToRender()
@@ -141,8 +157,17 @@ class AbstractContentCreationFields extends \Magento\Config\Block\System\Config\
         );
 
         $this->addColumn(
+            'field_type',
+            [
+                'label' => __('Field Type'),
+                'renderer' => $this->getFieldTypeRenderer()
+            ]
+        );
+
+        $this->addColumn(
             'data',
             [
+
                 'label' => __('Field Data Type'),
                 'renderer' => $this->getFieldDataTypeRenderer()
             ]
@@ -172,6 +197,8 @@ class AbstractContentCreationFields extends \Magento\Config\Block\System\Config\
 
         $fieldDatatype = $row->getData('data');
 
+        $fieldType = $row->getData('field_type');
+
         $options = [];
 
         if ($productAttribute) {
@@ -180,6 +207,11 @@ class AbstractContentCreationFields extends \Magento\Config\Block\System\Config\
 
         if ($source) {
             $options['option_' . $this->getSourceRenderer()->calcOptionHash($source)] = 'selected="selected"';
+        }
+
+        if ($fieldType) {
+
+            $options['option_' . $this->getFieldTypeRenderer()->calcOptionHash($fieldType)] = 'selected="selected"';
         }
 
         if ($fieldDatatype) {

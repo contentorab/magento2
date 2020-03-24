@@ -53,6 +53,26 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     }
 
     /**
+     * @param  int $m2ProductId
+     * @return void
+     */
+    public function setM2ProductId($m2ProductId)
+    {
+        $this->setData(
+            self::M2_PRODUCT_ID,
+            $m2ProductId
+        );
+    }
+
+    /**
+     * @return int
+     */
+    public function getM2ProductId()
+    {
+        return $this->getData(self::M2_PRODUCT_ID);
+    }
+
+    /**
      * @param  string $sku
      * @return void
      */

@@ -141,6 +141,29 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->_createCategoryContentorProducts($setup);
         }
 
+        /**
+         *  Added product_id field to sync products table
+         */
+        if (version_compare($context->getVersion(), '0.7.0') < 0) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_products'),
+                'm2_product_id',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    'nullable' => true,
+                    'comment'  => 'M2 Product Id',
+                    'unsigned' => true,
+                    'default'  => 0
+                ]
+            );
+
+            $setup->getConnection()->addIndex(
+                $setup->getTable('contentor_products'),
+                'on_m2_product_id',
+                'm2_product_id'
+            );
+        }
+
         $setup->endSetup();
     }
 

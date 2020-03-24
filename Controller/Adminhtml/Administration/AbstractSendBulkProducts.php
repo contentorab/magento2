@@ -151,10 +151,19 @@ class AbstractSendBulkProducts extends Action
                 $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIDs) . "\">";
                 if ( !empty($data['attributesConfig']) ) {
                     $returnData .= '<div id="configAttributesContentCreationResponse">';
-                    foreach ( $data['attributesConfig'] as $configs) {
-                        foreach ($configs as $attributeCode => $wordAmount ) {
-                            $returnData .= "<input type=\"hidden\" name=\"attributesConfig[][$attributeCode]\" value=\"" . $wordAmount . "\">";
-                        }
+                    foreach ( $data['attributesConfig'] as $attributeCode => $configs) {
+
+                        $wordCountId = $attributeCode.'_word_count';
+
+                        $fieldTypeId = $attributeCode.'_field_type';
+
+                        $contextValueId = $attributeCode.'_context_value';
+
+                        $returnData .= "<input type=\"hidden\" id=\"$wordCountId\" name=\"attributesConfig[$attributeCode][word_count]\" value=\"" . $configs['word_count'] . "\">";
+
+                        $returnData .= "<input type=\"hidden\" id=\"$fieldTypeId\" name=\"attributesConfig[$attributeCode][field_type]\" value=\"" . $configs['field_type'] . "\">";
+
+                        $returnData .= "<input type=\"hidden\" id=\"$contextValueId\" name=\"attributesConfig[$attributeCode][context_value]\" value=\"" . $configs['context_value'] . "\">";
                     }
                     $returnData .= "</div>";
                 }

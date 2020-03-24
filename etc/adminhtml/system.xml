@@ -84,14 +84,14 @@
                     <label>Product Content creation field configuration</label>
                     <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ContentCreationProductFields</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
+                    <comment><![CDATA[Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.<br/><strong>Context type</strong>: Contextual information to help writers with localization and content creation, it will skip product if the attribute doesn't have value for context type. <br/><strong>Creatable</strong>: Contentor will create content base on amount of words.]]></comment>
                 </field>
 
                 <field id="categoryFieldDetails" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Category Content creation field configuration</label>
                     <frontend_model>Contentor\LocalizationApi\Block\System\Config\Form\Fields\ContentCreationCategoryFields</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <comment>Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.</comment>
+                    <comment><![CDATA[Choose attribute and amount of words, Contentor will take the value of these attributes from Source Store View and help you create the content value for these attributes.<br/><strong>Context type</strong>: Contextual information to help writers with localization and content creation, it will skip product if the attribute doesn't have value for context type. <br/><strong>Creatable</strong>: Contentor will create content base on amount of words.]]></comment>
                 </field>
 
             </group>

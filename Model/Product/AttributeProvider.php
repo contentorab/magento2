@@ -34,22 +34,22 @@ class AttributeProvider
     private $syncType;
 
     /**
-     * @var \Contentor\LocalizationApi\Service\GetWordAmountConfigService
+     * @var \Contentor\LocalizationApi\Service\GetAttributeConfigService
      */
-    private $getWordAmountConfigService;
+    private $getAttributeConfigService;
 
     /**
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param ProductInterface $product
-     * @param \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService
+     * @param \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService
      * @param array $extraFields
      * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         ProductInterface $product,
-        \Contentor\LocalizationApi\Service\GetWordAmountConfigService $getWordAmountConfigService,
+        \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService,
         array $extraFields = [],
         $syncType = null
     ) {
@@ -57,7 +57,7 @@ class AttributeProvider
         $this->product = $product;
         $this->extraFields = $extraFields;
         $this->syncType = $syncType;
-        $this->getWordAmountConfigService = $getWordAmountConfigService;
+        $this->getAttributeConfigService = $getAttributeConfigService;
     }
 
     /**
@@ -88,11 +88,19 @@ class AttributeProvider
 
         $fields = [];
 
-        $fields[] = [
+        $fields[] =
+            [
                 'id' => 'auto_sku',
                 'type' => 'internal',
                 'data' => 'string',
                 'value' => $sku
+            ];
+        $fields[] =
+            [
+                'id' => 'auto_m2_product_id',
+                'type' => 'internal',
+                'data' => 'string',
+                'value' => $productID
             ];
 
         // Add extra content if sent
@@ -152,42 +160,78 @@ class AttributeProvider
                 //Value has to be null for creatable field
 
                 /**
-                 * Override WordAmount configs from request
+                 * Override Attribute Configs from request
                  */
-                $configWordsAmount = $this->getWordAmountConfigService->execute();
+                $configAttributes = $this->getAttributeConfigService->execute();
+
+
                 if (
-                    !empty($configWordsAmount)
-                    && array_key_exists($field['attribute'], $configWordsAmount)
+                    !empty($configAttributes)
+                    && array_key_exists($field['attribute'], $configAttributes)
                 ) {
-                    $field['word_count'] = $configWordsAmount[$field['attribute']];
+                    $field['word_count'] = $configAttributes[$field['attribute']]['word_count'];
                 }
 
-                $fields[] = [
-                    'id' => $id,
-                    'name' => $name,
-                    'type' => 'creatable',
-                    'data' => $field['data'],
-                    'hints' => [
-                        [
-                            'type'   => 'word-count',
-                            'around' => (int) $field['word_count'],
-                        ],
-                    ]
-                ];
+                $fieldType = $configAttributes[$field['attribute']]['field_type'];
 
-                $value = $product->getResource()->getAttributeRawValue($productID, $field['attribute'], $field['store']);
-                if(!empty($value)) {
-                    $fields[] = [
-                        'id' => $id . '_original',
-                        'name' => $name . '_original',
-                        'type' => 'context',
-                        'data' => $field['data'],
-                        'value' => $value
-                    ];
+                if ( !empty($fieldType) ) {
+                    $field['field_type'] = $fieldType;
                 }
+
+                if ( !empty($field['field_type']) ) {
+
+                    /**
+                     * Logic for context field
+                     * Send if there has value only
+                     * Otherwise skip this
+                     */
+                    if ( $field['field_type'] == 'context' ) {
+
+                        $contextValue = $configAttributes[$field['attribute']]['context_value'];
+                        // If context Value is null, take the value from Magento's Attribute
+                        if ( empty($contextValue) ) {
+                            $contextValue = $value;
+                        }
+
+                        if( !empty($contextValue) ) {
+                            $fields[] = [
+                                'id' => $id,
+                                'name' => $name,
+                                'type' => 'context',
+                                'data' => $field['data'],
+                                'value' => $contextValue
+                            ];
+
+                        } else {
+                            return [];
+                        }
+
+                    } else {
+                        $fields[] = [
+                            'id' => $id,
+                            'name' => $name,
+                            'type' => 'creatable',
+                            'data' => $field['data'],
+                            'hints' => [
+                                [
+                                    'type'   => 'word-count',
+                                    'around' => (int) $field['word_count'],
+                                ],
+                            ]
+                        ];
+                    }
+
+
+
+                } else {
+                    /**
+                     * Skip this request due to missing configuration
+                     */
+                    return [];
+                }
+
             }
         }
-
         return $fields;
     }
 }
