@@ -67,8 +67,15 @@ if ($tot > 0) {
     <?php
     $i = 0;
     foreach ($productList as $prod) {
-        $details = $block->getProduct($prod['m2_product_id']);
+
+         if(  empty($prod['m2_product_id']) || $prod['m2_product_id']  == 0 ) {
+             $details = $block->getProduct($prod['sku'], 'sku');
+         } else {
+             $details = $block->getProduct($prod['m2_product_id'], 'entity_id');
+         }
+
         $prodName = $details->getName();
+
         $url = $this->getUrl('catalog/product/edit', ['id' => $details->getId()]);
         if ($i%2) {
             $even = '#eee';

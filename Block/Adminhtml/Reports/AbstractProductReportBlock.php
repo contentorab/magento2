@@ -110,11 +110,12 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
 
     /**
      * @param $id
-     * @return bool|\Magento\Catalog\Model\AbstractModel
+     * @param $field
+     * @return mixed
      */
-    public function getProduct($id)
+    public function getProduct($id, $field)
     {
-        return $this->_productFactory->create()->loadByAttribute('entity_id', $id);
+        return $this->_productFactory->create()->loadByAttribute($field, $id);
     }
 
     /**
