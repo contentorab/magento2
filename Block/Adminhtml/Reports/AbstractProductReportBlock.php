@@ -91,6 +91,21 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
     {
         $connection = $this->_resource->getConnection('core_read');
         $table = $this->_resource->getTableName('contentor_products');
+
+        $queryGroupSku = "SELECT `m2_product_id`,
+                    `sku`,
+                    `delivery_speed` AS deliverySpeed,
+					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
+					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
+					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
+				FROM `" . $table . "` 
+				WHERE `synchronize_type` = ". $this->_syncType ."  AND ( `m2_product_id` IS NULL OR `m2_product_id` = 0 )  
+				GROUP BY `sku`, `source_locale`, `delivery_speed`
+				ORDER BY `sent_time` DESC
+				LIMIT " . $offset . "," . $pagesize;
+
+        $productListGroupSku = $connection->fetchAll($queryGroupSku);
+
         $query = "SELECT `m2_product_id`,
                     `sku`,
                     `delivery_speed` AS deliverySpeed,
@@ -98,23 +113,26 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
 				FROM `" . $table . "` 
-				WHERE `synchronize_type` = ". $this->_syncType ."
+				WHERE `synchronize_type` = ". $this->_syncType ."  AND `m2_product_id` IS NOT NULL 
 				GROUP BY `m2_product_id`, `source_locale`, `delivery_speed`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 
         $productList = $connection->fetchAll($query);
 
+        $productList  = array_merge($productList, $productListGroupSku);
+
         return $productList;
     }
 
     /**
      * @param $id
-     * @return bool|\Magento\Catalog\Model\AbstractModel
+     * @param $field
+     * @return mixed
      */
-    public function getProduct($id)
+    public function getProduct($id, $field)
     {
-        return $this->_productFactory->create()->loadByAttribute('entity_id', $id);
+        return $this->_productFactory->create()->loadByAttribute($field, $id);
     }
 
     /**

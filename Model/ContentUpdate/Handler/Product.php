@@ -159,20 +159,19 @@ class Product implements ContentUpdateHandlerInterface
         }
 
         /** @var \Magento\Catalog\Api\Data\ProductInterface| \Magento\Catalog\Model\Product $product */
-        $product = $this->productFactory->create()->setStoreId(
-            $entity->getTargetStore()
-        )->loadByAttribute('entity_id', $entity->getM2ProductId());
-        
-        if ( !$product && !$product->getId()) {
-            // Fallback to SKU
+
+        if ( !empty($entity->getM2ProductId()) || $entity->getM2ProductId() != 0 ) {
+            $product = $this->productFactory->create()->setStoreId(
+                $entity->getTargetStore()
+            )->loadByAttribute('entity_id', $entity->getM2ProductId());
+        } else {
             $product = $this->productFactory->create()->setStoreId(
                 $entity->getTargetStore()
             )->loadByAttribute('sku', $entity->getSku());
+        }
 
-            if ( !$product && !$product->getId() ) {
-                // The Magento product represented by this SKU does not exist, abort the update
-                return;
-            }
+        if ( !$product && !$product->getId()) {
+            return;
         }
 
         // Copy back the fields from the completed request into the product
