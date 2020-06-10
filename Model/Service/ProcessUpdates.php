@@ -6,6 +6,7 @@ use Contentor\LocalizationApi\Model\ContentUpdate\HandlerList;
 use Contentor\LocalizationApi\Model\EntityResolver;
 use Contentor\LocalizationApi\Model\Gateway\GetUpdates;
 use Magento\Framework\Exception\LocalizedException;
+use Contentor\LocalizationApi\Model\Gateway\SetImportState;
 
 /**
  * Class ProcessUpades
@@ -42,24 +43,32 @@ class ProcessUpdates
     private $entityResolver;
 
     /**
+     * @var SetImportState
+     */
+    private $setImportStateGateway;
+
+    /**
      * ProcessUpdates constructor.
      * @param HandlerList $handlerList
      * @param TestConnection $testConnection
      * @param GetUpdates $getUpdatesGateway
      * @param EntityResolver $entityResolver
+     * @param SetImportState $setImportStateGateway
      */
     public function __construct(
         Logger $logger,
         HandlerList $handlerList,
         TestConnection $testConnection,
         GetUpdates $getUpdatesGateway,
-        EntityResolver $entityResolver
+        EntityResolver $entityResolver,
+        SetImportState $setImportStateGateway
     ) {
         $this->logger = $logger;
         $this->handlerList = $handlerList;
         $this->testConnection = $testConnection;
         $this->getUpdatesGateway = $getUpdatesGateway;
         $this->entityResolver = $entityResolver;
+        $this->setImportStateGateway = $setImportStateGateway;
     }
 
     /**
@@ -95,6 +104,9 @@ class ProcessUpdates
 
             //3. process update
             $handler->execute($entity, $update);
+
+            //4 set the importState
+            $this->setImportStateGateway->execute($entity->getContentorId(),'success');
         }
 
         $this->logger->info('Processed ' . $count . ' requests, with the last state change being ' . $lastStateChangeSeen);
