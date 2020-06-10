@@ -40,6 +40,8 @@ $sendURL = $block->getSendUrl();
 
                         const deliverySpeed = formular.deliverySpeed.value;
 
+                        const machineTranslation = formular.machineTranslation ? formular.machineTranslation.value : 'none';
+
                         let inputs = null;
 
                         if ( document.getElementById('configAttributesContentCreation') ) {
@@ -89,7 +91,7 @@ $sendURL = $block->getSendUrl();
                         } else {
                             targets = formular.targets.value;
                         }
-                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total, deliverySpeed: deliverySpeed, attributesConfig: elesContentCreation }, function(data) {
+                        $.post("<?php print $sendURL ?>", { products: products, source: source, targets: targets, total: total, deliverySpeed: deliverySpeed, machineTranslation: machineTranslation, attributesConfig: elesContentCreation }, function(data) {
                             document.getElementById('resultdiv').innerHTML = data;
                             doSend(document.getElementById('progressform'));
                         });
@@ -169,6 +171,10 @@ $sendURL = $block->getSendUrl();
     ?>
 </p>
 <?= $block->getChildHtml('contentor.delivery-speed'); ?><br>
+
+<?php if( $block->getSyncType() !== \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+    <?= $block->getChildHtml('contentor.machine-translation'); ?><br>
+<?php endif;?>
 
 <?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
     <?= $block->getChildHtml('contentor.config-words-amount-block'); ?>

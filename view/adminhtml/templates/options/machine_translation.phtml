@@ -1,0 +1,17 @@
+<p>
+<h2>Machine Translation</h2>
+<?php
+$machineTranslationOptions = $this->helper('Contentor\LocalizationApi\Helper\MachineTranslationConfig')->getConfig();
+?>
+<select name="machineTranslation">
+    <?php
+    foreach ($machineTranslationOptions as $option) {
+        print '<option value="' . $option['value'] . '"';
+        if ($option['value'] == 'none') {
+            print ' SELECTED';
+        }
+        print '>' . $option['label'] . '</option>';
+    }
+    ?>
+</select>
+</p>

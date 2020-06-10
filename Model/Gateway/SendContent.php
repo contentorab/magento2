@@ -127,7 +127,15 @@ class SendContent
         if ( !empty($deliverySpeedData) ) {
             $request['preferences'][] = $deliverySpeedData;
         }
+        /**
+         * Get machine translation for contentor request
+         *
+        */
+        $machineTranslationData = $this->getMachineTranslation();
 
+        if ( !empty($machineTranslationData) ) {
+            $request['hints'][] = $machineTranslationData;
+        }
         return $request;
     }
 
@@ -142,6 +150,23 @@ class SendContent
         return [
             'type'  => 'delivery-speed',
             'value' => $deliverySpeed
+        ];
+    }
+
+    /**
+     * Get Machine Translation from dropdown select
+     * @return array
+     */
+    private function getMachineTranslation() {
+
+        $machineTranslation = $this->request->getParam('machineTranslation');
+        if(empty($machineTranslation) || $machineTranslation === 'none'){
+            return;
+        }
+
+        return [
+            'type'  => 'machine-translation',
+            'policy' => $machineTranslation
         ];
     }
 }

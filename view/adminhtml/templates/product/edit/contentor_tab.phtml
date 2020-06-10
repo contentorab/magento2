@@ -81,6 +81,13 @@
         ->setTemplate("Contentor_LocalizationApi::options/delivery_speed.phtml")
         ->toHtml() ?>
 <br><br><br>
+<?php if( $block->getSyncType() !== \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
+<?= $this->getLayout()
+    ->createBlock("Magento\Framework\View\Element\Template")
+    ->setTemplate("Contentor_LocalizationApi::options/machine_translation.phtml")
+    ->toHtml() ?>
+<br><br><br
+<?php endif;?>
 <?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
 <?= $this->getLayout()
     ->createBlock("Magento\Framework\View\Element\Template")
