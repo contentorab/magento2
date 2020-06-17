@@ -21,6 +21,8 @@ interface CategoryInterface
     const TYPE_CODE = 'category';
     const SYNCHRONIZE_TYPE = 'synchronize_type';
     const DELIVERY_SPEED = 'delivery_speed';
+    const MACHINE_TRANSLATION = 'machine_translation';
+    const ATTRIBUTION = 'attribution';
     /**#@-*/
 
     /**
@@ -166,4 +168,26 @@ interface CategoryInterface
      * @return string
      */
     public function getDeliverySpeed();
+
+    /**
+     * @param string $value
+     * @return boolean
+     */
+    public function setMachineTranslation($value);
+
+    /**
+     * @return string
+     */
+    public function getMachineTranslation();
+
+    /**
+     * @param string $value
+     * @return boolean
+     */
+    public function setAttribution($value);
+
+    /**
+     * @return string
+     */
+    public function getAttribution();
 }

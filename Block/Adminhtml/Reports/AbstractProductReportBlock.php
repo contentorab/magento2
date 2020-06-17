@@ -96,6 +96,7 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
                     `sku`,
                     `delivery_speed` AS deliverySpeed,
                     `machine_translation` AS machineTranslation,
+                    `attribution`,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
@@ -111,6 +112,7 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
                     `sku`,
                     `delivery_speed` AS deliverySpeed,
                     `machine_translation` AS machineTranslation,
+                    `attribution`,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state

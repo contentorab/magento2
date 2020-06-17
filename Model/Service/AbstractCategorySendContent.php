@@ -222,6 +222,11 @@ class AbstractCategorySendContent
      */
     protected function saveEntity($contentorId, $categoryId, $sourceLocale, $targetLocale, $targetId, $type)
     {
+        if(!empty($this->request->getParam('machineTranslation'))){
+            $machineTranslation = $this->request->getParam('machineTranslation');
+        } else {
+            $machineTranslation = 'none';
+        }
         /** @var ContentorCategoryInterface $category */
         $category = $this->categoryInterfaceFactory->create();
         $this->dataObjectHelper->populateWithArray(
@@ -236,7 +241,8 @@ class AbstractCategorySendContent
                 ContentorCategoryInterface::STATE => 'pending',
                 ContentorCategoryInterface::SENT_TIME => $this->date->gmtDate(),
                 ContentorCategoryInterface::SYNCHRONIZE_TYPE => $this->_syncType,
-                ContentorCategoryInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed')
+                ContentorCategoryInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed'),
+                ContentorCategoryInterface::MACHINE_TRANSLATION => $machineTranslation
             ],
             ContentorCategoryInterface::class
         );

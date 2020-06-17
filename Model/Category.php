@@ -288,4 +288,36 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     {
         $this->setData(self::DELIVERY_SPEED, $value);
     }
+
+    /**
+     * @return string
+     */
+    public function getMachineTranslation()
+    {
+        return $this->getData(self::MACHINE_TRANSLATION);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setMachineTranslation($value)
+    {
+        $this->setData(self::MACHINE_TRANSLATION, $value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttribution()
+    {
+        return $this->getData(self::ATTRIBUTION);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setAttribution($value)
+    {
+        $this->setData(self::ATTRIBUTION, $value);
+    }
 }

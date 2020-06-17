@@ -93,12 +93,14 @@ class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
         $table = $this->_resource->getTableName('contentor_category');
         $query = "SELECT `category_id`,
                     `delivery_speed` AS deliverySpeed,
+                    `machine_translation` AS machineTranslation,
+                    `attribution`,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "` 
+				FROM `" . $table . "`
 				WHERE `synchronize_type` = ". $this->_syncType ."
-				GROUP BY `category_id`, `source_locale`, `delivery_speed`
+				GROUP BY `category_id`, `source_locale`, `delivery_speed`, `machine_translation`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 

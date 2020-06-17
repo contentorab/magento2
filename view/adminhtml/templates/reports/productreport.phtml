@@ -54,7 +54,7 @@ if ($tot > 0) {
         <div class="hor-scroll">
             <table cellspacing=0 >
                 <thead>
-                    <tr class="headings"><th>Product Id</th><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th><th>Delivery Speed</th><th>Machine Translation</th></tr>
+                    <tr class="headings"><th>Product Id</th><th>SKU</th><th>Name</th><th>Source</th><th colspan=<?php print $numStores;?>>Status</th><th>Delivery Speed</th><th>Machine Translation</th><th>Attributions</th></tr>
                     <tr class="headings"><th></th><th></th><th></th><th></th>
                 <?php
                 foreach ($storeInfo as $id => $store) {
@@ -149,7 +149,8 @@ if ($tot > 0) {
             print '</td>';
         }
         print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['deliverySpeed'] !== null ? ucwords($prod['deliverySpeed']) : 'Normal') . '</td>';
-        print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['machineTranslation'] !== null ? ucwords($prod['machineTranslation']) : 'none') . '</td>';
+        print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['machineTranslation'] !== null ? ucwords($prod['machineTranslation']) : 'None') . '</td>';
+        print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['attribution'] !== null ? ucwords($prod['attribution']) : 'None') . '</td>';
         print '</tr>';
 
         $i++;
