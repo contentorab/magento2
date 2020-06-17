@@ -205,6 +205,7 @@ class Product implements ContentUpdateHandlerInterface
         // Update the state and completed time of the product
         $entity->setCompletedTime($data['completed']);
         $entity->setState($data['state']);
+        $entity->setAttribution($entity->getMachineTranslation() === 'only-automatic' ? 'google-translate' : 'none');
         $this->productRepository->save($entity);
 
         // Show a status message in the log for the product
