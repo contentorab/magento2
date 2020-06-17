@@ -237,6 +237,11 @@ class AbstractProductSendContent
      */
     protected function saveEntity($contentorId, $productId, $sku, $sourceLocale, $targetLocale, $targetId, $type)
     {
+        if(!empty($this->request->getParam('machineTranslation'))){
+            $machineTranslation = $this->request->getParam('machineTranslation');
+        } else {
+            $machineTranslation = 'none';
+        }
         /** @var ContentorProductInterface $product */
         $product = $this->productInterfaceFactory->create();
         $this->dataObjectHelper->populateWithArray(
@@ -252,7 +257,8 @@ class AbstractProductSendContent
                 ContentorProductInterface::STATE            => 'pending',
                 ContentorProductInterface::SENT_TIME        => $this->date->gmtDate(),
                 ContentorProductInterface::SYNCHRONIZE_TYPE => $this->_syncType,
-                ContentorProductInterface::DELIVERY_SPEED   => $this->request->getParam('deliverySpeed')
+                ContentorProductInterface::DELIVERY_SPEED   => $this->request->getParam('deliverySpeed'),
+                ContentorProductInterface::MACHINE_TRANSLATION => $machineTranslation
             ],
             ContentorProductInterface::class
         );

@@ -95,12 +95,13 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
         $queryGroupSku = "SELECT `m2_product_id`,
                     `sku`,
                     `delivery_speed` AS deliverySpeed,
+                    `machine_translation` AS machineTranslation,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "` 
-				WHERE `synchronize_type` = ". $this->_syncType ."  AND ( `m2_product_id` IS NULL OR `m2_product_id` = 0 )  
-				GROUP BY `sku`, `source_locale`, `delivery_speed`
+				FROM `" . $table . "`
+				WHERE `synchronize_type` = ". $this->_syncType ."  AND ( `m2_product_id` IS NULL OR `m2_product_id` = 0 )
+				GROUP BY `sku`, `source_locale`, `delivery_speed`,`machine_translation`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 
@@ -109,12 +110,13 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
         $query = "SELECT `m2_product_id`,
                     `sku`,
                     `delivery_speed` AS deliverySpeed,
+                    `machine_translation` AS machineTranslation,
 					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
 					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
 					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "` 
-				WHERE `synchronize_type` = ". $this->_syncType ."  AND `m2_product_id` IS NOT NULL 
-				GROUP BY `m2_product_id`, `source_locale`, `delivery_speed`
+				FROM `" . $table . "`
+				WHERE `synchronize_type` = ". $this->_syncType ."  AND `m2_product_id` IS NOT NULL
+				GROUP BY `sku`, `source_locale`, `delivery_speed`,`machine_translation`
 				ORDER BY `sent_time` DESC
 				LIMIT " . $offset . "," . $pagesize;
 

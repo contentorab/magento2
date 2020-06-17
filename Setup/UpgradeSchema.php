@@ -164,6 +164,53 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        /**
+         *  Added attribution field to sync products table
+         */
+        if (version_compare($context->getVersion(), '0.7.3') < 0) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_products'),
+                'machine_translation',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment'  => 'Machine Translation',
+                ]
+            );
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_products'),
+                'attribution',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment'  => 'Attribution for machine-translation',
+                ]
+            );
+        }
+        /**
+         *  Added attribution field to sync category table
+         */
+        if (version_compare($context->getVersion(), '0.7.3') < 0) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_category'),
+                'machine_translation',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment'  => 'Machine Translation',
+                ]
+            );
+            $setup->getConnection()->addColumn(
+                $setup->getTable('contentor_category'),
+                'attribution',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment'  => 'Attribution for machine-translation',
+                ]
+            );
+        }
+
         $setup->endSetup();
     }
 
@@ -260,6 +307,25 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'default' => null,
             ],
             'Delivery Speed'
+        )
+        ->addColumn(
+            'machine_translation',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            36,
+            [
+                'nullable' => true,
+                'default' => null,
+            ],
+            'Machine Translation'
+        )
+        ->addColumn(
+            'attribution',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            36,
+            [
+                'nullable' => true,
+            ],
+            'Attribution for machine-translation'
         )
         ->addIndex(
             $setup->getIdxName('contentor_category', ['synchronize_type']),
