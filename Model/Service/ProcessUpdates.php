@@ -106,7 +106,9 @@ class ProcessUpdates
             $handler->execute($entity, $update);
 
             //4 set the importState
-            $this->setImportStateGateway->execute($entity->getContentorId(),'success');
+            if($update['state'] == 'completed'){
+                $this->setImportStateGateway->execute($entity->getContentorId(),'success');
+            }
         }
 
         $this->logger->info('Processed ' . $count . ' requests, with the last state change being ' . $lastStateChangeSeen);
