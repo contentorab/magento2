@@ -150,7 +150,15 @@ class InstallSchema implements InstallSchemaInterface
             'Type Table'
         );
         $setup->getConnection()->createTable($productTable);
+        $setup->getConnection()->insert($setup->getTable('core_config_data'),[
+            'path' =>       'contentor_options/fieldDetails/productFieldDetails',
+            'value' =>      '{"_1592900795333_333":{"attribute":"productURL","store":"1","type":"context","data":"string"},"_1592900803680_680":{"attribute":"name","store":"1","type":"localizable","data":"string"},"_1592900817518_518":{"attribute":"description","store":"1","type":"localizable","data":"html:relaxed"},"_1592900823176_176":{"attribute":"short_description","store":"1","type":"localizable","data":"string"}}',
+        ]);
 
+        $setup->getConnection()->insert($setup->getTable('core_config_data'),[
+            'path' =>       'contentor_options/fieldDetails/categoryFieldDetails',
+            'value' =>      '{"_1592903609509_509":{"attribute":"url_key","store":"1","type":"context","data":"string"},"_1592903616327_327":{"attribute":"name","store":"1","type":"localizable","data":"string"},"_1592903621941_941":{"attribute":"meta_title","store":"1","type":"localizable","data":"string"},"_1592903629072_72":{"attribute":"description","store":"1","type":"localizable","data":"html:relaxed"}}'
+        ]);
 
         $setup->endSetup();
     }
