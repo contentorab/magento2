@@ -5,6 +5,7 @@
             <contentor_options>
                 <developer_mode>0</developer_mode>
                 <api_base_url>https://api.contentor.dev/</api_base_url>
+                <version>0.7.3</version>
             </contentor_options>
         </contentor_options>
     </default>

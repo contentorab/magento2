@@ -5,6 +5,7 @@ use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Contentor\LocalizationApi\Service\ConfigurationService;
 
 /**
  * Class SendContent
@@ -36,6 +37,8 @@ class SendContent
      */
     private $request;
 
+    protected $configurationService;
+
     /**
      * SendContent constructor.
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
@@ -47,12 +50,14 @@ class SendContent
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter,
-        \Magento\Framework\App\RequestInterface $request
+        \Magento\Framework\App\RequestInterface $request,
+        ConfigurationService $configurationService
     ) {
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
         $this->request = $request;
+        $this->configurationService = $configurationService;
     }
 
     /**
@@ -68,7 +73,7 @@ class SendContent
         $headers =  [
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
-            'User-Agent'    => 'ContentorMagento2/0.7.3'
+            'User-Agent'    => 'ContentorMagento2/' . $this->configurationService->getVersion()
         ];
 
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */

@@ -23,6 +23,7 @@ class ConfigurationService
     const XML_PATH_PRODUCT_FIELDS = 'contentor_options/fieldDetails/productFieldDetails';
     const XML_PATH_DEVELOPER_MODE = 'contentor_options/fieldDetails/developer_mode';
     const XML_PATH_API_BASE_URL = 'contentor_options/contentor_options/api_base_url';
+    const XML_PATH_MODULE_VERSION = 'contentor_options/contentor_options/version';
     const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
     const XML_PATH_MAIN_LOCALE = 'general/locale/code';
     const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
@@ -54,9 +55,12 @@ class ConfigurationService
         $this->scopeConfig = $scopeConfig;
     }
 
-    public function getVersion() {
-        // TODO: Maybe move this into the config file or pull it from the runtime somehow
-        return '0.4.0';
+    public function getVersion($store = NULL) {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_MODULE_VERSION,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
     }
 
     /**
