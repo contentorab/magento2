@@ -65,7 +65,7 @@ class SendContent
      *
      * @param array $data
      * @return int|string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function execute(array $data)
     {
@@ -88,7 +88,7 @@ class SendContent
         $result = $this->httpClient->sendRequest($transfer);
 
         if($result['code'] !== 200) {
-            // TODO: Should this throw an exception
+            throw new LocalizedException(__('Something went wrong when the request was sent to Contentor: %1' , $result['body']));
         } else {
             $result = $this->jsonToArrayConverter->convert(
                 $result['body']

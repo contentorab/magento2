@@ -222,6 +222,7 @@ class AbstractProductSendContent
                     $localizedException->getMessage()
                 )
             );
+            throw $localizedException;
         }
     }
 

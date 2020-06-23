@@ -114,6 +114,12 @@ class AbstractPostSingleEntity extends \Magento\Backend\App\Action
             $this->messageManager->addSuccess(__(sprintf('Sent %s request to Contentor platform successfully.', $this->entityName )));
         }catch ( \Exception $e ) {
             $this->messageManager->addError(__($e->getMessage()));
+
+            $url = $this->getUrl(
+                $this->routeRedirect,
+                ['id' => $idRequest]
+            );
+            $this->getResponse()->setRedirect($url)->sendResponse();
         }
 
         $this->getResponse()->setRedirect($url)->sendResponse();

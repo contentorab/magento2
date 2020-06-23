@@ -209,6 +209,7 @@ class AbstractCategorySendContent
                     $localizedException->getMessage()
                 )
             );
+            throw $localizedException;
         }
     }
 
