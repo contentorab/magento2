@@ -148,6 +148,7 @@ class AbstractCategorySendContent
             $this->logger->critical(
                 sprintf('Empty attributes map. Skip category %s', $category->getId())
             );
+            throw new LocalizedException(__('Something went wrong in the request to Contentor: Empty attributes map.'));
             return;
         }
 

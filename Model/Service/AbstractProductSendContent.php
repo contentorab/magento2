@@ -154,6 +154,7 @@ class AbstractProductSendContent
             $this->logger->critical(
                 sprintf('Empty attributes map. Skip product %s', $product->getSku())
             );
+            throw new LocalizedException(__('Something went wrong in the request to Contentor: Empty attributes map.'));
             return;
         }
 
