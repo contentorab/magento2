@@ -7,6 +7,7 @@ use Magento\Catalog\Model\ProductFactory;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class SendBulkProducts
@@ -116,15 +117,20 @@ class AbstractSendBulkProducts extends Action
                 /**
                  * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                if ( array_key_exists('instance', $this->serviceSendContent) ) {
-                    $this->_objectManager->create($this->serviceSendContent['instance'])
-                        ->execute(
-                            $product,
-                            $sourceLocale,
-                            $targets
-                        );
+                try{
+                    if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                        $this->_objectManager->create($this->serviceSendContent['instance'])
+                            ->execute(
+                                $product,
+                                $sourceLocale,
+                                $targets
+                            );
 
-                    unset($productlist[$i]);
+                        unset($productlist[$i]);
+                    }
+                } catch(LocalizedException $e){
+                    $this->getResponse()->setBody($e->getMessage());
+                    return;
                 }
             }
 

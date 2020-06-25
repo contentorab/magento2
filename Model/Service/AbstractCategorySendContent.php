@@ -139,6 +139,7 @@ class AbstractCategorySendContent
      * @param CategoryInterface $category
      * @param $sourceLocale
      * @param $targetLocales
+     * @throws LocalizedException
      */
     public function execute(CategoryInterface $category, $sourceLocale, $targetLocales)
     {

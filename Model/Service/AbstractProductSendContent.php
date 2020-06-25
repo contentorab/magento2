@@ -144,6 +144,7 @@ class AbstractProductSendContent
      * @param ProductInterface $product
      * @param string $sourceLocale
      * @param array $targetLocales
+     * @throws LocalizedException
      * @return void
      */
     public function execute(ProductInterface $product, $sourceLocale,  $targetLocales)
