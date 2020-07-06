@@ -152,6 +152,7 @@ class AbstractSendBulkProducts extends Action
             if ($productsLeft > 0) {
                 $returnData .= "<input type=\"hidden\" name=\"total\" value=\"" . $total . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"deliverySpeed\" value=\"" . $data['deliverySpeed'] . "\">";
+                $returnData .= "<input type=\"hidden\" name=\"machineTranslation\" value=\"" . $data['machineTranslation'] . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"products\" value=\"" . join(',', $productlist) . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"source\" value=\"" . $sourceLocale . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIDs) . "\">";
