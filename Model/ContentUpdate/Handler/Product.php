@@ -96,6 +96,8 @@ class Product implements ContentUpdateHandlerInterface
             $this->handleConfirmed($entity, $data);
         } else if($data['state'] == 'canceled') {
             $this->handleCanceled($entity, $data);
+        } else if($data['state'] == 'pending') {
+            $this->handlePending($entity, $data);
         }
     }
 
@@ -216,6 +218,63 @@ class Product implements ContentUpdateHandlerInterface
             $entity->getContentorId(),
             $data['language']['target'],
             date("Y-m-d H:i:s", strtotime($data['completed'])));
+
+        $this->statusRepository->saveStatus(
+            $entity->getContentorId(),
+            $status
+        );
+    }
+
+    /**
+     * Handles entries that are pending, currently only handle entries with intermediate_value
+     *
+     * @param ContentEntityInterface $entity
+     * @param array $data
+     * @return void
+     */
+    private function handlePending(ContentEntityInterface $entity, $data) {
+        if ( !empty($entity->getM2ProductId()) || $entity->getM2ProductId() != 0 ) {
+            $product = $this->productFactory->create()->setStoreId(
+                $entity->getTargetStore()
+            )->loadByAttribute('entity_id', $entity->getM2ProductId());
+        } else {
+            $product = $this->productFactory->create()->setStoreId(
+                $entity->getTargetStore()
+            )->loadByAttribute('sku', $entity->getSku());
+        }
+        // Copy the intermediate_value from the request to the product.
+        $updated = false;
+        $this->storeManager->setCurrentStore($entity->getTargetStore());
+        foreach ($data['fields'] as $field) {
+            if ($field['type'] == 'localizable') {
+                if ( array_key_exists('intermediateValue', $field) ) {
+                    $attribute = substr($field['id'], 0, -4);
+                    $product->setDataUsingMethod($attribute, $field['intermediateValue']);
+                    $updated = true;
+                }
+            }
+        }
+
+        // If no fields where updated, skip saving and updating.
+        if(!$updated){
+            return;
+        }
+
+        if ($this->configurationService->isAutomationEnabled()) {
+            $product->setStatus(1);
+        }
+
+        $this->catalogProductRepository->save($product);
+
+        $entity->setState($data['state']);
+        $entity->setAttribution('google-translate');
+        $this->productRepository->save($entity);
+
+        // Show a status message in the log for the product
+        $status = sprintf('Product ID: %s - SKU: %s - Contentor ID: %s. Received as pending with intermediateValue.',
+            $product->getId(),
+            $product->getSku(),
+            $entity->getContentorId());
 
         $this->statusRepository->saveStatus(
             $entity->getContentorId(),

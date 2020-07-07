@@ -343,4 +343,20 @@ class Product extends AbstractModel implements ProductInterface , ContentEntityI
     {
         $this->setData(self::ATTRIBUTION, $value);
     }
+
+    /**
+     * @return string
+     */
+    public function getIntermediateValue()
+    {
+        return $this->getData(self::INTERMEDIATE_VALUE);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setIntermediateValue($value)
+    {
+        $this->setData(self::INTERMEDIATE_VALUE, $value);
+    }
 }

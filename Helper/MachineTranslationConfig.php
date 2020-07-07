@@ -17,12 +17,12 @@ class MachineTranslationConfig extends \Magento\Framework\App\Helper\AbstractHel
         ],
         [
             'value' => 'only-automatic',
-            'label' => 'Only Machine Translation'
+            'label' => 'Only Automatic'
         ],
-        // [
-        //     'value' => 'with-post-editing',
-        //     'label' => 'Machine Translation and Rewrite'
-        // ]
+        [
+            'value' => 'with-post-editing',
+            'label' => 'With Post Editing'
+        ]
     ];
 
     /**

@@ -89,6 +89,8 @@ class Category implements ContentUpdateHandlerInterface
             $this->handleConfirmed($entity, $data);
         } else if($data['state'] == 'canceled') {
             $this->handleCanceled($entity, $data);
+        } else if($data['state'] == 'pending') {
+            $this->handlePending($entity, $data);
         }
     }
 
@@ -207,9 +209,61 @@ class Category implements ContentUpdateHandlerInterface
             . ', completion time: '
             . date("Y-m-d H:i:s", strtotime($data['completed']));
 
-        $this->statusRepository->saveStatus(
-            $entity->getContentorId(),
-            $status
-        );
+            $this->statusRepository->saveStatus(
+                $entity->getContentorId(),
+                $status
+            );
+        }
+
+        /**
+         * Handles entries that are pending, currently only handle entries with intermediate_value
+         *
+         * @param ContentEntityInterface $entity
+         * @param array $data
+         * @return void
+         */
+        private function handlePending(ContentEntityInterface $entity, $data) {
+            /** @var \Magento\Catalog\Api\Data\CategoryInterface $category */
+            $category = $this->categoryFactory->create()->setStoreId(
+                $entity->getTargetStore()
+            )->load($entity->getCategoryId());
+
+            // Copy the intermediate_value from the request to the product, if any product has been updated.
+            $updated = false;
+            $this->storeManager->setCurrentStore($entity->getTargetStore());
+            foreach ($data['fields'] as $field) {
+                if ($field['type'] == 'localizable') {
+                    if ( array_key_exists('intermediateValue', $field) ) {
+                        $attribute = substr($field['id'], 0, -4);
+                        $category->setDataUsingMethod($attribute, $field['intermediateValue']);
+                        $updated = true;
+                    }
+                }
+            }
+
+            // If no fields where updated, skip saving and updating.
+            if(!$updated){
+                return;
+            }
+
+            if ($this->configurationService->isAutomationEnabled()) {
+                // If the product should go live when received back update its status
+                $category->setStatus(1);
+            }
+
+            // Save the product with the updated attributes
+            $this->catalogCategoryRepository->save($category);
+
+            // Update the state and completed time of the product
+            $entity->setState($data['state']);
+            $entity->setAttribution('google-translate');
+            $this->categoryRepository->save($entity);;
+
+            $status = 'Received intermediateValue';
+
+            $this->statusRepository->saveStatus(
+                $entity->getContentorId(),
+                $status
+            );
+        }
     }
-}

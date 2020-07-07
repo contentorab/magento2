@@ -23,6 +23,7 @@ interface CategoryInterface
     const DELIVERY_SPEED = 'delivery_speed';
     const MACHINE_TRANSLATION = 'machine_translation';
     const ATTRIBUTION = 'attribution';
+    const INTERMEDIATE_VALUE = 'intermediate_value';
     /**#@-*/
 
     /**
@@ -190,4 +191,15 @@ interface CategoryInterface
      * @return string
      */
     public function getAttribution();
+
+    /**
+     * @param string $value
+     * @return boolean
+     */
+    public function setIntermediateValue($value);
+
+    /**
+     * @return string
+     */
+    public function getIntermediateValue();
 }
