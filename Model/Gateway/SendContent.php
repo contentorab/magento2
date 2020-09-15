@@ -68,7 +68,7 @@ class SendContent
         $headers =  [
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
-            'User-Agent'    => 'ContentorMagento2/0.7.2.1'
+            'User-Agent'    => 'ContentorMagento2/0.7.3'
         ];
 
         /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
