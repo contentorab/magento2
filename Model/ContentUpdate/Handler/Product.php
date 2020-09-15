@@ -170,7 +170,7 @@ class Product implements ContentUpdateHandlerInterface
             )->loadByAttribute('sku', $entity->getSku());
         }
 
-        if ( !$product && !$product->getId()) {
+        if ($product == null || !$product && !$product->getId()) {
             return;
         }
 
