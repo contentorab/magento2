@@ -68,6 +68,9 @@ if ($tot > 0) {
     $i = 0;
     foreach ($categoryList as $category) {
         $details = $block->getCategory($category['category_id']);
+        if(!$details){
+            continue;
+        }
         $categoryName = $details->getName();
         $url = $this->getUrl('catalog/category/edit', ['id' => $details->getId()]);
         if ($i%2) {

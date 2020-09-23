@@ -73,6 +73,9 @@ if ($tot > 0) {
          } else {
              $details = $block->getProduct($prod['m2_product_id'], 'entity_id');
          }
+         if(!$details){
+             continue;
+         }
 
         $prodName = $details->getName();
 
