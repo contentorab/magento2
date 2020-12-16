@@ -201,9 +201,6 @@ class AttributeProvider
                                 'data' => $field['data'],
                                 'value' => $contextValue
                             ];
-
-                        } else {
-                            return [];
                         }
 
                     } else {
