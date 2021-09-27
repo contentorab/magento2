@@ -1,9 +1,19 @@
 <p>
 <h2>Machine Translation</h2>
 <?php
-$machineTranslationOptions = $this->helper('Contentor\LocalizationApi\Helper\MachineTranslationConfig')->getConfig();
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+$machineTranslationViewModel = $block->getData('machineTranslationViewModel');
+$isVersioningEnabled = $machineTranslationViewModel->isVersioningEnabled();
+$machineTranslationOptions = $machineTranslationViewModel ? $machineTranslationViewModel->getConfig() : '';
+
+$configUrl = $this->getUrl(
+    'adminhtml/system_config/edit/section/contentor_options'
+);
+
 ?>
-<select name="machineTranslation">
+<select name="machineTranslation" <?php if($isVersioningEnabled): ?>disabled<?php endif;?>>
     <?php
     foreach ($machineTranslationOptions as $option) {
         print '<option value="' . $option['value'] . '"';
@@ -14,5 +24,12 @@ $machineTranslationOptions = $this->helper('Contentor\LocalizationApi\Helper\Mac
     }
     ?>
 </select><br />
+<?php if($isVersioningEnabled): ?>
+    <br />
+    Currently machine-translation orders are not possible when you have versioning enabled, 
+    please disable versioning in the Contentor <a href="<?=$configUrl; ?>">configuration</a> to use machine-translation.
+    <br />
+<?php endif;?>
+<br />
 <strong>Note:</strong> Some machine-translated content requires <strong>attributions</strong> to the machine-translation provider to be displayed. Please refer to our agreement and <a href="https://developer.contentor.com/concepts/machine-translation/#attributions" target="_blank">documentation</a> for more information.
 </p>

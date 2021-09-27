@@ -1,35 +1,33 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Service;
 
+use Contentor\LocalizationApi\Api\CategoryRepositoryInterface;
 use Contentor\LocalizationApi\Api\Data\CategoryInterface as ContentorCategoryInterface;
 use Contentor\LocalizationApi\Api\Data\CategoryInterfaceFactory;
-use Contentor\LocalizationApi\Api\CategoryRepositoryInterface;
 use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
-use Contentor\LocalizationApi\Model\Logger\Logger;
-use Contentor\LocalizationApi\Model\Gateway\SendContent;
 use Contentor\LocalizationApi\Model\Category\AttributeProviderFactory;
+use Contentor\LocalizationApi\Model\Gateway\SendContent;
+use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Framework\Api\DataObjectHelper;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
-/**
- * Class AbstractCategorySendContent
- * @package Contentor\LocalizationApi\Model\Service
- */
 class AbstractCategorySendContent
 {
     /**
      * @var string
      */
-    protected $_syncType;
+    protected $syncType;
 
     /**
      * @var string
      */
-    protected $_syncName;
+    protected $syncName;
 
     /**
      * @var Logger
@@ -86,7 +84,7 @@ class AbstractCategorySendContent
     protected $testConnection;
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     protected $request;
 
@@ -103,7 +101,7 @@ class AbstractCategorySendContent
      * @param TypeRepositoryInterface $typeRepository
      * @param StatusRepositoryInterface $statusRepository
      * @param TestConnection $testConnection
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param RequestInterface $request
      */
     public function __construct(
         Logger $logger,
@@ -117,7 +115,7 @@ class AbstractCategorySendContent
         TypeRepositoryInterface $typeRepository,
         StatusRepositoryInterface $statusRepository,
         TestConnection $testConnection,
-        \Magento\Framework\App\RequestInterface $request
+        RequestInterface $request
     ) {
         $this->logger = $logger;
         $this->attributeProviderFactory = $attributeProviderFactory;
@@ -134,7 +132,6 @@ class AbstractCategorySendContent
         $this->request = $request;
     }
 
-
     /**
      * @param CategoryInterface $category
      * @param $sourceLocale
@@ -149,11 +146,14 @@ class AbstractCategorySendContent
                 sprintf('Empty attributes map. Skip category %s', $category->getId())
             );
             throw new LocalizedException(__('Something went wrong in the request to Contentor: Empty attributes map.'));
-            return;
         }
 
         try {
-            $this->logger->info('Sending categoryId: ' . $category->getId() . ' for '. $this->_syncName .' to: ' . implode(' ', array_values($targetLocales)));
+            $this->logger->info(
+                'Sending categoryId: ' . $category->getId()
+                . ' for ' . $this->syncName
+                . ' to: ' . implode(' ', array_values($targetLocales))
+            );
 
             foreach ($targetLocales as $targetId => $targetLocale) {
                 $type = 'standard';
@@ -168,7 +168,7 @@ class AbstractCategorySendContent
                         $category->getId(),
                         $targetLocale,
                         $sourceLocale,
-                        $this->_syncType
+                        $this->syncType
                     );
 
                     if (null !== $update->getContentorId()) {
@@ -190,13 +190,22 @@ class AbstractCategorySendContent
                     $this->saveTypeEntity($contentorId);
                     $this->saveStatusEntity(
                         $contentorId,
-                        'Sent category for '. $this->_syncName .' to ' . $targetLocale
+                        'Sent category for ' . $this->syncName . ' to ' . $targetLocale
                     );
 
                     if ($type == 'update') {
-                        $this->logger->info('category: '.$category->getId() . ' to ' . $targetLocale . ' sent as update request to ' . $prevID . ', assigned id ' . $contentorId);
+                        $this->logger->info(
+                            'category: ' . $category->getId()
+                            . ' to ' . $targetLocale
+                            . ' sent as update request to ' . $prevID
+                            . ', assigned id ' . $contentorId
+                        );
                     } else {
-                        $this->logger->info('category: '.$category->getId() . ' to ' . $targetLocale . ' sent as standard request, assigned id ' . $contentorId);
+                        $this->logger->info(
+                            'category: ' . $category->getId() .
+                            ' to ' . $targetLocale .
+                            ' sent as standard request, assigned id ' . $contentorId
+                        );
                     }
                 } else {
                     $this->logger->critical(
@@ -206,13 +215,29 @@ class AbstractCategorySendContent
             }
         } catch (LocalizedException $localizedException) {
             $this->logger->critical(
-                sprintf('Exception for categoryId %s , message : %s',
+                sprintf(
+                    'Exception for categoryId %s , message : %s',
                     $category->getId(),
                     $localizedException->getMessage()
                 )
             );
             throw $localizedException;
         }
+    }
+
+    /**
+     * @param CategoryInterface $category
+     * @return array
+     */
+    protected function getFields(CategoryInterface $category): array
+    {
+        $attributeProvider = $this->attributeProviderFactory->create([
+            'category' => $category,
+            'extraFields' => [],
+            'syncType' => $this->syncType
+        ]);
+
+        return $attributeProvider->getList();
     }
 
     /**
@@ -225,7 +250,7 @@ class AbstractCategorySendContent
      */
     protected function saveEntity($contentorId, $categoryId, $sourceLocale, $targetLocale, $targetId, $type)
     {
-        if(!empty($this->request->getParam('machineTranslation'))){
+        if (!empty($this->request->getParam('machineTranslation'))) {
             $machineTranslation = $this->request->getParam('machineTranslation');
         } else {
             $machineTranslation = 'none';
@@ -243,7 +268,7 @@ class AbstractCategorySendContent
                 ContentorCategoryInterface::TYPE => $type,
                 ContentorCategoryInterface::STATE => 'pending',
                 ContentorCategoryInterface::SENT_TIME => $this->date->gmtDate(),
-                ContentorCategoryInterface::SYNCHRONIZE_TYPE => $this->_syncType,
+                ContentorCategoryInterface::SYNCHRONIZE_TYPE => $this->syncType,
                 ContentorCategoryInterface::DELIVERY_SPEED => $this->request->getParam('deliverySpeed'),
                 ContentorCategoryInterface::MACHINE_TRANSLATION => $machineTranslation
             ],
@@ -257,32 +282,18 @@ class AbstractCategorySendContent
      * @param string $contentorId
      * @return void
      */
-    protected function saveTypeEntity($contentorId)
+    protected function saveTypeEntity($contentorId): void
     {
-        $this->typeRepository->saveContentRequest($contentorId,ContentorCategoryInterface::TYPE_CODE);
+        $this->typeRepository->saveContentRequest($contentorId, ContentorCategoryInterface::TYPE_CODE);
     }
 
     /**
      * @param string $contentorId
      * @param string $status
+     * @return void
      */
-    protected function saveStatusEntity($contentorId, $status)
+    protected function saveStatusEntity($contentorId, $status): void
     {
         $this->statusRepository->saveStatus($contentorId, $status);
-    }
-
-    /**
-     * @param CategoryInterface $category
-     * @return array
-     */
-    protected function getFields(CategoryInterface $category)
-    {
-        $attributeProvider = $this->attributeProviderFactory->create([
-            'category'    => $category,
-            'extraFields' => [],
-            'syncType'    => $this->_syncType
-        ]);
-
-        return $attributeProvider->getList();
     }
 }

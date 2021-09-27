@@ -1,27 +1,23 @@
 <?php
+
 namespace Contentor\LocalizationApi\Service;
 
-/**
- * Class GetAttributeConfigService
- * @package Contentor\LocalizationApi\Service
- */
+use Magento\Framework\App\RequestInterface;
+
 class GetAttributeConfigService
 {
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     private $request;
 
-
     /**
      * GetAttributeConfigService constructor.
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param RequestInterface $request
      */
-    public function __construct(
-        \Magento\Framework\App\RequestInterface $request
-    )
+    public function __construct(RequestInterface $request)
     {
-        $this->request              = $request;
+        $this->request = $request;
     }
 
     /**
@@ -29,10 +25,8 @@ class GetAttributeConfigService
      * Service getting word amount config from request
      * @return array
      */
-    public function execute() {
-
-        $configAttributes = $this->request->getParam('attributesConfig');
-
-        return $configAttributes;
+    public function execute(): array
+    {
+        return $this->request->getParam('attributesConfig');
     }
 }

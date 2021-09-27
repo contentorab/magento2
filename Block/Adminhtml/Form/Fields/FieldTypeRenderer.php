@@ -3,11 +3,13 @@
  * Copyright � 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
-use \Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Html\Select;
 
-class FieldTypeRenderer extends \Magento\Framework\View\Element\Html\Select
+class FieldTypeRenderer extends Select
 {
     /**
      * methodList
@@ -31,7 +33,7 @@ class FieldTypeRenderer extends \Magento\Framework\View\Element\Html\Select
      *
      * @return string
      */
-    public function _toHtml()
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
             $this->addOption('', '');
@@ -42,13 +44,14 @@ class FieldTypeRenderer extends \Magento\Framework\View\Element\Html\Select
         $this->setValue('internal');
         return parent::_toHtml();
     }
+
     /**
      * Sets name for input element
      *
-     * @param  string $value
+     * @param string $value
      * @return $this
      */
-    public function setInputName($value)
+    public function setInputName($value): FieldTypeRenderer
     {
         return $this->setName($value);
     }

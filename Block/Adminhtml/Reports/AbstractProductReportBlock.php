@@ -1,46 +1,50 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Reports;
 
-use \Magento\Framework\App\ResourceConnection;
-use \Magento\Framework\Locale\ListsInterface;
-use \Magento\Store\Model\StoreRepository;
-use \Magento\Catalog\Model\ProductFactory;
-use \Magento\Framework\App\Request\Http;
+use Exception;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Catalog\Model\AbstractModel;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Locale\ListsInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreRepository;
+use Psr\Log\LoggerInterface;
 
-/**
- * Class AbstractProductReportBlock
- * @package Contentor\LocalizationApi\Block\Adminhtml\Reports
- */
-class AbstractProductReportBlock extends \Magento\Backend\Block\Template
+class AbstractProductReportBlock extends Template
 {
     /**
-     * @var
+     * @var int
      */
-    protected $_syncType;
+    protected $syncType;
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
     /**
      * @var ResourceConnection
      */
-    protected $_resource;
+    protected $resource;
     /**
      * @var ListsInterface
      */
-    protected $_localeList;
+    protected $localeList;
     /**
      * @var StoreRepository
      */
-    protected $_storeRepository;
+    protected $storeRepository;
     /**
      * @var ProductFactory
      */
-    protected $_productFactory;
+    protected $productFactory;
 
     /**
      * AbstractProductReportBlock constructor.
-     * @param \Magento\Backend\Block\Template\Context $context
+     * @param Context $context
      * @param ResourceConnection $resource
      * @param ListsInterface $localeList
      * @param StoreRepository $storeRepository
@@ -49,36 +53,41 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
+        Context $context,
         ResourceConnection $resource,
         ListsInterface $localeList,
         StoreRepository $storeRepository,
         ProductFactory $productFactory,
         Http $request,
         array $data = []
-    )
-    {
-        $this->_logger = $context->getLogger();
-        $this->_resource = $resource;
-        $this->_localeList = $localeList;
-        $this->_storeRepository = $storeRepository;
-        $this->_productFactory = $productFactory;
+    ) {
+        $this->logger = $context->getLogger();
+        $this->resource = $resource;
+        $this->localeList = $localeList;
+        $this->storeRepository = $storeRepository;
+        $this->productFactory = $productFactory;
         $this->_request = $request;
         parent::__construct($context, $data);
     }
 
     /**
      * @return int
-     * @throws \Zend_Db_Statement_Exception
      */
-    public function getTotal()
+    public function getTotal(): int
     {
-        $connection = $this->_resource->getConnection('core_read');
-        $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `m2_product_id` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType. " GROUP BY `m2_product_id`, `source_locale`";
-        $result = $connection->query($query);
-        $total = $result->rowCount();
-
+        $total = 0;
+        try {
+            $connection = $this->resource->getConnection('core_read');
+            $table = $this->resource->getTableName('contentor_products');
+            $query = $connection->select()
+                ->from(['cp' => $table])
+                ->where('synchronize_type =?', $this->syncType)
+                ->group(['m2_product_id', 'source_locale']);
+            $result = $connection->query($query);
+            $total = $result->rowCount();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
         return $total;
     }
 
@@ -87,64 +96,72 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
      * @param $pagesize
      * @return array
      */
-    public function getProductList($offset, $pagesize)
+    public function getProductList($offset, $pagesize): array
     {
-        $connection = $this->_resource->getConnection('core_read');
-        $table = $this->_resource->getTableName('contentor_products');
+        $result = [];
+        try {
+            $connection = $this->resource->getConnection('core_read');
+            $table = $this->resource->getTableName('contentor_products');
 
-        $queryGroupSku = "SELECT `m2_product_id`,
-                    `sku`,
-                    `delivery_speed` AS deliverySpeed,
-                    `machine_translation` AS machineTranslation,
-                    `attribution`,
-					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
-					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
-					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "`
-				WHERE `synchronize_type` = ". $this->_syncType ."  AND ( `m2_product_id` IS NULL OR `m2_product_id` = 0 )
-				GROUP BY `sku`, `source_locale`, `delivery_speed`,`machine_translation`
-				ORDER BY `sent_time` DESC
-				LIMIT " . $offset . "," . $pagesize;
+            $queryGroupSku = $connection->select()
+                ->from(['cp' => $table], [
+                    'cp.m2_product_id',
+                    'cp.sku',
+                    'deliverySpeed' => 'cp.delivery_speed',
+                    'machineTranslation' => 'cp.machine_translation',
+                    'cp.attribution',
+                    'sent' => "group_concat(`cp`.`target_store`, ';', `cp`.`sent_time`)",
+                    'completed' => "group_concat(`cp`.`target_store`, ';', `cp`.`completed_time`)",
+                    'source' => 'cp.source_locale',
+                    'state' => "group_concat(`cp`.`target_store`, ';', `cp`.`state`)"
+                ])->where(
+                    "`cp`.`synchronize_type`= ? AND (`cp`.`m2_product_id` IS NULL OR `cp`.`m2_product_id` = 0)",
+                    $this->syncType
+                )->group(['sku', 'source_locale', 'delivery_speed', 'machine_translation'])
+                ->order('sent_time DESC')
+                ->limit($pagesize, $offset);
 
-        $productListGroupSku = $connection->fetchAll($queryGroupSku);
-
-        $query = "SELECT `m2_product_id`,
-                    `sku`,
-                    `delivery_speed` AS deliverySpeed,
-                    `machine_translation` AS machineTranslation,
-                    `attribution`,
-					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
-					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
-					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "`
-				WHERE `synchronize_type` = ". $this->_syncType ."  AND `m2_product_id` IS NOT NULL
-				GROUP BY `sku`, `source_locale`, `delivery_speed`,`machine_translation`
-				ORDER BY `sent_time` DESC
-				LIMIT " . $offset . "," . $pagesize;
-
-        $productList = $connection->fetchAll($query);
-
-        $productList  = array_merge($productList, $productListGroupSku);
-
-        return $productList;
+            $productListGroupSku = $connection->fetchAll($queryGroupSku);
+            $query = $connection->select()
+                ->from(['cp' => $table], [
+                    'cp.m2_product_id',
+                    'cp.sku',
+                    'deliverySpeed' => 'cp.delivery_speed',
+                    'machineTranslation' => 'cp.machine_translation',
+                    'cp.attribution',
+                    'sent' => "group_concat(`cp`.`target_store`, ';', `cp`.`sent_time`)",
+                    'completed' => "group_concat(`cp`.`target_store`, ';', `cp`.`completed_time`)",
+                    'source' => 'cp.source_locale',
+                    'state' => "group_concat(`cp`.`target_store`, ';', `cp`.`state`)"
+                ])
+                ->where("`cp`.`synchronize_type`= ? AND `cp`.`m2_product_id` IS NOT NULL", $this->syncType)
+                ->group(['sku', 'source_locale', 'delivery_speed', 'machine_translation'])
+                ->order('sent_time DESC')
+                ->limit($pagesize, $offset);
+            $productList = $connection->fetchAll($query);
+            $result = array_merge($productList, $productListGroupSku);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+        return $result;
     }
 
     /**
      * @param $id
      * @param $field
-     * @return mixed
+     * @return bool|AbstractModel
      */
     public function getProduct($id, $field)
     {
-        return $this->_productFactory->create()->loadByAttribute($field, $id);
+        return $this->productFactory->create()->loadByAttribute($field, $id);
     }
 
     /**
-     * @return \Magento\Store\Api\Data\StoreInterface[]
+     * @return StoreInterface[]
      */
-    public function getStores()
+    public function getStores(): array
     {
-        return $this->_storeRepository->getList();
+        return $this->storeRepository->getList();
     }
 
     /**
@@ -153,7 +170,7 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
      */
     public function getStoreLocale($id)
     {
-        return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+        return $this->_scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $id);
     }
 
     /**
@@ -169,7 +186,11 @@ class AbstractProductReportBlock extends \Magento\Backend\Block\Template
      * @param $page
      * @return string
      */
-    public function getPage($page) {
-        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page, 'key' => $this->_request->getParam('key') ]);
+    public function getPage($page): string
+    {
+        return $this->getUrl(
+            'contentor/reports/productreport',
+            ['page' => $page, 'key' => $this->_request->getParam('key')]
+        );
     }
 }

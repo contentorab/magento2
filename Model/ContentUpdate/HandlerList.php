@@ -1,13 +1,14 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ContentUpdate;
 
-use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Product;
 use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Category;
+use Contentor\LocalizationApi\Model\ContentUpdate\Handler\Product;
+use Contentor\LocalizationApi\Model\Spi\ContentUpdateHandlerInterface;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class HandlerList
- * @package Contentor\LocalizationApi\Model\ContentUpdate
  *
  * Work with ContentUpdateHandlerInterface handlers
  * Used for search handler by code (product, in future category and CMS)
@@ -29,27 +30,26 @@ class HandlerList
         Category $category
     ) {
         $this->handlers = [
-            'product'  => $product,
+            'product' => $product,
             'category' => $category
         ];
     }
 
     /**
      * Returns related handler by code see di.xml for available handlers
-     * @see di.xml for available handlers
      * @param string $code
      * @param array $arguments
-     * @return \Contentor\LocalizationApi\Model\Spi\ContentUpdateHandlerInterface
+     * @return ContentUpdateHandlerInterface
      * @throws LocalizedException
+     * @see di.xml for available handlers
      */
-    public function getHandlerByCode($code, array $arguments = [])
+    public function getHandlerByCode($code, array $arguments = []): ContentUpdateHandlerInterface
     {
         $handler = $this->handlers[$code];
-        if(empty($handler)) {
+        if (empty($handler)) {
             throw  new LocalizedException(__('Handler with code %1 is not defined', $code));
         }
 
         return $handler;
     }
 }
-

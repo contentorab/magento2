@@ -1,28 +1,30 @@
 <?php
+
 namespace Contentor\LocalizationApi\Api;
+
+use Contentor\LocalizationApi\Api\Data\TypeInterface;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Interface ProductRepositoryInterface
- * @package Contentor\LocalizationApi\Api
  * @api
  */
 interface TypeRepositoryInterface
 {
     /**
      * Save Product content Type.
-     *
-     * @param int $contentorId
+     * @param $contentorId
      * @param string $typeCode
-     * @return Data\TypeInterface
+     * @return TypeInterface
      */
-    public function saveContentRequest($contentorId, $typeCode = Data\ProductInterface::TYPE_CODE);
+    public function saveContentRequest($contentorId, $typeCode = Data\ProductInterface::TYPE_CODE): TypeInterface;
 
     /**
      * Returns content type code by contentorID
      *
      * @param string $contentorId
      * @return string string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function getByContentorId($contentorId);
+    public function getByContentorId($contentorId): string;
 }

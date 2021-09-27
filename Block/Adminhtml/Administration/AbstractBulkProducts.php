@@ -1,45 +1,42 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 
-use \Magento\Backend\Block\Template\Context;
-use \Contentor\LocalizationApi\Helper\ContentorAPI;
-use \Magento\Framework\Locale\ListsInterface;
-use \Magento\Store\Model\System\Store;
-use \Magento\Ui\Component\MassAction\Filter;
-use \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Contentor\LocalizationApi\Service\ConfigurationService;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Locale\ListsInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\System\Store;
+use Magento\Ui\Component\MassAction\Filter;
 
-/**
- * Class AbstractBulkProducts
- * @package Contentor\LocalizationApi\Block\Adminhtml\Administration
- */
-abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
+abstract class AbstractBulkProducts extends Template
 {
     /**
      * @var int
      */
-    protected $_syncType;
+    protected $syncType;
 
     /**
      * @var string
      */
     protected $_template = 'administration/bulkproducts.phtml';
+
     /**
      * @var
      */
-    protected $_btnSubmitLabel;
-    /**
-     * @var ContentorAPI
-     */
-    protected $_contentorApi;
+    protected $btnSubmitLabel;
+
     /**
      * @var ListsInterface
      */
-    protected $_localeList;
+    protected $localeList;
     /**
      * @var Store
      */
-    protected $_systemStores;
+    protected $systemStores;
     /**
      * @var Filter
      */
@@ -49,30 +46,30 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
      */
     protected $collectionFactory;
 
+    /**
+     * @var ConfigurationService
+     */
     protected $configurationService;
 
     /**
      * AbstractBulkProducts constructor.
      * @param Context $context
-     * @param ContentorAPI $contentorApi
      * @param ListsInterface $localeList
      * @param Store $systemStores
      * @param Filter $filter
      * @param CollectionFactory $collectionFactory
+     * @param ConfigurationService $configurationService
      */
     public function __construct(
         Context $context,
-        ContentorAPI $contentorApi,
         ListsInterface $localeList,
         Store $systemStores,
         Filter $filter,
         CollectionFactory $collectionFactory,
         ConfigurationService $configurationService
     ) {
-
-        $this->_contentorApi = $contentorApi;
-        $this->_localeList = $localeList;
-        $this->_systemStores = $systemStores;
+        $this->localeList = $localeList;
+        $this->systemStores = $systemStores;
         $this->_scopeConfig = $context->getScopeConfig();
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
@@ -84,17 +81,17 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
     /**
      * @return array
      */
-    public function getLocaleList()
+    public function getLocaleList(): array
     {
-        return $this->_localeList->getOptionLocales();
+        return $this->localeList->getOptionLocales();
     }
 
     /**
      * @return array
      */
-    public function getStoreViews()
+    public function getStoreViews(): array
     {
-        return $this->_systemStores->getStoresStructure();
+        return $this->systemStores->getStoresStructure();
     }
 
     /**
@@ -103,37 +100,37 @@ abstract class AbstractBulkProducts extends \Magento\Backend\Block\Template
      */
     public function getStoreLocale($id)
     {
-        return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+        return $this->_scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $id);
     }
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function getProductsWithFilter()
+    public function getProductsWithFilter(): array
     {
         $collection = $this->filter->getCollection($this->collectionFactory->create());
-        $products = $collection->getAllIds();
-
-        return $products;
+        return $collection->getAllIds();
     }
 
     /**
      * @return string
      */
-    public function getLabelSubmitButton(){
-        return $this->_btnSubmitLabel;
+    public function getLabelSubmitButton(): string
+    {
+        return $this->btnSubmitLabel;
     }
 
     /**
      * @return int
      */
-    public function getSyncType(){
-        return $this->_syncType;
+    public function getSyncType(): int
+    {
+        return $this->syncType;
     }
 
     /**
      * @return string
      */
-    abstract function getSendUrl();
+    abstract public function getSendUrl(): string;
 }

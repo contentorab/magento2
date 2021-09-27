@@ -1,12 +1,21 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
+
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldDataTypeRenderer;
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldTypeRenderer;
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\RequiredRenderer;
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\SourceRenderer;
+use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\BlockInterface;
 
 /**
  * Abstract class for configuration of localization feature
  * Class AbstractLocalizedFields
- * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
  */
-class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class AbstractLocalizedFields extends AbstractFieldArray
 {
     /**
      * Grid columns
@@ -61,8 +70,6 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
 
     /**
      * Check if columns are defined, set template
-     *
-     * @return void
      */
     protected function _construct()
     {
@@ -70,80 +77,15 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
         parent::_construct();
     }
 
-
     /**
-     * @return \Magento\Framework\View\Element\BlockInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return BlockInterface
+     * @throws LocalizedException
      */
-    protected function getAttributeRenderer()
-    {
-        if (!$this->_attributeRenderer) {
-            $this->_attributeRenderer = $this->getLayout()->createBlock(
-                $this->_attributeRendererClass,
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->_attributeRenderer;
-    }
-
-    /**
-     * @return \Magento\Framework\View\Element\BlockInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function getSourceRenderer()
-    {
-        if (!$this->_sourceRenderer) {
-            $this->_sourceRenderer = $this->getLayout()->createBlock(
-                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\SourceRenderer',
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->_sourceRenderer;
-    }
-
-    /**
-     * @return \Magento\Framework\View\Element\BlockInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function getFieldTypeRenderer()
-    {
-        if (!$this->_fieldTypeRenderer) {
-            $this->_fieldTypeRenderer = $this->getLayout()->createBlock(
-                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldTypeRenderer',
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->_fieldTypeRenderer;
-    }
-
-    /**
-     * @return \Magento\Framework\View\Element\BlockInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function getFieldDataTypeRenderer()
-    {
-        if (!$this->_fieldDataTypeRenderer) {
-            $this->_fieldDataTypeRenderer = $this->getLayout()->createBlock(
-                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\FieldDataTypeRenderer',
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->_fieldDataTypeRenderer;
-    }
-
-    /**
-     * @return \Magento\Framework\View\Element\BlockInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function getRequiredRenderer()
+    protected function getRequiredRenderer(): BlockInterface
     {
         if (!$this->_requiredRenderer) {
             $this->_requiredRenderer = $this->getLayout()->createBlock(
-                '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\RequiredRenderer',
+                RequiredRenderer::class,
                 '',
                 ['data' => ['is_render_to_js_template' => true]]
             );
@@ -152,9 +94,9 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
     }
 
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    protected function _prepareToRender()
+    protected function _prepareToRender(): void
     {
         $this->addColumn(
             'attribute',
@@ -188,23 +130,79 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
             ]
         );
 
-        // $this->addColumn(
-        //     'required',
-        //     [
-        //         'label' => __('Required'),
-        //         'renderer' => $this->getRequiredRenderer(),
-        //     ]
-        // );
-
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add');
     }
 
     /**
-     * @param \Magento\Framework\DataObject $row
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return BlockInterface
+     * @throws LocalizedException
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    protected function getAttributeRenderer(): BlockInterface
+    {
+        if (!$this->_attributeRenderer) {
+            $this->_attributeRenderer = $this->getLayout()->createBlock(
+                $this->_attributeRendererClass,
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->_attributeRenderer;
+    }
+
+    /**
+     * @return BlockInterface
+     * @throws LocalizedException
+     */
+    protected function getSourceRenderer(): BlockInterface
+    {
+        if (!$this->_sourceRenderer) {
+            $this->_sourceRenderer = $this->getLayout()->createBlock(
+                SourceRenderer::class,
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->_sourceRenderer;
+    }
+
+    /**
+     * @return BlockInterface
+     * @throws LocalizedException
+     */
+    protected function getFieldTypeRenderer(): BlockInterface
+    {
+        if (!$this->_fieldTypeRenderer) {
+            $this->_fieldTypeRenderer = $this->getLayout()->createBlock(
+                FieldTypeRenderer::class,
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->_fieldTypeRenderer;
+    }
+
+    /**
+     * @return BlockInterface
+     * @throws LocalizedException
+     */
+    protected function getFieldDataTypeRenderer(): BlockInterface
+    {
+        if (!$this->_fieldDataTypeRenderer) {
+            $this->_fieldDataTypeRenderer = $this->getLayout()->createBlock(
+                FieldDataTypeRenderer::class,
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->_fieldDataTypeRenderer;
+    }
+
+    /**
+     * @param DataObject $row
+     * @throws LocalizedException
+     */
+    protected function _prepareArrayRow(DataObject $row): void
     {
         $productAttribute = $row->getData('attribute');
         $source = $row->getData('store');
@@ -214,7 +212,8 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
 
         $options = [];
         if ($productAttribute) {
-            $options['option_' . $this->getAttributeRenderer()->calcOptionHash($productAttribute)] = 'selected="selected"';
+            $options['option_'
+            . $this->getAttributeRenderer()->calcOptionHash($productAttribute)] = 'selected="selected"';
         }
 
         if ($source) {
@@ -226,7 +225,8 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
         }
 
         if ($fieldDatatype) {
-            $options['option_' . $this->getFieldDataTypeRenderer()->calcOptionHash($fieldDatatype)] = 'selected="selected"';
+            $options['option_'
+            . $this->getFieldDataTypeRenderer()->calcOptionHash($fieldDatatype)] = 'selected="selected"';
         }
 
         if ($required) {
@@ -234,18 +234,5 @@ class AbstractLocalizedFields extends \Magento\Config\Block\System\Config\Form\F
         }
 
         $row->setData('option_extra_attrs', $options);
-    }
-
-    /**
-     * Render array cell for prototypeJS template
-     *
-     * @param  string $columnName
-     * @return string
-     * @throws \Exception
-     */
-    public function renderCellTemplate($columnName)
-    {
-
-        return parent::renderCellTemplate($columnName);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Service;
 
 use Contentor\LocalizationApi\Model\Gateway\TestConnection as GatewayTestConnection;
@@ -11,10 +12,12 @@ use Magento\Framework\Exception\LocalizedException;
  */
 class TestConnection
 {
+
     /**
      * @var GatewayTestConnection
      */
     private $testConnection;
+
     /**
      * @var ConfigurationService
      */
@@ -45,7 +48,8 @@ class TestConnection
         if (true === $configuration['error']) {
             throw new LocalizedException(
                 __(implode(
-                    ',' ,$configuration['messages']
+                    ',',
+                    $configuration['messages']
                 ))
             );
         }

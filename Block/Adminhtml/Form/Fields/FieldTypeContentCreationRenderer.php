@@ -3,15 +3,13 @@
  * Copyright � 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
-use \Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Html\Select;
 
-/**
- * Class FieldTypeContentCreationRenderer
- * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
- */
-class FieldTypeContentCreationRenderer extends \Magento\Framework\View\Element\Html\Select
+class FieldTypeContentCreationRenderer extends Select
 {
     /**
      * methodList
@@ -39,7 +37,7 @@ class FieldTypeContentCreationRenderer extends \Magento\Framework\View\Element\H
      *
      * @return string
      */
-    public function _toHtml()
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
             $this->addOption('', '');
@@ -49,13 +47,14 @@ class FieldTypeContentCreationRenderer extends \Magento\Framework\View\Element\H
         }
         return parent::_toHtml();
     }
+
     /**
      * Sets name for input element
      *
-     * @param  string $value
+     * @param string $value
      * @return $this
      */
-    public function setInputName($value)
+    public function setInputName($value): FieldTypeContentCreationRenderer
     {
         return $this->setName($value);
     }

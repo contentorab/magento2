@@ -1,24 +1,24 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Html\Select;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreRepository;
 
-/**
- * Class SourceRenderer
- * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
- */
-class SourceRenderer extends \Magento\Framework\View\Element\Html\Select
+class SourceRenderer extends Select
 {
     /**
      * @var StoreRepository
      */
-    protected $_storeRepository;
+    protected $storeRepository;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    protected $scopeConfig;
 
     /**
      * SourceRenderer constructor.
@@ -32,8 +32,8 @@ class SourceRenderer extends \Magento\Framework\View\Element\Html\Select
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_storeRepository = $storeRepository;
-        $this->_scopeConfig = $context->getScopeConfig();
+        $this->storeRepository = $storeRepository;
+        $this->scopeConfig = $context->getScopeConfig();
     }
 
     /**
@@ -41,14 +41,13 @@ class SourceRenderer extends \Magento\Framework\View\Element\Html\Select
      *
      * @return string
      */
-    public function _toHtml()
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
-            $stores = $this->_storeRepository->getList();
+            $stores = $this->storeRepository->getList();
             $this->addOption('', '');
             foreach ($stores as $store) {
                 if ($store->getId()) {
-                    $locale = $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getStoreId());
                     $this->addOption($store->getId(), $store->getName());
                 }
             }
@@ -59,7 +58,7 @@ class SourceRenderer extends \Magento\Framework\View\Element\Html\Select
     /**
      * Sets name for input element
      *
-     * @param  string $value
+     * @param string $value
      * @return $this
      */
     public function setInputName($value)

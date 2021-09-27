@@ -1,13 +1,12 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel;
 
 use Contentor\LocalizationApi\Api\Data\TypeInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use \Magento\Framework\Model\ResourceModel\Db\Context;
+use Psr\Log\LoggerInterface;
 
-/**
- * Class Type
- * @package Contentor\LocalizationApi\Model\ResourceModel
- */
 class Type extends AbstractDb
 {
     /**
@@ -16,8 +15,21 @@ class Type extends AbstractDb
     protected $_isPkAutoIncrement = false;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        Context $context,
+        LoggerInterface $logger,
+        $connectionName = null
+    ) {
+        $this->logger = $logger;
+        parent::__construct($context, $connectionName);
+    }
+
+    /**
      * @inheritdoc
-     * @void
      */
     public function _construct()
     {
@@ -30,14 +42,19 @@ class Type extends AbstractDb
     /**
      * @param int $contentorId
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getByContentorId($contentorId)
+    public function getByContentorId($contentorId): string
     {
-        $connection = $this->getConnection();
-        $select = $connection->select();
-        $select->from($this->getMainTable(), ['type']);
-        $select->where('contentor_id =?', $contentorId);
-        return $connection->fetchOne($select);
+        $result = [];
+        try {
+            $connection = $this->getConnection();
+            $select = $connection->select();
+            $select->from($this->getMainTable(), ['type']);
+            $select->where('contentor_id =?', $contentorId);
+            $result = $connection->fetchOne($select);
+        } catch (\Exception $e) {
+            $this->logger->error('Cannot get contentor_id: ' . $e->getMessage());
+        }
+        return $result;
     }
 }

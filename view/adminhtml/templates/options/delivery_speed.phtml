@@ -1,7 +1,12 @@
 <p>
 <h2>Delivery Speed</h2>
 <?php
-$deliveryOptions = $this->helper('Contentor\LocalizationApi\Helper\DeliveryExpressConfig')->getConfig();
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+$deliveryExpressViewModel = $block->getData('deliveryExpressViewModel');
+$deliveryOptions = $deliveryExpressViewModel ? $deliveryExpressViewModel->getConfig() : '';
 ?>
 <select name="deliverySpeed">
     <?php

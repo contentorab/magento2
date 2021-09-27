@@ -1,12 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Api;
 
 use Contentor\LocalizationApi\Api\Data\CategoryInterface;
+use Magento\Framework\DataObject;
 
-/**
- * Interface CategoryRepositoryInterface
- * @package Contentor\LocalizationApi\Api
- */
 interface CategoryRepositoryInterface
 {
     /**
@@ -16,11 +14,11 @@ interface CategoryRepositoryInterface
      * @param int $synchronizeType
      * @return CategoryInterface
      */
-    public function getLastUpdateByLocale($categoryId , $targetLocale, $sourceLocale, $synchronizeType);
+    public function getLastUpdateByLocale($categoryId, $targetLocale, $sourceLocale, $synchronizeType): DataObject;
 
     /**
      * @param CategoryInterface $category
      * @return CategoryInterface
      */
-    public function save(CategoryInterface $category);
+    public function save(CategoryInterface $category): CategoryInterface;
 }

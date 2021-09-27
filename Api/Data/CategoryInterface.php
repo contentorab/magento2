@@ -1,9 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Api\Data;
 
 interface CategoryInterface
 {
-    /**#@+
+    /**
      * Column names
      * @var string
      */
@@ -24,182 +25,180 @@ interface CategoryInterface
     const MACHINE_TRANSLATION = 'machine_translation';
     const ATTRIBUTION = 'attribution';
     const INTERMEDIATE_VALUE = 'intermediate_value';
-    /**#@-*/
 
     /**
-     * @param  int $contentorId
+     * @param int $contentorId
      * @return void
      */
-    public function setContentorId($contentorId);
+    public function setContentorId($contentorId): void;
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getContentorId();
-
 
     /**
      * @param int $value
      * @return void
      */
-    public function setCategoryId($value);
+    public function setCategoryId($value): void;
 
     /**
      * @return int
      */
-    public function getCategoryId();
+    public function getCategoryId(): int;
 
     /**
      * @param string $sourceLocale
      * @return void
      */
-    public function setSourceLocale($sourceLocale);
+    public function setSourceLocale($sourceLocale): void;
 
     /**
      * @return string
      */
-    public function getSourceLocale();
+    public function getSourceLocale(): string;
 
     /**
      * @param string $targetLocale
      * @return void
      */
-    public function setTargetLocale($targetLocale);
+    public function setTargetLocale($targetLocale): void;
 
     /**
      * @return string
      */
-    public function getTargetLocale();
+    public function getTargetLocale(): string;
 
     /**
      * @param string $targetStore
      * @return void
      */
-    public function setTargetStore($targetStore);
+    public function setTargetStore($targetStore): void;
 
     /**
      * @return string
      */
-    public function getTargetStore();
+    public function getTargetStore(): string;
 
     /**
      * @param string $sendTime
      * @return void
      */
-    public function setSentTime($sendTime);
+    public function setSentTime($sendTime): void;
 
     /**
      * @return string
      */
-    public function getSentTime();
+    public function getSentTime(): string;
 
     /**
      * @param string $completedTime
      * @return void
      */
-    public function setCompletedTime($completedTime);
+    public function setCompletedTime($completedTime): void;
 
     /**
      * @return string
      */
-    public function getCompletedTime();
+    public function getCompletedTime(): string;
 
     /**
      * @param string $deadlineTime
      * @return void
      */
-    public function setDeadlineTime($deadlineTime);
+    public function setDeadlineTime($deadlineTime): void;
 
     /**
      * @return string
      */
-    public function getDeadlineTime();
+    public function getDeadlineTime(): string;
 
     /**
      * @param string $canceledTime
      * @return void
      */
-    public function setCanceledTime($canceledTime);
+    public function setCanceledTime($canceledTime): void;
 
     /**
      * @return string
      */
-    public function getCanceledTime();
+    public function getCanceledTime(): string;
 
     /**
      * @param string $state
      * @return void
      */
-    public function setState($state);
+    public function setState($state): void;
 
     /**
      * @return string
      */
-    public function getState();
+    public function getState(): string;
 
     /**
      * @param string $type
      * @return void
      */
-    public function setType($type);
+    public function setType($type): void;
 
     /**
      * @return string
      */
-    public function getType();
+    public function getType(): string;
 
     /**
      * @param int $type
-     * @return boolean
+     * @return void
      */
-    public function setSynchronizeType($type);
+    public function setSynchronizeType($type): void;
 
     /**
      * @return int
      */
-    public function getSynchronizeType();
+    public function getSynchronizeType(): int;
 
     /**
      * @param string $value
-     * @return boolean
+     * @return void
      */
-    public function setDeliverySpeed($value);
+    public function setDeliverySpeed($value): void;
 
     /**
      * @return string
      */
-    public function getDeliverySpeed();
+    public function getDeliverySpeed(): string;
 
     /**
      * @param string $value
-     * @return boolean
+     * @return void
      */
-    public function setMachineTranslation($value);
+    public function setMachineTranslation($value): void;
 
     /**
      * @return string
      */
-    public function getMachineTranslation();
+    public function getMachineTranslation(): string;
 
     /**
      * @param string $value
-     * @return boolean
+     * @return void
      */
-    public function setAttribution($value);
+    public function setAttribution($value): void;
 
     /**
      * @return string
      */
-    public function getAttribution();
+    public function getAttribution(): string;
 
     /**
      * @param string $value
-     * @return boolean
+     * @return void
      */
-    public function setIntermediateValue($value);
+    public function setIntermediateValue($value): void;
 
     /**
      * @return string
      */
-    public function getIntermediateValue();
+    public function getIntermediateValue(): string;
 }

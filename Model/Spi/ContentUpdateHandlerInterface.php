@@ -1,9 +1,7 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Spi;
 
-/**
- * Interface ContentUpdateHandlerInterface
- */
 interface ContentUpdateHandlerInterface
 {
     /**
@@ -14,5 +12,5 @@ interface ContentUpdateHandlerInterface
      * @param array $data
      * @return void
      */
-    public function execute(ContentEntityInterface $entity, array $data);
+    public function execute(ContentEntityInterface $entity, array $data): void;
 }

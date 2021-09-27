@@ -1,14 +1,16 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface;
+use Contentor\LocalizationApi\Api\Data\TypeInterface;
 use Contentor\LocalizationApi\Api\Data\TypeInterfaceFactory;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
 use Contentor\LocalizationApi\Model\ResourceModel\Type;
 
 /**
  * Class TypeRepository
- * @package Contentor\LocalizationApi\Model
+ *
  * @api
  * Allow to save different contentorId->type relations.
  * We need to know what type of content linked to ContentorId.
@@ -39,16 +41,10 @@ class TypeRepository implements TypeRepositoryInterface
     }
 
     /**
-     * Save Product content Type.
-     *
-     * @param int $contentorId
-     * @param string $typeCode
-     * @return \Contentor\LocalizationApi\Api\Data\TypeInterface
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @inheritdoc
      */
-    public function saveContentRequest($contentorId, $typeCode = ProductInterface::TYPE_CODE)
+    public function saveContentRequest($contentorId, $typeCode = ProductInterface::TYPE_CODE): TypeInterface
     {
-        /** @var \Contentor\LocalizationApi\Api\Data\TypeInterface $type */
         $type = $this->typeInterfaceFactory->create();
         $type->setContentorId($contentorId);
         $type->setType($typeCode);
@@ -57,13 +53,9 @@ class TypeRepository implements TypeRepositoryInterface
     }
 
     /**
-     * Returns content type code by contentorID
-     *
-     * @param string $contentorId
-     * @return string string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @inheritdoc
      */
-    public function getByContentorId($contentorId)
+    public function getByContentorId($contentorId): string
     {
         return $this->typeResource->getByContentorId($contentorId);
     }

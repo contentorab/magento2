@@ -1,14 +1,15 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Gateway;
 
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
-use Contentor\LocalizationApi\Service\ConfigurationService;
+use Magento\Framework\Exception\LocalizedException;
+use Zend_Http_Client;
 
 /**
  * Class TestConnection
- * @package Contentor\LocalizationApi\Model\Gateway
  *
  * Gateway command for URL [ContentorBaseUrl]/auth:GET.
  * Responsibility : Check if API ready.
@@ -33,8 +34,7 @@ class TestConnection
     private $jsonToArrayConverter;
 
     /**
-     * SendContent constructor.
-     * @param ConfigurationService $configurationService
+     * TestConnection constructor.
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      * @param JsonToArray $jsonToArrayConverter
@@ -51,22 +51,21 @@ class TestConnection
 
     /**
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function execute()
+    public function execute(): bool
     {
         //todo : logic of this check was wrong on base implementation. skip for now
         return true;
-        $headers =  [
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json'
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
         ];
-        /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
         $transfer = $this->httpRequestTransferInterfaceFactory->create([
             'headers' => $headers,
             'params' => [],
             'body' => '',
-            'method' => \Zend_Http_Client::GET,
+            'method' => Zend_Http_Client::GET,
             'uri' => 'v1/auth'
         ]);
 
@@ -77,6 +76,5 @@ class TestConnection
         );
 
         return !empty($result['companyName']);
-
     }
 }

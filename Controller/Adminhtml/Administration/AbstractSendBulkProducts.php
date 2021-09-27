@@ -1,18 +1,17 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Backend\App\Action;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Backend\App\Action\Context;
+use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\Request\Http;
-use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Class SendBulkProducts
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
- */
 class AbstractSendBulkProducts extends Action
 {
     /**
@@ -73,7 +72,7 @@ class AbstractSendBulkProducts extends Action
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @return ResponseInterface|ResultInterface|void
      */
     public function execute()
     {
@@ -81,25 +80,26 @@ class AbstractSendBulkProducts extends Action
         $max = 10;
         $data = $this->_request->getParams();
 
-        $productlist = explode(',', $data['products']);
-        $numberProducts = count($productlist);
-        $sourceLocale =  str_replace('_', '-', $data['source']);
-        $targetIDs = explode(",", $data["targets"]);
-        $numberTargets = count($targetIDs);
+        $productList = explode(',', $data['products']);
+        $numberProducts = count($productList);
+        $sourceLocale = str_replace('_', '-', $data['source']);
+        $targetIds = explode(",", $data["targets"]);
+        $numberTargets = count($targetIds);
 
-        foreach ($targetIDs as $targetID) {
-            $targets[$targetID] = str_replace('_', '-', $this->configurationService->getMainLocale($targetID));
+        foreach ($targetIds as $targetId) {
+            $targets[$targetId] =
+                str_replace('_', '-', $this->configurationService->getMainLocale($targetId));
         }
 
         // Check if source in targets?
         if (!count($targets)) {
             $this->getResponse()->setBody('No data sent!<br>No target selected');
-        } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
+        } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true) {
             $this->getResponse()->setBody('No data sent!<br>Source language in targets');
         } else {
             // Loop products
             if ($data["total"] == 0) {
-                $total = $numberProducts*$numberTargets;
+                $total = $numberProducts * $numberTargets;
             } else {
                 $total = $data["total"];
             }
@@ -108,17 +108,17 @@ class AbstractSendBulkProducts extends Action
                 $max = $numberProducts;
             }
 
-            for ($i=0; $i<$max; $i++) {
+            for ($i = 0; $i < $max; $i++) {
                 // Send some products
-                $prodID = $productlist[$i];
+                $prodID = $productList[$i];
 
                 $product = $this->productFactory->create()->load($prodID);
 
                 /**
                  * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                try{
-                    if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                try {
+                    if (array_key_exists('instance', $this->serviceSendContent)) {
                         $this->_objectManager->create($this->serviceSendContent['instance'])
                             ->execute(
                                 $product,
@@ -126,16 +126,16 @@ class AbstractSendBulkProducts extends Action
                                 $targets
                             );
 
-                        unset($productlist[$i]);
+                        unset($productList[$i]);
                     }
-                } catch(LocalizedException $e){
+                } catch (LocalizedException $e) {
                     $this->getResponse()->setBody($e->getMessage());
                     return;
                 }
             }
 
-            $productsLeft = $numberTargets*count($productlist);
-            $procent = (1-($productsLeft/$total))*100;
+            $productsLeft = $numberTargets * count($productList);
+            $percent = (1 - ($productsLeft / $total)) * 100;
 
             $returnData = "<h3>Progress</h3>";
             $returnData .= "<svg height=20 width=\"100%\">";
@@ -143,7 +143,7 @@ class AbstractSendBulkProducts extends Action
             $returnData .= "<rect height=20 width=\"100%\" style=\"fill:#ccc;\"></rect>";
             $returnData .= "</g>";
             $returnData .= "<g transform=\"translate(0,0)\">";
-            $returnData .= "<rect height=20 width=\"" . $procent . "%\" style=\"fill:#d75f07;\"></rect>";
+            $returnData .= "<rect height=20 width=\"" . $percent . "%\" style=\"fill:#d75f07;\"></rect>";
             $returnData .= "</g>";
             $returnData .= "</svg>";
             $returnData .= '<b>' . $productsLeft . '</b> items remaining from a total of <b>' . $total . '</b> items';
@@ -151,33 +151,45 @@ class AbstractSendBulkProducts extends Action
             $returnData .= "<form id=\"progressform\">";
             if ($productsLeft > 0) {
                 $returnData .= "<input type=\"hidden\" name=\"total\" value=\"" . $total . "\">";
-                $returnData .= "<input type=\"hidden\" name=\"deliverySpeed\" value=\"" . $data['deliverySpeed'] . "\">";
-                $returnData .= "<input type=\"hidden\" name=\"machineTranslation\" value=\"" . $data['machineTranslation'] . "\">";
-                $returnData .= "<input type=\"hidden\" name=\"products\" value=\"" . join(',', $productlist) . "\">";
+                $returnData .=
+                    "<input type=\"hidden\" name=\"deliverySpeed\" value=\"" . $data['deliverySpeed'] . "\">";
+                $returnData .=
+                    "<input type=\"hidden\" name=\"machineTranslation\" value=\"" . $data['machineTranslation'] . "\">";
+                $returnData .= "<input type=\"hidden\" name=\"products\" value=\"" . join(',', $productList) . "\">";
                 $returnData .= "<input type=\"hidden\" name=\"source\" value=\"" . $sourceLocale . "\">";
-                $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIDs) . "\">";
-                if ( !empty($data['attributesConfig']) ) {
+                $returnData .= "<input type=\"hidden\" name=\"targets\" value=\"" . join(',', $targetIds) . "\">";
+                if (!empty($data['attributesConfig'])) {
                     $returnData .= '<div id="configAttributesContentCreationResponse">';
-                    foreach ( $data['attributesConfig'] as $attributeCode => $configs) {
+                    foreach ($data['attributesConfig'] as $attributeCode => $configs) {
+                        $wordCountId = $attributeCode . '_word_count';
 
-                        $wordCountId = $attributeCode.'_word_count';
+                        $fieldTypeId = $attributeCode . '_field_type';
 
-                        $fieldTypeId = $attributeCode.'_field_type';
+                        $contextValueId = $attributeCode . '_context_value';
 
-                        $contextValueId = $attributeCode.'_context_value';
+                        $returnData .=
+                            "<input type=\"hidden\" id=\"$wordCountId\"
+                             name=\"attributesConfig[$attributeCode][word_count]\" value=\""
+                            . $configs['word_count'] . "\">";
 
-                        $returnData .= "<input type=\"hidden\" id=\"$wordCountId\" name=\"attributesConfig[$attributeCode][word_count]\" value=\"" . $configs['word_count'] . "\">";
+                        $returnData .=
+                            "<input type=\"hidden\" id=\"$fieldTypeId\"
+                            name=\"attributesConfig[$attributeCode][field_type]\" value=\""
+                            . $configs['field_type'] . "\">";
 
-                        $returnData .= "<input type=\"hidden\" id=\"$fieldTypeId\" name=\"attributesConfig[$attributeCode][field_type]\" value=\"" . $configs['field_type'] . "\">";
-
-                        $returnData .= "<input type=\"hidden\" id=\"$contextValueId\" name=\"attributesConfig[$attributeCode][context_value]\" value=\"" . $configs['context_value'] . "\">";
+                        $returnData .=
+                            "<input type=\"hidden\" id=\"$contextValueId\"
+                             name=\"attributesConfig[$attributeCode][context_value]\" value=\""
+                            . $configs['context_value'] . "\">";
                     }
                     $returnData .= "</div>";
                 }
 
                 if (!empty($data['contextvalue'])) {
-                    $returnData .= "<input type=\"hidden\" name=\"contextvalue\" value=\"" . $data['contextvalue'] . "\">";
-                    $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"" . $data['contextname'] . "\">";
+                    $returnData .= "<input type=\"hidden\" name=\"contextvalue\" value=\""
+                        . $data['contextvalue'] . "\">";
+                    $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\""
+                        . $data['contextname'] . "\">";
                 } else {
                     $returnData .= "<input type=\"hidden\" name=\"contextvalue\" value=\"\">";
                     $returnData .= "<input type=\"hidden\" name=\"contextname\" value=\"\">";

@@ -1,43 +1,25 @@
 <?php
 namespace Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab;
 
-/**
- * Class Localization
- * @package Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab
- */
-class Localization extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab\AbstractTabBlock
+use Contentor\LocalizationApi\Model\Product;
+
+class Localization extends AbstractTabBlock
 {
     /**
      * @var int
      */
-    protected $_syncType = \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE;
+    protected $syncType = Product::LOCALIZED_SYNC_TYPE;
 
     /**
      * @var string
      */
-    protected $_submitLabelBtn = 'localization';
+    protected $submitLabelBtn = 'localization';
 
     /**
      * @return string
      */
-    public function getSubmitUrl()
+    public function getSubmitUrl(): string
     {
         return $this->getUrl("contentor/administration/postcategory/");
-    }
-
-    /**
-     * @return array
-     */
-    public function getValidationMessages()
-    {
-        return parent::getValidationMessages();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isReady()
-    {
-        return parent::isReady();
     }
 }

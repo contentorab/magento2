@@ -1,4 +1,5 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
 use Contentor\LocalizationApi\Api\Data\CategoryInterface;
@@ -6,23 +7,17 @@ use Contentor\LocalizationApi\Model\ResourceModel\Category as CategoryResource;
 use Contentor\LocalizationApi\Model\Spi\ContentEntityInterface;
 use Magento\Framework\Model\AbstractModel;
 
-/**
- * Class Category
- * @package Contentor\LocalizationApi\Model
- */
-class Category extends AbstractModel implements CategoryInterface , ContentEntityInterface
+class Category extends AbstractModel implements CategoryInterface, ContentEntityInterface
 {
-    /**#@+
+    /**
      * Column names
      * @var string
      */
-    CONST LOCALIZED_SYNC_TYPE        = 0;
+    const LOCALIZED_SYNC_TYPE = 0;
 
-    CONST CONTENT_CREATION_SYNC_TYPE = 1;
-    /**#@-*/
+    const CONTENT_CREATION_SYNC_TYPE = 1;
 
     /**
-     * @void
      * @inheritdoc
      */
     public function _construct()
@@ -31,10 +26,9 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @param  int $contentorId
-     * @return void
+     * @inheritdoc
      */
-    public function setContentorId($contentorId)
+    public function setContentorId($contentorId): void
     {
         $this->setData(
             self::CONTENTOR_ID,
@@ -43,17 +37,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getContentorId()
     {
-       return $this->getData(self::CONTENTOR_ID);
+        return $this->getData(self::CONTENTOR_ID);
     }
 
     /**
-     * @param int $value
+     * @inheritdoc
      */
-    public function setCategoryId($value)
+    public function setCategoryId($value): void
     {
         $this->setData(
             self::CATEGORY_ID,
@@ -62,18 +56,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getCategoryId()
+    public function getCategoryId(): int
     {
         return $this->getData(self::CATEGORY_ID);
     }
 
     /**
-     * @param string $sourceLocale
-     * @return void
+     * @inheritdoc
      */
-    public function setSourceLocale($sourceLocale)
+    public function setSourceLocale($sourceLocale): void
     {
         $this->setData(
             self::SOURCE_LOCALE,
@@ -82,18 +75,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSourceLocale()
+    public function getSourceLocale(): string
     {
         return $this->getData(self::SOURCE_LOCALE);
     }
 
     /**
-     * @param string $targetLocale
-     * @return void
+     * @inheritdoc
      */
-    public function setTargetLocale($targetLocale)
+    public function setTargetLocale($targetLocale): void
     {
         $this->setData(
             self::TARGET_LOCALE,
@@ -102,18 +94,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTargetLocale()
+    public function getTargetLocale(): string
     {
         return $this->getData(self::TARGET_STORE);
     }
 
     /**
-     * @param string $targetStore
-     * @return void
+     * @inheritdoc
      */
-    public function setTargetStore($targetStore)
+    public function setTargetStore($targetStore): void
     {
         $this->setData(
             self::TARGET_STORE,
@@ -122,18 +113,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTargetStore()
+    public function getTargetStore(): string
     {
         return $this->getData(self::TARGET_STORE);
     }
 
     /**
-     * @param string $sendTime
-     * @return void
+     * @inheritdoc
      */
-    public function setSentTime($sendTime)
+    public function setSentTime($sendTime): void
     {
         $this->setData(
             self::SENT_TIME,
@@ -142,18 +132,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getSentTime()
+    public function getSentTime(): string
     {
         return $this->getData(self::SENT_TIME);
     }
 
     /**
-     * @param string $completedTime
-     * @return void
+     * @inheritdoc
      */
-    public function setCompletedTime($completedTime)
+    public function setCompletedTime($completedTime): void
     {
         $this->setData(
             self::COMPLETED_TIME,
@@ -162,18 +151,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getCompletedTime()
+    public function getCompletedTime(): string
     {
         return $this->getData(self::COMPLETED_TIME);
     }
 
     /**
-     * @param string $deadlineTime
-     * @return void
+     * @inheritdoc
      */
-    public function setDeadlineTime($deadlineTime)
+    public function setDeadlineTime($deadlineTime): void
     {
         $this->setData(
             self::DEADLINE_TIME,
@@ -182,18 +170,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getDeadlineTime()
+    public function getDeadlineTime(): string
     {
         return $this->getData(self::DEADLINE_TIME);
     }
 
     /**
-     * @param string $canceledTime
-     * @return void
+     * @inheritdoc
      */
-    public function setCanceledTime($canceledTime)
+    public function setCanceledTime($canceledTime): void
     {
         $this->setData(
             self::CANCELED_TIME,
@@ -202,18 +189,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getCanceledTime()
+    public function getCanceledTime(): string
     {
         return $this->getData(self::CANCELED_TIME);
     }
 
     /**
-     * @param string $state
-     * @return void
+     * @inheritdoc
      */
-    public function setState($state)
+    public function setState($state): void
     {
         $this->setData(
             self::STATE,
@@ -222,18 +208,17 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getState()
+    public function getState(): string
     {
         return $this->getData(self::STATE);
     }
 
     /**
-     * @param string $type
-     * @return void
+     * @inheritdoc
      */
-    public function setType($type)
+    public function setType($type): void
     {
         $this->setData(
             self::TYPE,
@@ -242,97 +227,97 @@ class Category extends AbstractModel implements CategoryInterface , ContentEntit
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->getData(self::TYPE);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getContentCode()
+    public function getContentCode(): string
     {
         return self::TYPE_CODE;
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getSynchronizeType()
+    public function getSynchronizeType(): int
     {
         return $this->getData(self::SYNCHRONIZE_TYPE);
     }
 
     /**
-     * @param int $type
+     * @inheritdoc
      */
-    public function setSynchronizeType($type)
+    public function setSynchronizeType($type): void
     {
         $this->setData(self::SYNCHRONIZE_TYPE, $type);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getDeliverySpeed()
+    public function getDeliverySpeed(): string
     {
         return $this->getData(self::DELIVERY_SPEED);
     }
 
     /**
-     * @param string $value
+     * @inheritdoc
      */
-    public function setDeliverySpeed($value)
+    public function setDeliverySpeed($value): void
     {
         $this->setData(self::DELIVERY_SPEED, $value);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getMachineTranslation()
+    public function getMachineTranslation(): string
     {
         return $this->getData(self::MACHINE_TRANSLATION);
     }
 
     /**
-     * @param string $value
+     * @inheritdoc
      */
-    public function setMachineTranslation($value)
+    public function setMachineTranslation($value): void
     {
         $this->setData(self::MACHINE_TRANSLATION, $value);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getAttribution()
+    public function getAttribution(): string
     {
         return $this->getData(self::ATTRIBUTION);
     }
 
     /**
-     * @param string $value
+     * @inheritdoc
      */
-    public function setAttribution($value)
+    public function setAttribution($value): void
     {
         $this->setData(self::ATTRIBUTION, $value);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getIntermediateValue()
+    public function getIntermediateValue(): string
     {
         return $this->getData(self::INTERMEDIATE_VALUE);
     }
 
     /**
-     * @param string $value
+     * @inheritdoc
      */
-    public function setIntermediateValue($value)
+    public function setIntermediateValue($value): void
     {
         $this->setData(self::INTERMEDIATE_VALUE, $value);
     }

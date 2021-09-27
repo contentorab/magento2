@@ -1,19 +1,18 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Service;
 
-/**
- * Class ProductSendContent
- * @package Contentor\LocalizationApi\Model\Service
- */
-class ProductSendContent extends \Contentor\LocalizationApi\Model\Service\AbstractProductSendContent
+use Contentor\LocalizationApi\Model\Product;
+
+class ProductSendContent extends AbstractProductSendContent
 {
     /**
      * @var int
      */
-    protected $_syncType = \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE;
+    protected $syncType = Product::LOCALIZED_SYNC_TYPE;
 
     /**
      * @var string
      */
-    protected $_syncName = 'localization';
+    protected $syncName = 'localization';
 }

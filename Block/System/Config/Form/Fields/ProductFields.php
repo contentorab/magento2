@@ -1,11 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
 
-/**
- * Class ProductFields
- * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
- */
-class ProductFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractLocalizedFields
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\ProductAttributeRenderer;
+
+class ProductFields extends AbstractLocalizedFields
 {
     /**
      * @var string
@@ -16,5 +15,5 @@ class ProductFields extends \Contentor\LocalizationApi\Block\System\Config\Form\
      * Class rendering attribute for products
      * @var string
      */
-    protected $_attributeRendererClass = '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\ProductAttributeRenderer';
+    protected $_attributeRendererClass = ProductAttributeRenderer::class;
 }

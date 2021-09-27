@@ -3,10 +3,21 @@
         <referenceContainer name="content">
             <block class="Contentor\LocalizationApi\Block\Adminhtml\Administration\BulkProducts"
                    name="bulk_block">
+                <arguments>
+                    <argument name="dataViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\DataViewModel</argument>
+                </arguments>
                 <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/delivery_speed.phtml"
-                       name="contentor.delivery-speed"/>
+                       name="contentor.delivery-speed">
+                    <arguments>
+                        <argument name="deliveryExpressViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\DeliveryExpressViewModel</argument>
+                    </arguments>
+                </block>
                 <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/machine_translation.phtml"
-                       name="contentor.machine-translation"/>
+                       name="contentor.machine-translation">
+                    <arguments>
+                        <argument name="machineTranslationViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\MachineTranslationViewModel</argument>
+                    </arguments>
+                </block>
             </block>
         </referenceContainer>
     </body>

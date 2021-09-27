@@ -1,12 +1,11 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation;
 
+use Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity;
+use Magento\Catalog\Model\ProductFactory;
 
-/**
- * Class PostProduct
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation
- */
-class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity
+class PostProduct extends AbstractPostSingleEntity
 {
     /**
      * @var string
@@ -32,5 +31,5 @@ class PostProduct extends \Contentor\LocalizationApi\Controller\Adminhtml\Admini
     /**
      * @var string
      */
-    protected $modelFactory  = 'Magento\Catalog\Model\ProductFactory';
+    protected $modelFactory = ProductFactory::class;
 }

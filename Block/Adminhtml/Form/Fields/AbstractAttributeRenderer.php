@@ -1,14 +1,15 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
-use \Magento\Framework\View\Element\Context;
-use \Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Eav\Model\Config;
+use Magento\Eav\Model\Entity\Attribute\Set;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Html\Select;
 
-/**
- * Class AbstractAttributeRenderer
- * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
- */
-class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Select
+class AbstractAttributeRenderer extends Select
 {
     /**
      * Allow attributes which have these frontendInput
@@ -32,7 +33,7 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
     protected $_attributeFactory;
 
     /**
-     * @var \Magento\Eav\Model\Config
+     * @var Config
      */
     protected $eavConfig;
 
@@ -45,13 +46,13 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
      * AbstractAttributeRenderer constructor.
      * @param Context $context
      * @param Attribute $attributeFactory
-     * @param \Magento\Eav\Model\Config $eavConfig
+     * @param Config $eavConfig
      * @param array $data
      */
     public function __construct(
         Context $context,
         Attribute $attributeFactory,
-        \Magento\Eav\Model\Config $eavConfig,
+        Config $eavConfig,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -61,37 +62,28 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
 
     /**
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function _toHtml()
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
-
             $attributeInfo = $this->_attributeFactory->getCollection()
-                ->addFieldToFilter(\Magento\Eav\Model\Entity\Attribute\Set::KEY_ENTITY_TYPE_ID, $this->getEntityTypeId());
-
+                ->addFieldToFilter(Set::KEY_ENTITY_TYPE_ID, $this->getEntityTypeId());
             $this->addOption('', '');
-
-            foreach ( $this->additionalOptions as $optionLabelValue => $optionLabel ) {
+            foreach ($this->additionalOptions as $optionLabelValue => $optionLabel) {
                 $this->addOption($optionLabelValue, $optionLabel);
             }
-
             foreach ($attributeInfo as $attribute) {
-
                 $label = $attribute->getData('frontend_label');
-
                 $type = $attribute->getFrontendInput();
-
                 $code = $attribute->getAttributeCode();
-
                 $backendType = $attribute->getBackEndType();
-
-                if ( !empty($label) && in_array($type, $this->frontendInput) && in_array($backendType, $this->backendType) ) {
-
+                if (!empty($label)
+                    && in_array($type, $this->frontendInput)
+                    && in_array($backendType, $this->backendType)
+                ) {
                     $name = $label . ' (' . $type . ')';
-
                     $this->addOption($code, $name);
-
                 }
             }
         }
@@ -99,25 +91,24 @@ class AbstractAttributeRenderer extends \Magento\Framework\View\Element\Html\Sel
     }
 
     /**
-     * Sets name for input element
-     *
-     * @param  string $value
-     * @return $this
+     * @return int
+     * @throws LocalizedException
      */
-    public function setInputName($value)
+    protected function getEntityTypeId(): int
     {
-        return $this->setName($value);
+        return $this->eavConfig
+            ->getEntityType($this->entityType)
+            ->getEntityTypeId();
     }
 
     /**
-     * @return int
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * Sets name for input element
+     *
+     * @param string $value
+     * @return $this
      */
-    protected function getEntityTypeId() {
-        $entityId = $this->eavConfig
-            ->getEntityType($this->entityType)
-            ->getEntityTypeId();
-
-        return $entityId;
+    public function setInputName($value): AbstractAttributeRenderer
+    {
+        return $this->setName($value);
     }
 }

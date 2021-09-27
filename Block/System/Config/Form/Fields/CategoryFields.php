@@ -1,7 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
 
-class CategoryFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractLocalizedFields
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\CategoryAttributeRenderer;
+
+class CategoryFields extends AbstractLocalizedFields
 {
     /**
      * @var string
@@ -12,5 +15,5 @@ class CategoryFields extends \Contentor\LocalizationApi\Block\System\Config\Form
      * Class rendering attribute for products
      * @var string
      */
-    protected $_attributeRendererClass = '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\CategoryAttributeRenderer';
+    protected $_attributeRendererClass = CategoryAttributeRenderer::class;
 }

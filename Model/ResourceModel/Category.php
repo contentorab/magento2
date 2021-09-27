@@ -1,13 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel;
 
 use Contentor\LocalizationApi\Api\Data\CategoryInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
-/**
- * Class Category
- * @package Contentor\LocalizationApi\Model\ResourceModel
- */
 class Category extends AbstractDb
 {
     /**
@@ -17,7 +14,6 @@ class Category extends AbstractDb
 
     /**
      * @inheritdoc
-     * @void
      */
     public function _construct()
     {
