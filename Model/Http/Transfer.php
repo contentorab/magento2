@@ -1,13 +1,9 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Http;
 
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 
-/**
- * Class Transfer
- * @package Contentor\LocalizationAp\Model\Http
- *
- */
 class Transfer implements HttpRequestTransferInterface
 {
     /**
@@ -36,11 +32,6 @@ class Transfer implements HttpRequestTransferInterface
     private $uri;
 
     /**
-     * @var bool
-     */
-    private $encode;
-
-    /**
      * Transfer constructor.
      * @param array $headers
      * @param string $body
@@ -62,19 +53,18 @@ class Transfer implements HttpRequestTransferInterface
         $this->uri = $uri;
     }
 
-
     /**
      * @return string|int
      */
     public function getMethod()
     {
-        return (string) $this->method;
+        return $this->method;
     }
 
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -90,7 +80,7 @@ class Transfer implements HttpRequestTransferInterface
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->params;
     }
@@ -98,16 +88,9 @@ class Transfer implements HttpRequestTransferInterface
     /**
      * @return string
      */
-    public function getUri()
+    public function getUri(): string
     {
-        return (string) $this->uri;
+        return $this->uri;
     }
 
-    /**
-     * @return boolean
-     */
-    public function shouldEncode()
-    {
-        return $this->encode;
-    }
 }

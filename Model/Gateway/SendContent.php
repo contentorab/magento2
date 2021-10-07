@@ -1,15 +1,18 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Gateway;
 
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Contentor\LocalizationApi\Service\ConfigurationService;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Serialize\Serializer\Json;
+use Zend_Http_Client;
 
 /**
  * Class SendContent
- * @package Contentor\LocalizationApi\Model\Gateway
  *
  * Gateway command for URL [ContentorBaseUrl]/content:PUT.
  * Responsibility : Data transfer, pre format API response result.
@@ -17,6 +20,11 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
  */
 class SendContent
 {
+    /**
+     * @var ConfigurationService
+     */
+    protected $configurationService;
+
     /**
      * @var HttpClientInterface
      */
@@ -33,31 +41,39 @@ class SendContent
     private $jsonToArrayConverter;
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     private $request;
 
-    protected $configurationService;
+    /**
+     * @var Json
+     */
+    private $serializer;
+
 
     /**
      * SendContent constructor.
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      * @param JsonToArray $jsonToArrayConverter
-     * @param \Magento\Framework\App\RequestInterface $request
+     * @param RequestInterface $request
+     * @param ConfigurationService $configurationService
+     * @param Json $serializer
      */
     public function __construct(
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
         JsonToArray $jsonToArrayConverter,
-        \Magento\Framework\App\RequestInterface $request,
-        ConfigurationService $configurationService
+        RequestInterface $request,
+        ConfigurationService $configurationService,
+        Json $serializer
     ) {
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
         $this->request = $request;
         $this->configurationService = $configurationService;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -69,32 +85,32 @@ class SendContent
      */
     public function execute(array $data)
     {
-        //TODO: Move version
-        $headers =  [
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'User-Agent'    => 'ContentorMagento2/' . $this->configurationService->getVersion()
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'User-Agent' => 'ContentorMagento2/' . $this->configurationService->getVersion()
         ];
 
-        /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
         $transfer = $this->httpRequestTransferInterfaceFactory->create([
             'headers' => $headers,
             'params' => [],
-            'body' => json_encode($this->prepareRequest($data)),
-            'method' => \Zend_Http_Client::PUT,
+            'body' => $this->serializer->serialize($this->prepareRequest($data)),
+            'method' => Zend_Http_Client::PUT,
             'uri' => 'v1/content'
         ]);
 
-        $result = $this->httpClient->sendRequest($transfer);
+        $response = $this->httpClient->sendRequest($transfer);
 
-        if($result['code'] !== 200) {
-            throw new LocalizedException(__('Something went wrong when the request was sent to Contentor: %1' , $result['body']));
+        if ($response['code'] !== 200) {
+            throw new LocalizedException(
+                __('Something went wrong when the request was sent to Contentor: %1', $response['body'])
+            );
         } else {
-            $result = $this->jsonToArrayConverter->convert(
-                $result['body']
+            $response = $this->jsonToArrayConverter->convert(
+                $response['body']
             );
 
-            return $result['id'];
+            return $response['id'];
         }
     }
 
@@ -105,9 +121,9 @@ class SendContent
      * @return array
      * @throws LocalizedException
      */
-    private function prepareRequest($data)
+    private function prepareRequest($data): array
     {
-        $request  = [
+        $request = [
             'language' => [
                 'source' => str_replace('_', '-', $data['sourceLocale']),
                 'target' => str_replace('_', '-', $data['targetLocale']),
@@ -116,29 +132,23 @@ class SendContent
             'fields' => $data['fields']
         ];
 
-        if($data['type'] == 'update') {
-            if(empty($data['previous'])) {
-                throw new LocalizedException('Tried sending update request without previous version');
+        if ($data['type'] == 'update') {
+            if (empty($data['previous'])) {
+                throw new LocalizedException(__('Tried sending update request without previous version'));
             } else {
                 $request['previous'] = $data['previous'];
             }
         }
-        /**
-         * Get delivery speed for contentor request
-         *
-        */
+
         $deliverySpeedData = $this->getDeliverySpeed();
 
-        if ( !empty($deliverySpeedData) ) {
+        if (!empty($deliverySpeedData)) {
             $request['preferences'][] = $deliverySpeedData;
         }
-        /**
-         * Get machine translation for contentor request
-         *
-        */
+
         $machineTranslationData = $this->getMachineTranslation();
 
-        if ( !empty($machineTranslationData) ) {
+        if (!empty($machineTranslationData)) {
             $request['hints'][] = $machineTranslationData;
         }
         return $request;
@@ -148,12 +158,12 @@ class SendContent
      * Get Delivery speed from dropdown select
      * @return array
      */
-    private function getDeliverySpeed() {
-
+    private function getDeliverySpeed(): array
+    {
         $deliverySpeed = $this->request->getParam('deliverySpeed');
 
         return [
-            'type'  => 'delivery-speed',
+            'type' => 'delivery-speed',
             'value' => $deliverySpeed
         ];
     }
@@ -162,16 +172,17 @@ class SendContent
      * Get Machine Translation from dropdown select
      * @return array
      */
-    private function getMachineTranslation() {
-
+    private function getMachineTranslation(): array
+    {
+        $result = [];
         $machineTranslation = $this->request->getParam('machineTranslation');
-        if(empty($machineTranslation) || $machineTranslation === 'none'){
-            return;
+        if (!empty($machineTranslation) && $machineTranslation !== 'none') {
+            $result = [
+                'type' => 'machine-translation',
+                'policy' => $machineTranslation
+            ];
         }
 
-        return [
-            'type'  => 'machine-translation',
-            'policy' => $machineTranslation
-        ];
+        return $result;
     }
 }

@@ -1,14 +1,14 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Class PostBulkProducts
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation
- */
 class PostBulkProducts extends Action
 {
     /**
@@ -30,7 +30,7 @@ class PostBulkProducts extends Action
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|\Magento\Framework\View\Result\Page
+     * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()
     {

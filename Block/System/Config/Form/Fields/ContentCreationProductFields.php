@@ -1,16 +1,15 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
 
-/**
- * Class ContentCreationProductFields
- * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
- */
-class ContentCreationProductFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractContentCreationFields
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\ProductAttributeRenderer;
+
+class ContentCreationProductFields extends AbstractContentCreationFields
 {
     /**
      * @var string
      */
-    protected $_attributeRendererClass = '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\ProductAttributeRenderer';
+    protected $_attributeRendererClass = ProductAttributeRenderer::class;
 
     /**
      * @var string

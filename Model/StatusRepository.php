@@ -1,6 +1,8 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
+use Contentor\LocalizationApi\Api\Data\StatusInterface;
 use Contentor\LocalizationApi\Api\Data\StatusInterfaceFactory;
 use Contentor\LocalizationApi\Api\StatusRepositoryInterface;
 use Contentor\LocalizationApi\Model\ResourceModel\Status;
@@ -8,7 +10,7 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * Class StatusRepository
- * @package Contentor\LocalizationApi\Model
+ *
  * @api
  * Allow to work with contentor status relations.
  */
@@ -39,28 +41,20 @@ class StatusRepository implements StatusRepositoryInterface
         StatusInterfaceFactory $statusInterfaceFactory,
         Status $statusResource,
         DateTime $dateTime
-    )  {
+    ) {
         $this->statusInterfaceFactory = $statusInterfaceFactory;
         $this->statusResource = $statusResource;
         $this->dateTime = $dateTime;
     }
 
     /**
-     * Save product contentor status.
-     * Should be used for status updates, to avoid direct DB queries
-     *
-     * @param int $contentorId
-     * @param string $status
-     * @param null $date
-     * @return \Contentor\LocalizationApi\Api\Data\StatusInterface
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @inheritdoc
      */
-    public function saveStatus($contentorId, $status, $date = null)
+    public function saveStatus($contentorId, $status, $date = null): StatusInterface
     {
         if (null === $date) {
             $date = $this->dateTime->gmtDate();
         }
-        /** @var \Contentor\LocalizationApi\Api\Data\StatusInterface $dto */
         $dto = $this->statusInterfaceFactory->create();
         $dto->setContentorId($contentorId);
         $dto->setStatus($status);

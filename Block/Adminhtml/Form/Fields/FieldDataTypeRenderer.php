@@ -1,13 +1,11 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Form\Fields;
 
-use \Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Context;
+use Magento\Framework\View\Element\Html\Select;
 
-/**
- * Class FieldDataTypeRenderer
- * @package Contentor\LocalizationApi\Block\Adminhtml\Form\Fields
- */
-class FieldDataTypeRenderer extends \Magento\Framework\View\Element\Html\Select
+class FieldDataTypeRenderer extends Select
 {
     /**
      * @var array
@@ -33,7 +31,7 @@ class FieldDataTypeRenderer extends \Magento\Framework\View\Element\Html\Select
      *
      * @return string
      */
-    public function _toHtml()
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
             $this->addOption('', '');
@@ -48,10 +46,10 @@ class FieldDataTypeRenderer extends \Magento\Framework\View\Element\Html\Select
     /**
      * Sets name for input element
      *
-     * @param  string $value
+     * @param string $value
      * @return $this
      */
-    public function setInputName($value)
+    public function setInputName($value): FieldDataTypeRenderer
     {
         return $this->setName($value);
     }

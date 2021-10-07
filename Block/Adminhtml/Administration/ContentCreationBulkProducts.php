@@ -1,27 +1,26 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 
-/**
- * Class ContentCreationBulkProducts
- * @package Contentor\LocalizationApi\Block\Adminhtml\Administration
- */
-class ContentCreationBulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administration\AbstractBulkProducts
+use Contentor\LocalizationApi\Model\Product;
+
+class ContentCreationBulkProducts extends AbstractBulkProducts
 {
 
     /**
      * @var int
      */
-    protected $_syncType = \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE;
+    protected $syncType = Product::CONTENT_CREATION_SYNC_TYPE;
 
     /**
      * @var string
      */
-    protected $_btnSubmitLabel = 'Send for content creation' ;
+    protected $btnSubmitLabel = 'Send for content creation';
 
     /**
      * @return string
      */
-    public function getSendUrl()
+    public function getSendUrl(): string
     {
         return $this->getUrl('contentor/administration/contentcreation_sendbulkproducts');
     }
@@ -30,7 +29,7 @@ class ContentCreationBulkProducts extends \Contentor\LocalizationApi\Block\Admin
      * Validate content creation configuration
      * @return array
      */
-    public function getValidationMessages()
+    public function getValidationMessages(): array
     {
         $result = $this->configurationService->validateContentCreationConfiguration();
         return $result['messages'];
@@ -40,7 +39,7 @@ class ContentCreationBulkProducts extends \Contentor\LocalizationApi\Block\Admin
      * Check if isReady to show send request button
      * @return bool
      */
-    public function isReady()
+    public function isReady(): bool
     {
         $result = $this->configurationService->validateContentCreationConfiguration();
         return !$result['error'];

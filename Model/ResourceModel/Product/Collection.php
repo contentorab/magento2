@@ -1,12 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel\Product;
 
+use Contentor\LocalizationApi\Model\ResourceModel\Product;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-/**
- * Class Collection
- * @package Contentor\LocalizationApi\Model\ResourceModel\Product
- */
 class Collection extends AbstractCollection
 {
     /**
@@ -16,7 +14,7 @@ class Collection extends AbstractCollection
     {
         $this->_init(
             \Contentor\LocalizationApi\Model\Product::class,
-            \Contentor\LocalizationApi\Model\ResourceModel\Product::class
+            Product::class
         );
     }
 }

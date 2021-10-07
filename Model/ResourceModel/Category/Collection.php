@@ -1,12 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel\Category;
 
+use Contentor\LocalizationApi\Model\ResourceModel\Category;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-/**
- * Class Collection
- * @package Contentor\LocalizationApi\Model\ResourceModel\Category
- */
 class Collection extends AbstractCollection
 {
     /**
@@ -16,7 +14,7 @@ class Collection extends AbstractCollection
     {
         $this->_init(
             \Contentor\LocalizationApi\Model\Category::class,
-            \Contentor\LocalizationApi\Model\ResourceModel\Category::class
+            Category::class
         );
     }
 }

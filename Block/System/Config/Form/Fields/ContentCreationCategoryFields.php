@@ -1,16 +1,15 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\System\Config\Form\Fields;
 
-/**
- * Class ContentCreationCategoryFields
- * @package Contentor\LocalizationApi\Block\System\Config\Form\Fields
- */
-class ContentCreationCategoryFields extends \Contentor\LocalizationApi\Block\System\Config\Form\Fields\AbstractContentCreationFields
+use Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\CategoryAttributeRenderer;
+
+class ContentCreationCategoryFields extends AbstractContentCreationFields
 {
     /**
      * @var string
      */
-    protected $_attributeRendererClass = '\Contentor\LocalizationApi\Block\Adminhtml\Form\Fields\CategoryAttributeRenderer';
+    protected $_attributeRendererClass = CategoryAttributeRenderer::class;
 
     /**
      * @var string

@@ -1,4 +1,5 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
 use Contentor\LocalizationApi\Api\Data\StatusInterface;
@@ -7,13 +8,12 @@ use Magento\Framework\Model\AbstractModel;
 
 /**
  * Class Status
- * @package Contentor\LocalizationApi\Model
+ *
  * Status model. Represent data from `contentor_status` table
  */
 class Status extends AbstractModel implements StatusInterface
 {
     /**
-     * @void
      * @inheritdoc
      */
     public function _construct()
@@ -22,10 +22,9 @@ class Status extends AbstractModel implements StatusInterface
     }
 
     /**
-     * @param  int $contentorId
-     * @return void
+     * @inheritdoc
      */
-    public function setContentorId($contentorId)
+    public function setContentorId($contentorId): void
     {
         $this->setData(
             self::CONTENTOR_ID,
@@ -34,7 +33,7 @@ class Status extends AbstractModel implements StatusInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getContentorId()
     {
@@ -42,10 +41,9 @@ class Status extends AbstractModel implements StatusInterface
     }
 
     /**
-     * @param string $status
-     * @return void
+     * @inheritdoc
      */
-    public function setStatus($status)
+    public function setStatus($status): void
     {
         $this->setData(
             self::STATUS,
@@ -54,18 +52,17 @@ class Status extends AbstractModel implements StatusInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->getData(self::STATUS);
     }
 
     /**
-     * @param string $statusTime
-     * @return void
+     * @inheritdoc
      */
-    public function setStatusTime($statusTime)
+    public function setStatusTime($statusTime): void
     {
         $this->setData(
             self::STATUS_TIME,
@@ -74,9 +71,9 @@ class Status extends AbstractModel implements StatusInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getStatusTime()
+    public function getStatusTime(): string
     {
         return $this->getData(self::STATUS_TIME);
     }

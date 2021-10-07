@@ -1,18 +1,20 @@
 <?php
+
 namespace Contentor\LocalizationApi\Service;
 
+use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class ConfigurationService
- * @package Contentor\LocalizationApi\Service
  *
  * Contains all accessors to configurable extension options (api credentials, general settings)
  */
 class ConfigurationService
 {
-    /**#@+
+    /**
      * Admin config XML Path constants
      * @var string
      */
@@ -27,18 +29,16 @@ class ConfigurationService
     const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
     const XML_PATH_MAIN_LOCALE = 'general/locale/code';
     const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
-    /**#@-*/
 
-    /**#@+
+    /**
      * Category config XML Path constants
      * @var string
      */
-    const XML_PATH_CATEGORY_AUTOMATION_ENABLE  = 'contentor_options/automation/category_import';
-    const XML_PATH_CATEGORY_SOURCE_LOCALE      = 'contentor_options/source/category_sourcelocale';
+    const XML_PATH_CATEGORY_AUTOMATION_ENABLE = 'contentor_options/automation/category_import';
+    const XML_PATH_CATEGORY_SOURCE_LOCALE = 'contentor_options/source/category_sourcelocale';
     const XML_PATH_CATEGORY_TARGET_STORE_VIEWS = 'contentor_options/targets/category_targetviews';
-    const XML_PATH_CATEGORY_FIELDS             = 'contentor_options/fieldDetails/categoryFieldDetails';
-    const XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS   = 'contentor_options/contentCreation/categoryFieldDetails';
-    /**#@-*/
+    const XML_PATH_CATEGORY_FIELDS = 'contentor_options/fieldDetails/categoryFieldDetails';
+    const XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/categoryFieldDetails';
 
     /**
      * @var ScopeConfigInterface
@@ -46,33 +46,31 @@ class ConfigurationService
     private $scopeConfig;
 
     /**
+     * @var Json
+     */
+    private $serializer;
+
+    /**
      * ConfigurationService constructor.
      * @param ScopeConfigInterface $scopeConfig
+     * @param Json $serializer
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Json $serializer
     ) {
         $this->scopeConfig = $scopeConfig;
-    }
-
-    public function getVersion($store = NULL) {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_MODULE_VERSION,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $this->serializer = $serializer;
     }
 
     /**
-     * Returns token from config
-     *
-     * @param string|null $store
-     * @return string
+     * @param null $store
+     * @return mixed
      */
-    public function getToken($store = null)
+    public function getVersion($store = null)
     {
         return $this->scopeConfig->getValue(
-            self::XML_PATH_TOKEN,
+            self::XML_PATH_MODULE_VERSION,
             ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -84,7 +82,7 @@ class ConfigurationService
      * @param string|null $store
      * @return bool
      */
-    public function isAutomationEnabled($store = null)
+    public function isAutomationEnabled($store = null): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_AUTOMATION_ENABLE,
@@ -99,7 +97,7 @@ class ConfigurationService
      * @param string|null $store
      * @return bool
      */
-    public function isCategoryAutomationEnabled($store = null)
+    public function isCategoryAutomationEnabled($store = null): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_CATEGORY_AUTOMATION_ENABLE,
@@ -114,7 +112,7 @@ class ConfigurationService
      * @param string|null $store
      * @return bool
      */
-    public function isVersioningEnabled($store = null)
+    public function isVersioningEnabled($store = null): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_VERSIONING_ENABLED,
@@ -129,26 +127,10 @@ class ConfigurationService
      * @param string|null $store
      * @return bool
      */
-    public function isDeveloperMode($store = null)
+    public function isDeveloperMode($store = null): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_DEVELOPER_MODE,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-
-    /**
-     * Returns Contentor API url from magento config
-     *
-     * @param string|null $store
-     * @return string
-     */
-    public function getApiBaseUrl($store = null)
-    {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_API_BASE_URL,
             ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -160,7 +142,7 @@ class ConfigurationService
      * @param string|null $store
      * @return string
      */
-    public function getMainLocale($store = null)
+    public function getMainLocale($store = null): string
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_MAIN_LOCALE,
@@ -170,182 +152,18 @@ class ConfigurationService
     }
 
     /**
-     * Returns Source locale from magento config
-     *
-     * @param string|null $store
-     * @return string
-     */
-    public function getSourceLocale($store = null)
-    {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_SOURCE_LOCALE,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Returns Category Source locale from magento config
-     *
-     * @param string|null $store
-     * @return string
-     */
-    public function getCategorySourceLocale($store = null)
-    {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_CATEGORY_SOURCE_LOCALE,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Returns Product target store views from magento config
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getTargetStoreViews($store = null)
-    {
-        return (array) $this->scopeConfig->getValue(
-            self::XML_PATH_TARGET_STORE_VIEWS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Returns Category target store views from magento config
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getCategoryTargetStoreViews($store = null)
-    {
-        return (array) $this->scopeConfig->getValue(
-            self::XML_PATH_CATEGORY_TARGET_STORE_VIEWS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
-    /**
-     * Returns Product attributes map from magento config
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getProductFields($store = null)
-    {
-        $data =  $this->scopeConfig->getValue(
-            self::XML_PATH_PRODUCT_FIELDS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-
-        if (empty($data)) {
-            return [];
-        }
-
-        $result = json_decode($data, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns category attributes map from magento config
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getCategoryFields($store = null)
-    {
-        $data =  $this->scopeConfig->getValue(
-            self::XML_PATH_CATEGORY_FIELDS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-
-        if (empty($data)) {
-            return [];
-        }
-
-        $result = json_decode($data, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns Product attributes map from magento config for content creation
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getContentCreationProductFields($store = null)
-    {
-        $data =  $this->scopeConfig->getValue(
-            self::XML_PATH_CONTENT_CREATION_FIELDS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-
-        if (empty($data)) {
-            return [];
-        }
-
-        $result = json_decode($data, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns category attributes map from magento config for content creation
-     *
-     * @param string|null $store
-     * @return array
-     */
-    public function getContentCreationCategoryFields($store = null)
-    {
-        $data =  $this->scopeConfig->getValue(
-            self::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-
-        if (empty($data)) {
-            return [];
-        }
-
-        $result = json_decode($data, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
-        }
-
-        return $result;
-    }
-
-    /**
      * Basic config validation.
      * Check required API fields before make real api request.
      *
      * @param string|null $store
      * @return array
      */
-    public function validateConfiguration($store = null)
+    public function validateConfiguration($store = null): array
     {
-       $result = [
-           'error' => false,
-           'messages' => []
-       ];
+        $result = [
+            'error' => false,
+            'messages' => []
+        ];
         if (empty($this->getToken($store))) {
             $result['error'] = true;
             $result['messages'][] = '[Contentor] Empty Token';
@@ -371,7 +189,88 @@ class ConfigurationService
             $result['messages'][] = '[Contentor] Empty Target store views';
         }
 
-       return $result;
+        return $result;
+    }
+
+    /**
+     * Returns token from config
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getToken($store = null): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_TOKEN,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns Contentor API url from magento config
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getApiBaseUrl($store = null): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_API_BASE_URL,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns Product attributes map from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getProductFields($store = null): array
+    {
+        $data = $this->scopeConfig->getValue(
+            self::XML_PATH_PRODUCT_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        return $this->serializer->unserialize($data);
+    }
+
+    /**
+     * Returns Source locale from magento config
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getSourceLocale($store = null): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_SOURCE_LOCALE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns Product target store views from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getTargetStoreViews($store = null): array
+    {
+        return (array)$this->scopeConfig->getValue(
+            self::XML_PATH_TARGET_STORE_VIEWS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
     }
 
     /**
@@ -381,7 +280,7 @@ class ConfigurationService
      * @param string|null $store
      * @return array
      */
-    public function validateCategoryConfiguration($store = null)
+    public function validateCategoryConfiguration($store = null): array
     {
         $result = [
             'error' => false,
@@ -416,13 +315,64 @@ class ConfigurationService
     }
 
     /**
+     * Returns category attributes map from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getCategoryFields($store = null): array
+    {
+        $data = $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        return $this->serializer->unserialize($data);
+    }
+
+    /**
+     * Returns Category Source locale from magento config
+     *
+     * @param string|null $store
+     * @return string
+     */
+    public function getCategorySourceLocale($store = null): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_SOURCE_LOCALE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Returns Category target store views from magento config
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getCategoryTargetStoreViews($store = null): array
+    {
+        return (array)$this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_TARGET_STORE_VIEWS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
      * Basic config validation.
      * Check required API fields before make real api request.
      *
      * @param string|null $store
      * @return array
      */
-    public function validateContentCreationConfiguration($store = null)
+    public function validateContentCreationConfiguration($store = null): array
     {
         $result = [
             'error' => false,
@@ -457,13 +407,34 @@ class ConfigurationService
     }
 
     /**
+     * Returns Product attributes map from magento config for content creation
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getContentCreationProductFields($store = null): array
+    {
+        $data = $this->scopeConfig->getValue(
+            self::XML_PATH_CONTENT_CREATION_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        return $this->serializer->unserialize($data);
+    }
+
+    /**
      * Basic config validation for category content creation
      * Check required API fields before make real api request.
      *
      * @param string|null $store
      * @return array
      */
-    public function validateCategoryContentCreationConfiguration($store = null)
+    public function validateCategoryContentCreationConfiguration($store = null): array
     {
         $result = [
             'error' => false,
@@ -495,5 +466,26 @@ class ConfigurationService
         }
 
         return $result;
+    }
+
+    /**
+     * Returns category attributes map from magento config for content creation
+     *
+     * @param string|null $store
+     * @return array
+     */
+    public function getContentCreationCategoryFields($store = null): array
+    {
+        $data = $this->scopeConfig->getValue(
+            self::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+
+        if (empty($data)) {
+            return [];
+        }
+
+        return $this->serializer->unserialize($data);
     }
 }

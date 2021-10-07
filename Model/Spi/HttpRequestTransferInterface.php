@@ -1,10 +1,7 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Spi;
 
-/**
- * Interface HttpRequestTransferInterface
- * @package Contentor\LocalizationApi\Model\Spi
- */
 interface HttpRequestTransferInterface
 {
     /**
@@ -19,7 +16,7 @@ interface HttpRequestTransferInterface
      *
      * @return array
      */
-    public function getHeaders();
+    public function getHeaders(): array;
 
     /**
      * Returns request parameters
@@ -40,5 +37,5 @@ interface HttpRequestTransferInterface
      *
      * @return string
      */
-    public function getUri();
+    public function getUri(): string;
 }

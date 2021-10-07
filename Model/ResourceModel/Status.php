@@ -1,13 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel;
 
 use Contentor\LocalizationApi\Api\Data\StatusInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
-/**
- * Class Status
- * @package Contentor\LocalizationApi\Model\ResourceModel
- */
 class Status extends AbstractDb
 {
     /**
@@ -17,7 +14,6 @@ class Status extends AbstractDb
 
     /**
      * @inheritdoc
-     * @void
      */
     public function _construct()
     {

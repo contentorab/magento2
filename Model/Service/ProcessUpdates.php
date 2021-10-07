@@ -1,23 +1,21 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Service;
 
-use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\ContentUpdate\HandlerList;
 use Contentor\LocalizationApi\Model\EntityResolver;
 use Contentor\LocalizationApi\Model\Gateway\GetUpdates;
-use Magento\Framework\Exception\LocalizedException;
 use Contentor\LocalizationApi\Model\Gateway\SetImportState;
+use Contentor\LocalizationApi\Model\Logger\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
- * Class ProcessUpades
- * @package Contentor\LocalizationApi\Model\Service
- *
+ * Class ProcessUpdates
  * Contentor 'getUpdates' api endpoint service
- *
  */
 class ProcessUpdates
 {
-      /**
+    /**
      * @var Logger
      */
     private $logger;
@@ -26,11 +24,6 @@ class ProcessUpdates
      * @var HandlerList
      */
     private $handlerList;
-
-    /**
-     * @var TestConnection
-     */
-    private $testConnection;
 
     /**
      * @var GetUpdates
@@ -48,27 +41,33 @@ class ProcessUpdates
     private $setImportStateGateway;
 
     /**
+     * @var LoggerInterface
+     */
+    private $psrLogger;
+
+    /**
      * ProcessUpdates constructor.
+     * @param Logger $logger
      * @param HandlerList $handlerList
-     * @param TestConnection $testConnection
      * @param GetUpdates $getUpdatesGateway
      * @param EntityResolver $entityResolver
      * @param SetImportState $setImportStateGateway
+     * @param LoggerInterface $psrLogger
      */
     public function __construct(
         Logger $logger,
         HandlerList $handlerList,
-        TestConnection $testConnection,
         GetUpdates $getUpdatesGateway,
         EntityResolver $entityResolver,
-        SetImportState $setImportStateGateway
+        SetImportState $setImportStateGateway,
+        LoggerInterface $psrLogger
     ) {
         $this->logger = $logger;
         $this->handlerList = $handlerList;
-        $this->testConnection = $testConnection;
         $this->getUpdatesGateway = $getUpdatesGateway;
         $this->entityResolver = $entityResolver;
         $this->setImportStateGateway = $setImportStateGateway;
+        $this->psrLogger = $psrLogger;
     }
 
     /**
@@ -76,46 +75,53 @@ class ProcessUpdates
      * seen.
      * @param $date
      * @return array
-     * @throws LocalizedException
      */
-    public function execute($date)
+    public function execute($date): array
     {
-        //1. get updates
-        $updates = $this->getUpdatesGateway->execute($date);
-        $lastStateChangeSeen = $date;
-        $count = 0;
-        foreach ($updates as $update) {
-            // Keep the last state change seen - no matter if the entity exists or not
-            $lastStateChangeSeen = $update['lastStateChange'];
+        $result = [];
+        try {
+            $updates = $this->getUpdatesGateway->execute($date);
+            $lastStateChangeSeen = $date;
+            $count = 0;
+            foreach ($updates as $update) {
+                // Keep the last state change seen - no matter if the entity exists or not
+                $lastStateChangeSeen = $update['lastStateChange'];
 
-            $entity = $this->entityResolver->findByContentorId(
-                $update['id']
+                $entity = $this->entityResolver->findByContentorId(
+                    $update['id']
+                );
+
+                if ($entity == null) {
+                    // If entity is not found - continue processing other updates
+                    continue;
+                }
+
+                $count++;
+
+                //2. find entity handler
+                $handler = $this->handlerList->getHandlerByCode($entity->getContentCode());
+
+                //3. process update
+                $handler->execute($entity, $update);
+
+                //4 set the importState
+                if ($update['state'] == 'completed') {
+                    $this->setImportStateGateway->execute($entity->getContentorId(), 'success');
+                }
+            }
+
+            $this->logger->info(
+                'Processed ' . $count
+                . ' requests, with the last state change being ' . $lastStateChangeSeen
             );
 
-            if($entity == null) {
-                // If entity is not found - continue processing other updates
-                continue;
-            }
-
-            $count++;
-
-            //2. find entity handler
-            $handler = $this->handlerList->getHandlerByCode($entity->getContentCode());
-
-            //3. process update
-            $handler->execute($entity, $update);
-
-            //4 set the importState
-            if($update['state'] == 'completed'){
-                $this->setImportStateGateway->execute($entity->getContentorId(),'success');
-            }
+            $result = [
+                'lastStateChange' => $lastStateChangeSeen,
+                'updates' => count($updates)
+            ];
+        } catch (\Exception $e) {
+            $this->psrLogger->error($e->getMessage());
         }
-
-        $this->logger->info('Processed ' . $count . ' requests, with the last state change being ' . $lastStateChangeSeen);
-
-        return [
-            'lastStateChange' => $lastStateChangeSeen,
-            'updates' => count($updates)
-        ];
+        return $result;
     }
 }

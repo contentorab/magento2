@@ -1,26 +1,25 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab;
 
-/**
- * Class ContentCreation
- * @package Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab
- */
-class ContentCreation extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\AbstractTabBlock
+use Contentor\LocalizationApi\Model\Product;
+
+class ContentCreation extends AbstractTabBlock
 {
     /**
      * @var int
      */
-    protected $_syncType = \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE;
+    protected $syncType = Product::CONTENT_CREATION_SYNC_TYPE;
 
     /**
      * @var string
      */
-    protected $_submitLabelBtn = 'content creation';
+    protected $submitLabelBtn = 'content creation';
 
     /**
      * @return string
      */
-    public function getSubmitUrl()
+    public function getSubmitUrl(): string
     {
         return $this->getUrl("contentor/administration/contentcreation_postproduct/");
     }
@@ -29,7 +28,7 @@ class ContentCreation extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog
      * Validate content creation configuration
      * @return array
      */
-    public function getValidationMessages()
+    public function getValidationMessages(): array
     {
         $result = $this->configurationService->validateContentCreationConfiguration();
         return $result['messages'];
@@ -39,7 +38,7 @@ class ContentCreation extends \Contentor\LocalizationApi\Block\Adminhtml\Catalog
      * Check if isReady to show send request button
      * @return bool
      */
-    public function isReady()
+    public function isReady(): bool
     {
         $result = $this->configurationService->validateContentCreationConfiguration();
         return !$result['error'];

@@ -1,18 +1,19 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
-use Contentor\LocalizationApi\Api\Data\ProductInterface;
-use Contentor\LocalizationApi\Api\Data\CategoryInterface;
-use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
 use Contentor\LocalizationApi\Api\CategoryRepositoryInterface;
+use Contentor\LocalizationApi\Api\Data\CategoryInterface;
+use Contentor\LocalizationApi\Api\Data\ProductInterface;
+use Contentor\LocalizationApi\Api\ProductRepositoryInterface;
 use Contentor\LocalizationApi\Api\TypeRepositoryInterface;
+use Contentor\LocalizationApi\Model\Spi\ContentEntityInterface;
 use Contentor\LocalizationApi\Model\Spi\ContentEntityLoaderInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\ObjectManagerInterface;
 
 /**
  * Class EntityResolver
- * @package Contentor\LocalizationApi\Model
  *
  * Work with different content entities (Product,CMS..)
  * Get Content Updates API returns all request data in one response,
@@ -54,15 +55,12 @@ class EntityResolver
     }
 
     /**
-     * Find entity  by contentor id
-     *
-     * @param int $contentorId
-     * @return \Contentor\LocalizationApi\Model\Spi\ContentEntityInterface
+     * @param $contentorId
+     * @return ContentEntityInterface|null
      * @throws LocalizedException
      */
-    public function findByContentorId($contentorId)
+    public function findByContentorId($contentorId): ?ContentEntityInterface
     {
-        //2. try to find type
         $type = $this->typeRepository->getByContentorId($contentorId);
         if (empty($type)) {
             // No type found - meaning we didn't send this request - return null as we can't load associated entity
@@ -73,25 +71,13 @@ class EntityResolver
             throw new LocalizedException(__('Undefined content type  %1', $type));
         }
 
-        //2. try to find type repository
         /** @var ContentEntityLoaderInterface $repository */
         $repository = $this->objectManager->create(
             $this->repositoriesMap[$type]
         );
 
-        //3. load content entity
         return $repository->loadByContentorId(
             $contentorId
         );
-    }
-
-
-    /**
-     * @param $contentorId
-     * @param $entity
-     * @deprecated
-     */
-    public function saveByContentorId($contentorId, $entity)
-    {
     }
 }

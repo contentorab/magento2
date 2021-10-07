@@ -1,4 +1,5 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Http\Client;
 
 use Contentor\LocalizationApi\Model\Logger\Logger;
@@ -6,11 +7,8 @@ use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\HTTP\Adapter\Curl as CurlAdapter;
+use Zend_Http_Response;
 
-/**
- * Class Curl
- * @package Contentor\LocalizationApi\Model\Http\Client
- */
 class Curl implements HttpClientInterface
 {
     /**
@@ -29,8 +27,10 @@ class Curl implements HttpClientInterface
     private $logger;
 
     /**
+     * Curl constructor.
+     * @param ConfigurationService $configurationService
      * @param CurlAdapter $curl
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      */
     public function __construct(
         ConfigurationService $configurationService,
@@ -46,14 +46,13 @@ class Curl implements HttpClientInterface
      * @param HttpRequestTransferInterface $transfer
      * @return array
      */
-    public function sendRequest(HttpRequestTransferInterface $transfer)
+    public function sendRequest(HttpRequestTransferInterface $transfer): array
     {
         $headers = [
             'User-Agent' => 'ContentorMagento2/' . $this->configurationService->getVersion()
         ];
         $token = $this->configurationService->getToken();
-        if (! empty($token)) {
-            // Apply the authorization token if it is set
+        if (!empty($token)) {
             $headers[] = 'Authorization: Bearer ' . $token;
         }
 
@@ -78,11 +77,9 @@ class Curl implements HttpClientInterface
         );
 
         $response = $this->curl->read();
-        $result = [
-            'code' => \Zend_Http_Response::extractCode($response),
-            'body' => \Zend_Http_Response::extractBody($response),
+        return [
+            'code' => Zend_Http_Response::extractCode($response),
+            'body' => Zend_Http_Response::extractBody($response),
         ];
-
-        return $result;
     }
 }

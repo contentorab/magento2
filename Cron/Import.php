@@ -1,9 +1,11 @@
 <?php
+
 namespace Contentor\LocalizationApi\Cron;
 
 use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Service\ProcessUpdates;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class Import
@@ -32,9 +34,9 @@ class Import
      * @param ProcessUpdates $processUpdates
      */
     public function __construct(
-        Logger $logger,
+        Logger             $logger,
         ResourceConnection $resource,
-        ProcessUpdates $processUpdates
+        ProcessUpdates     $processUpdates
     ) {
         $this->processUpdates = $processUpdates;
         $this->logger = $logger;
@@ -43,7 +45,7 @@ class Import
 
     /**
      * @return $this|bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function execute()
     {
@@ -52,13 +54,13 @@ class Import
         $lastRun = $this->get($connection, 'lastRun');
         $lastStateChange = $this->get($connection, 'lastStateChange');
 
-        if(empty($lastStateChange)) {
+        if (empty($lastStateChange)) {
             $this->logger->info('Running initial content synchronization');
         } else {
             $this->logger->info('Running content synchronization, last state change seen ' . $lastStateChange . ' (at ' . $lastRun . ')');
         }
 
-        while(true) {
+        while (true) {
             $result = $this->processUpdates->execute(
                 empty($lastStateChange) ? gmdate('c', strtotime('-2 days')) : $lastStateChange
             );
@@ -67,7 +69,7 @@ class Import
             $this->update($connection, 'lastStateChange', $result['lastStateChange'], $lastStateChange);
             $lastStateChange = $result['lastStateChange'];
 
-            if($result['updates'] == 0) {
+            if ($result['updates'] == 0) {
                 break;
             }
         }
@@ -82,14 +84,17 @@ class Import
      * @param $key
      * @return null
      */
-    private function get($connection, $key) {
+    private function get($connection, $key)
+    {
         $table = $this->resource->getTableName('contentor_config');
-        $query = "SELECT `value` FROM `" . $table . "` WHERE `key` = :key";
+        $query = $connection->select()
+            ->from(['cc' => $table], ['value'])
+            ->where('cc.key =:key');
         $binds = [
             'key' => $key
         ];
         $date = $connection->fetchOne($query, $binds);
-        if(empty($date)) {
+        if (empty($date)) {
             return null;
         } else {
             return $date;
@@ -102,18 +107,13 @@ class Import
      * @param $value
      * @param $previous
      */
-    private function update($connection, $key, $value, $previous) {
+    private function update($connection, $key, $value, $previous)
+    {
         $table = $this->resource->getTableName('contentor_config');
         if (empty($previous)) {
-            $query = "INSERT INTO `" . $table . "` (`key`, `value`) VALUES (:key, :value)";
+            $connection->insert($table, ['key' => $key, 'value' => $value]);
         } else {
-            $query = "UPDATE `" . $table . "` SET `value` = :value WHERE `key` = :key";
+            $connection->update($table, ['value' => $value], ['value = ?' => $key]);
         }
-
-        $binds = [
-            'key' => $key,
-            'value' => $value
-        ];
-        $connection->query($query, $binds);
     }
 }

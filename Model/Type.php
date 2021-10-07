@@ -1,4 +1,5 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model;
 
 use Contentor\LocalizationApi\Api\Data\TypeInterface;
@@ -7,13 +8,12 @@ use Magento\Framework\Model\AbstractModel;
 
 /**
  * Class Type
- * @package Contentor\LocalizationApi\Model
+ *
  * Type model. Represent data from `contentor_type` table
  */
 class Type extends AbstractModel implements TypeInterface
 {
     /**
-     * @void
      * @inheritdoc
      */
     public function _construct()
@@ -22,10 +22,9 @@ class Type extends AbstractModel implements TypeInterface
     }
 
     /**
-     * @param  int $contentorId
-     * @return void
+     * @inheritdoc
      */
-    public function setContentorId($contentorId)
+    public function setContentorId($contentorId): void
     {
         $this->setData(
             self::CONTENTOR_ID,
@@ -34,7 +33,7 @@ class Type extends AbstractModel implements TypeInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getContentorId()
     {
@@ -42,10 +41,9 @@ class Type extends AbstractModel implements TypeInterface
     }
 
     /**
-     * @param string $type
-     * @return void
+     * @inheritdoc
      */
-    public function setType($type)
+    public function setType($type): void
     {
         $this->setData(
             self::TYPE,
@@ -54,9 +52,9 @@ class Type extends AbstractModel implements TypeInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->getData(self::TYPE);
     }

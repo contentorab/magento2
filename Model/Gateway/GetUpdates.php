@@ -1,18 +1,17 @@
 <?php
-namespace Contentor\LocalizationApi\Model\Gateway;
 
-use Psr\Log\LoggerInterface;
+namespace Contentor\LocalizationApi\Model\Gateway;
 
 use Contentor\LocalizationApi\Model\Http\Converter\JsonToArray;
 use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
-use Contentor\LocalizationApi\Service\ConfigurationService;
+use Psr\Log\LoggerInterface;
+use Zend_Http_Client;
+use Magento\Framework\Serialize\Serializer\Json;
 
 /**
  * Class GetUpdates
- * @package Contentor\LocalizationApi\Model\Gateway
- *
  * Gateway command for URL [ContentorBaseUrl]/content:GET.
  * Responsibility : Data transfer, pre format API response result.
  * Used for getting updates from contentor
@@ -40,22 +39,38 @@ class GetUpdates
     private $jsonToArrayConverter;
 
     /**
-     * SendContent constructor.
-     * @param ConfigurationService $configurationService
+     * @var LoggerInterface
+     */
+    private $psrLogger;
+
+    /**
+     * @var Json
+     */
+    private $serializer;
+
+    /**
+     * GetUpdates constructor.
+     * @param Logger $logger
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      * @param JsonToArray $jsonToArrayConverter
+     * @param LoggerInterface $psrLogger
+     * @param Json $serializer
      */
     public function __construct(
         Logger $logger,
         HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory,
         HttpClientInterface $httpClient,
-        JsonToArray $jsonToArrayConverter
+        JsonToArray $jsonToArrayConverter,
+        LoggerInterface $psrLogger,
+        Json $serializer
     ) {
         $this->logger = $logger;
         $this->httpClient = $httpClient;
         $this->httpRequestTransferInterfaceFactory = $httpRequestTransferInterfaceFactory;
         $this->jsonToArrayConverter = $jsonToArrayConverter;
+        $this->psrLogger = $psrLogger;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -63,9 +78,8 @@ class GetUpdates
      *
      * @param string $date
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function execute($date)
+    public function execute($date): array
     {
         $result = $this->getUpdates($date);
         $updates = [];
@@ -85,40 +99,43 @@ class GetUpdates
      * @param string $date
      * @param null $page
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getUpdates($date, $page = null)
+    private function getUpdates($date, $page = null): array
     {
-        $headers =  [
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json'
-        ];
-        /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
-        $transfer = $this->httpRequestTransferInterfaceFactory->create([
-            'headers' => $headers,
-            'params' => [],
-            'method' => \Zend_Http_Client::GET,
-            'body' => null,
-            'uri' => sprintf('v1/content?%s%s',
-                $this->buildSearchCriteria($date),
-                (null === $page) ? '' : '&page=' . $page
+        $body = [];
+        try {
+            $headers = [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json'
+            ];
 
-            )
-        ]);
+            $transfer = $this->httpRequestTransferInterfaceFactory->create([
+                'headers' => $headers,
+                'params' => [],
+                'method' => Zend_Http_Client::GET,
+                'body' => null,
+                'uri' => sprintf(
+                    'v1/content?%s%s',
+                    $this->buildSearchCriteria($date),
+                    (null === $page) ? '' : '&page=' . $page
+                )
+            ]);
 
-        $result = $this->httpClient->sendRequest($transfer);
-        $result = $this->jsonToArrayConverter->convert(
-            $result['body']
-        );
-
-        return $result;
+            $result = $this->httpClient->sendRequest($transfer);
+            $body = $this->jsonToArrayConverter->convert(
+                $result['body']
+            );
+        } catch (\Exception $e) {
+            $this->psrLogger->error($e->getMessage());
+        }
+        return $body;
     }
 
     /**
      * @param string $date
      * @return string
      */
-    private function buildSearchCriteria($date)
+    private function buildSearchCriteria($date): string
     {
         $args = [
             'criteria' => [
@@ -130,11 +147,11 @@ class GetUpdates
                     ]
                 ]
             ],
-            'sortBy' => [ 'lastStateChange:asc' ]
+            'sortBy' => ['lastStateChange:asc']
         ];
 
         return http_build_query(
-            ['query' => json_encode($args)]
+            ['query' => $this->serializer->serialize($args)]
         );
     }
 }

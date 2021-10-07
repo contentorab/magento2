@@ -1,9 +1,9 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Spi;
 
 /**
  * Interface ContentEntityLoaderInterface
- * @package Contentor\LocalizationApi\Model\Spi
  *
  * Represent entity loader repository
  * @see \Contentor\LocalizationApi\Model\EntityResolver
@@ -11,10 +11,10 @@ namespace Contentor\LocalizationApi\Model\Spi;
 interface ContentEntityLoaderInterface
 {
     /**
-     * Returns Product Content Request  by contentor ID
+     * Returns Product Content Request by contentor ID
      *
      * @param int|string $contentorId
-     * @return ContentEntityInterface
+     * @return mixed
      */
     public function loadByContentorId($contentorId);
 }

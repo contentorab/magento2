@@ -1,16 +1,15 @@
 <?php
-namespace Contentor\LocalizationApi\Model\Gateway;
 
-use Psr\Log\LoggerInterface;
+namespace Contentor\LocalizationApi\Model\Gateway;
 
 use Contentor\LocalizationApi\Model\Logger\Logger;
 use Contentor\LocalizationApi\Model\Spi\HttpClientInterface;
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterfaceFactory;
-use Contentor\LocalizationApi\Service\ConfigurationService;
+use Psr\Log\LoggerInterface;
+use Zend_Http_Client;
 
 /**
  * Class SetImportState
- * @package Contentor\LocalizationApi\Model\Gateway
  *
  * Gateway command for setting the importState after a successful or failed import
  * of content.
@@ -34,7 +33,7 @@ class SetImportState
 
     /**
      * SetImportState constructor.
-     * @param ConfigurationService $configurationService
+     * @param Logger $logger
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      */
@@ -53,13 +52,12 @@ class SetImportState
      *
      * @param string $contentRequest
      * @param string $state
-     * @return array
+     * @return void
      */
-    public function execute($contentRequest, $state)
+    public function execute($contentRequest, $state): void
     {
         $this->setImportState($contentRequest, $state);
         $this->logger->info('Updated importState for ' . $contentRequest . ', set state: ' . $state);
-
     }
 
     /**
@@ -67,23 +65,23 @@ class SetImportState
      *
      * @param string $contentRequest
      * @param string $state
+     * @return void
      */
-    private function setImportState($contentRequest, $state)
+    private function setImportState($contentRequest, $state): void
     {
-        $headers =  [
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json'
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
         ];
         $body = '{
             "importState": "' . $state . '"
         }';
-        /** @var \Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface $transfer */
         $transfer = $this->httpRequestTransferInterfaceFactory->create([
             'headers' => $headers,
             'params' => [],
-            'method' => \Zend_Http_Client::PUT,
+            'method' => Zend_Http_Client::PUT,
             'body' => $body,
-            'uri' => 'v1/content/'. $contentRequest . '/import'
+            'uri' => 'v1/content/' . $contentRequest . '/import'
         ]);
         $this->httpClient->sendRequest($transfer);
     }

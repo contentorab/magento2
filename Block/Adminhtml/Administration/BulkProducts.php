@@ -1,26 +1,25 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 
-/**
- * Class BulkProducts
- * @package Contentor\LocalizationApi\Block\Adminhtml\Administration
- */
-class BulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administration\AbstractBulkProducts
+use Contentor\LocalizationApi\Model\Product;
+
+class BulkProducts extends AbstractBulkProducts
 {
     /**
      * @var int
      */
-    protected $_syncType = \Contentor\LocalizationApi\Model\Product::LOCALIZED_SYNC_TYPE;
+    protected $syncType = Product::LOCALIZED_SYNC_TYPE;
 
     /**
      * @var string
      */
-    protected $_btnSubmitLabel = 'Send for localization' ;
+    protected $btnSubmitLabel = 'Send for localization';
 
     /**
      * @return string
      */
-    public function getSendUrl()
+    public function getSendUrl(): string
     {
         return $this->getUrl('contentor/administration/sendbulkproducts');
     }
@@ -28,7 +27,7 @@ class BulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administra
     /**
      * @return array
      */
-    public function getValidationMessages()
+    public function getValidationMessages(): array
     {
         $result = $this->configurationService->validateConfiguration();
         return $result['messages'];
@@ -37,10 +36,9 @@ class BulkProducts extends \Contentor\LocalizationApi\Block\Adminhtml\Administra
     /**
      * @return bool
      */
-    public function isReady()
+    public function isReady(): bool
     {
         $result = $this->configurationService->validateConfiguration();
         return !$result['error'];
     }
-
 }

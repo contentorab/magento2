@@ -1,4 +1,11 @@
-<?php if (!$block->isReady()) :?>
+<?php
+
+use Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab\ContentCreation;
+use Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab\Localization;
+use Contentor\LocalizationApi\Model\Product;
+
+/** @var ContentCreation|Localization $block */
+if (!$block->isReady()) :?>
     <?php
     $configUrl = $this->getUrl(
         'adminhtml/system_config/edit/section/contentor_options'
@@ -17,6 +24,22 @@
 
 <?php else: ?>
 
+<?php
+    $dataViewModel = $block->getData('dataViewModel');
+    $configLocale = $dataViewModel ? $dataViewModel->getConfig('contentor_options/source/sourcelocale') : '';
+    $defaultStores = $dataViewModel
+        ? explode(',', $dataViewModel->getConfig('contentor_options/targets/targetviews'))
+        : '';
+    $deliverySpeedBlock = $block->getChildBlock('localization_delivery_speed')
+        ? 'localization_delivery_speed'
+        : 'content_creation_delivery_speed';
+    $machineTranslationBlock = $block->getChildBlock('localization_machine_translation')
+        ? 'localization_machine_translation'
+        : 'content_creation_machine_translation';
+    $productWordsAmountBlock = $block->getChildBlock('localization_product_words_amount')
+        ? 'localization_product_words_amount'
+        : 'content_creation_product_words_amount';
+?>
 <p>
     <form method="post" action="<?php print $block->getSubmitUrl(); ?>" name="contentorproducts">
     <input type="hidden" name="returnurl" value ="<?php print $this->getCategory()->getUrl(); ?>">
@@ -27,7 +50,6 @@
     <select name="source">
         <option value="">Choose source language</option>
             <?php
-            $configLocale = $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/source/sourcelocale');
             $localeList = $this->getLocales();
             foreach ($localeList as $lang) {
                 print '<option value="' . $lang['value'] . '"';
@@ -47,7 +69,6 @@
             // Get stores if sent before
 
             // Else get default stores
-            $defaultstores = explode(',', $this->helper('Contentor\LocalizationApi\Helper\Data')->getConfig('contentor_options/targets/targetviews'));
             $storesStructure = $this->getStoreViews();
 
             foreach ($storesStructure as $website) {
@@ -62,8 +83,7 @@
                         $id = $storeview['value'];
                         $name = $storeview['label'];
                         $locale = $this->getStoreLocale($id);
-                        //str_replace('_', '-', Mage::getStoreConfig('general/locale/code', $id));
-                        if (in_array($id, $defaultstores)) {
+                        if ($defaultStores && in_array($id, $defaultStores)) {
                             $checked = 'checked';
                         } else {
                             $checked = '';
@@ -76,25 +96,15 @@
             ?>
 </p>
 <br><br><br>
-<?= $this->getLayout()
-        ->createBlock("Magento\Framework\View\Element\Template")
-        ->setTemplate("Contentor_LocalizationApi::options/delivery_speed.phtml")
-        ->toHtml() ?>
+<?= $block->getChildHtml($deliverySpeedBlock); ?>
 <br><br><br>
-<?php if( $block->getSyncType() !== \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
-<?= $this->getLayout()
-    ->createBlock("Magento\Framework\View\Element\Template")
-    ->setTemplate("Contentor_LocalizationApi::options/machine_translation.phtml")
-    ->toHtml() ?>
-<br><br><br
+<?php if ($block->getSyncType() !== Product::CONTENT_CREATION_SYNC_TYPE):?>
+    <?= $block->getChildHtml($machineTranslationBlock); ?>
+    <br><br><br
 <?php endif;?>
-<?php if( $block->getSyncType() == \Contentor\LocalizationApi\Model\Product::CONTENT_CREATION_SYNC_TYPE ):?>
-<?= $this->getLayout()
-    ->createBlock("Magento\Framework\View\Element\Template")
-    ->setIsCategory(true)
-    ->setTemplate("Contentor_LocalizationApi::options/product_words_amount.phtml")
-    ->toHtml() ?>
-<br><br><br>
+<?php if ($block->getSyncType() == Product::CONTENT_CREATION_SYNC_TYPE):?>
+    <?= $block->getChildHtml($productWordsAmountBlock); ?>
+    <br><br><br>
 <?php endif;?>
 <p>
  <button name="submitme" class="action-secondary" onClick="this.submit()"><span>Send for <?= $block->getLabelSubmitButton(); ?></span></button>

@@ -1,14 +1,15 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
+use Exception;
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
 
-/**
- * Class AbstractPostSingleEntity
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
- */
-class AbstractPostSingleEntity extends \Magento\Backend\App\Action
+class AbstractPostSingleEntity extends Action
 {
     protected $entityName;
     /**
@@ -61,7 +62,7 @@ class AbstractPostSingleEntity extends \Magento\Backend\App\Action
 
     /**
      * @inheritdoc
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @return ResponseInterface|ResultInterface|void
      */
     public function execute()
     {
@@ -88,15 +89,14 @@ class AbstractPostSingleEntity extends \Magento\Backend\App\Action
                 $targets[$id] = $locale;
             }
 
-            if (!count($targets)) {
-                // No target selected
-            } elseif (in_array($sourceLocale, $targets) && $this->shouldValidateTargetAndSource == true ) {
-                // Source locale in targets
-            } else {
+            if (count($targets)
+                && !in_array($sourceLocale, $targets)
+                && !$this->shouldValidateTargetAndSource == true
+            ) {
                 /**
                  * Declare $serviceSendContent in etc/adminhtml/di.xml as argument to reusable
                  */
-                if ( array_key_exists('instance', $this->serviceSendContent) ) {
+                if (array_key_exists('instance', $this->serviceSendContent)) {
                     $this->_objectManager->create($this->serviceSendContent['instance'])
                         ->execute(
                             $entity,
@@ -111,9 +111,11 @@ class AbstractPostSingleEntity extends \Magento\Backend\App\Action
                 ['id' => $idRequest]
             );
 
-            $this->messageManager->addSuccess(__(sprintf('Sent %s request to Contentor platform successfully.', $this->entityName )));
-        }catch ( \Exception $e ) {
-            $this->messageManager->addError(__($e->getMessage()));
+            $this->messageManager->addSuccessMessage(
+                __(sprintf('Sent %s request to Contentor platform successfully.', $this->entityName))
+            );
+        } catch (Exception $e) {
+            $this->messageManager->addErrorMessage(__($e->getMessage()));
 
             $url = $this->getUrl(
                 $this->routeRedirect,

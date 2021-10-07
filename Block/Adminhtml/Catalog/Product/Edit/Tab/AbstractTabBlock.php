@@ -3,16 +3,16 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab;
 
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Backend\Block\Template\Context;
+use Magento\Catalog\Model\Product;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\Locale\ListsInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\System\Store;
 use Magento\Framework\App\ResourceConnection;
 
-/**
- * Class AbstractTabBlock
- * @package Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab
- */
-abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
+abstract class AbstractTabBlock extends Template
 {
     /**
      * @var string
@@ -22,42 +22,42 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     /**
      * @var int
      */
-    protected $_syncType;
+    protected $syncType;
 
     /**
      * @var string
      */
-    protected $_submitLabelBtn;
+    protected $submitLabelBtn;
 
     /**
      * @var Registry
      */
-    protected $_coreRegistry;
+    protected $coreRegistry;
 
     /**
      * @var
      */
-    protected $_resolver;
+    protected $resolver;
 
     /**
      * @var Store
      */
-    protected $_systemStores;
+    protected $systemStores;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    protected $scopeConfig;
 
     /**
      * @var ResourceConnection
      */
-    protected $_resource;
+    protected $resource;
 
     /**
      * @var ListsInterface
      */
-    protected $_localeList;
+    protected $localeList;
 
     /**
      * @var ConfigurationService
@@ -83,11 +83,11 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
         ConfigurationService $configurationService,
         array $data = []
     ) {
-        $this->_coreRegistry = $registry;
-        $this->_localeList = $localeList;
-        $this->_systemStores = $systemStores;
-        $this->_resource = $resource;
-        $this->_scopeConfig = $context->getScopeConfig();
+        $this->coreRegistry = $registry;
+        $this->localeList = $localeList;
+        $this->systemStores = $systemStores;
+        $this->resource = $resource;
+        $this->scopeConfig = $context->getScopeConfig();
         parent::__construct($context, $data);
         $this->configurationService = $configurationService;
     }
@@ -95,61 +95,81 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     /**
      * Retrieve product
      *
-     * @return \Magento\Catalog\Model\Product
+     * @return Product
      */
-    public function getProduct()
+    public function getProduct(): Product
     {
-        return $this->_coreRegistry->registry('current_product');
+        return $this->coreRegistry->registry('current_product');
     }
 
     /**
      * @return array
      */
-    public function getLocales()
+    public function getLocales(): array
     {
-        return $this->_localeList->getOptionLocales();
+        return $this->localeList->getOptionLocales();
     }
 
     /**
      * @return array
      */
-    public function getStoreViews()
+    public function getStoreViews(): array
     {
-        return $this->_systemStores->getStoresStructure();
+        return $this->systemStores->getStoresStructure();
     }
 
     /**
      * @param string $id
      * @return string
      */
-    public function getStoreLocale($id)
+    public function getStoreLocale($id): string
     {
-        return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+        return $this->scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $id);
     }
 
     /**
      * @param string $sku
      * @return array
      */
-    public function getRequestStatus($sku)
+    public function getRequestStatus($sku): array
     {
-        $connection = $this->_resource->getConnection('core_read');
-        $statustable = $table = $this->_resource->getTableName('contentor_status');
-        $producttable = $table = $this->_resource->getTableName('contentor_products');
-        $query = "SELECT `" . $producttable . "`.`contentor_id`, `" . $producttable . "`.`target_store`, `" . $producttable . "`.`sent_time`, `" . $producttable . "`.`completed_time`, `" . $producttable . "`.`canceled_time`, `" . $statustable . "`.`status_time`, `" . $statustable . "`.`status`, `" . $producttable . "`.`state`, `" . $producttable . "`.`type` FROM `" . $producttable . "` LEFT JOIN `" . $statustable . "` ON `" . $producttable . "`.`contentor_id`= `" . $statustable . "`.`contentor_id` WHERE `" . $producttable . "`.`sku` = :this_sku AND `synchronize_type` = :this_synchronize_type ORDER BY `" . $producttable . "`.`contentor_id` DESC, `" . $statustable . "`.`status_time`";
-        $binds = [
-            'this_sku' => $sku,
-            'this_synchronize_type' => $this->_syncType
-        ];
-        $status = $connection->fetchAll($query, $binds);
-
+        $status = [];
+        try {
+            $connection = $this->resource->getConnection('core_read');
+            $statusTable = $this->resource->getTableName('contentor_status');
+            $productTable = $this->resource->getTableName('contentor_products');
+            $query = $connection->select()
+                ->from(
+                    ['cp' => $productTable],
+                    [
+                        'cp.contentor_id',
+                        'cp.target_store',
+                        'cp.sent_time',
+                        'cp.completed_time',
+                        'cp.canceled_time',
+                        'cs.status_time',
+                        'cs.status',
+                        'cp.state',
+                        'cp.type'
+                    ]
+                )->joinLeft(['cs' => $statusTable], 'cp.contentor_id = cs.contentor_id')
+                ->where('cp.sku =:this_sku AND synchronize_type = :this_synchronize_type')
+                ->order('cp.contentor_id DESC, cs.status_time');
+            $binds = [
+                'this_sku' => $sku,
+                'this_synchronize_type' => $this->syncType
+            ];
+            $status = $connection->fetchAll($query, $binds);
+        } catch (\Exception $e) {
+            $this->_logger->error($e->getMessage());
+        }
         return $status;
     }
 
     /**
      * @return array
      */
-    public function getValidationMessages()
+    public function getValidationMessages(): array
     {
         $result = $this->configurationService->validateConfiguration();
         return $result['messages'];
@@ -158,7 +178,7 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     /**
      * @return bool
      */
-    public function isReady()
+    public function isReady(): bool
     {
         $result = $this->configurationService->validateConfiguration();
         return !$result['error'];
@@ -167,19 +187,21 @@ abstract class AbstractTabBlock extends \Magento\Framework\View\Element\Template
     /**
      * @return string
      */
-    public function getLabelSubmitButton(){
-        return $this->_submitLabelBtn;
+    public function getLabelSubmitButton(): string
+    {
+        return $this->submitLabelBtn;
     }
 
     /**
      * @return int
      */
-    public function getSyncType(){
-        return $this->_syncType;
+    public function getSyncType(): int
+    {
+        return $this->syncType;
     }
 
     /**
      * @return string
      */
-    abstract function getSubmitUrl();
+    abstract public function getSubmitUrl(): string;
 }

@@ -1,14 +1,11 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Class PostBulkProducts
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
- */
 class PostBulkProducts extends Action
 {
     /**

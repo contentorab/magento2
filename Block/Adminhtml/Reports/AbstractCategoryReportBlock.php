@@ -1,46 +1,50 @@
 <?php
+
 namespace Contentor\LocalizationApi\Block\Adminhtml\Reports;
 
-use \Magento\Framework\App\ResourceConnection;
-use \Magento\Framework\Locale\ListsInterface;
-use \Magento\Store\Model\StoreRepository;
-use \Magento\Catalog\Model\CategoryFactory;
-use \Magento\Framework\App\Request\Http;
+use Exception;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\CategoryFactory;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Locale\ListsInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreRepository;
+use Psr\Log\LoggerInterface;
 
-/**
- * Class AbstractCategoryReportBlock
- * @package Contentor\LocalizationApi\Block\Adminhtml\Reports
- */
-class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
+class AbstractCategoryReportBlock extends Template
 {
     /**
-     * @var
+     * @var int
      */
-    protected $_syncType;
+    protected $syncType;
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
     /**
      * @var ResourceConnection
      */
-    protected $_resource;
+    protected $resource;
     /**
      * @var ListsInterface
      */
-    protected $_localeList;
+    protected $localeList;
     /**
      * @var StoreRepository
      */
-    protected $_storeRepository;
+    protected $storeRepository;
     /**
      * @var CategoryFactory
      */
-    protected $_categoryFactory;
+    protected $categoryFactory;
 
     /**
      * AbstractCategoryReportBlock constructor.
-     * @param \Magento\Backend\Block\Template\Context $context
+     * @param Context $context
      * @param ResourceConnection $resource
      * @param ListsInterface $localeList
      * @param StoreRepository $storeRepository
@@ -49,36 +53,41 @@ class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
+        Context $context,
         ResourceConnection $resource,
         ListsInterface $localeList,
         StoreRepository $storeRepository,
         CategoryFactory $productFactory,
         Http $request,
         array $data = []
-    )
-    {
-        $this->_logger = $context->getLogger();
-        $this->_resource = $resource;
-        $this->_localeList = $localeList;
-        $this->_storeRepository = $storeRepository;
-        $this->_categoryFactory = $productFactory;
+    ) {
+        $this->logger = $context->getLogger();
+        $this->resource = $resource;
+        $this->localeList = $localeList;
+        $this->storeRepository = $storeRepository;
+        $this->categoryFactory = $productFactory;
         $this->_request = $request;
         parent::__construct($context, $data);
     }
 
     /**
      * @return int
-     * @throws \Zend_Db_Statement_Exception
      */
-    public function getTotal()
+    public function getTotal(): int
     {
-        $connection = $this->_resource->getConnection('core_read');
-        $table = $this->_resource->getTableName('contentor_category');
-        $query = "SELECT `category_id` FROM `" . $table . "` WHERE `synchronize_type` = ". $this->_syncType ." GROUP BY `category_id`, `source_locale`";
-        $result = $connection->query($query);
-        $total = $result->rowCount();
-
+        $total = 0;
+        try {
+            $connection = $this->resource->getConnection('core_read');
+            $table = $this->resource->getTableName('contentor_category');
+            $query = $connection->select()
+                ->from($table, 'category_id')
+                ->where('synchronize_type =?', $this->syncType)
+                ->group(['category_id', 'source_locale']);
+            $result = $connection->query($query);
+            $total = $result->rowCount();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
         return $total;
     }
 
@@ -87,43 +96,50 @@ class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
      * @param $pagesize
      * @return array
      */
-    public function getCategoryList($offset, $pagesize)
+    public function getCategoryList($offset, $pagesize): array
     {
-        $connection = $this->_resource->getConnection('core_read');
-        $table = $this->_resource->getTableName('contentor_category');
-        $query = "SELECT `category_id`,
-                    `delivery_speed` AS deliverySpeed,
-                    `machine_translation` AS machineTranslation,
-                    `attribution`,
-					GROUP_CONCAT(`target_store`, ';', `sent_time`) AS sent,
-					GROUP_CONCAT(`target_store`, ';', `completed_time`) AS completed,
-					`source_locale` AS source, GROUP_CONCAT(`target_store`, ';', `state`) as state
-				FROM `" . $table . "`
-				WHERE `synchronize_type` = ". $this->_syncType ."
-				GROUP BY `category_id`, `source_locale`, `delivery_speed`, `machine_translation`
-				ORDER BY `sent_time` DESC
-				LIMIT " . $offset . "," . $pagesize;
+        $result = [];
+        try {
+            $connection = $this->resource->getConnection('core_read');
+            $table = $this->resource->getTableName('contentor_category');
+            $query = $connection->select()
+                ->from(['cc' => $table], [
+                    'cc.category_id',
+                    'deliverySpeed' => 'cc.delivery_speed',
+                    'machineTranslation' => 'cc.machine_translation',
+                    'cc.attribution',
+                    'sent' => "group_concat(`cc`.`target_store`, ';', `cc`.`sent_time`)",
+                    'completed' => "group_concat(`cc`.`target_store`, ';', `cc`.`completed_time`)",
+                    'source' => 'cc.source_locale',
+                    'state' => "group_concat(`cc`.`target_store`, ';', `cc`.`state`)"
+                ])
+                ->where("`cc`.`synchronize_type`=?", $this->syncType)
+                ->group(['category_id', 'source_locale', 'delivery_speed', 'machine_translation'])
+                ->order('sent_time DESC')
+                ->limit($pagesize, $offset);
+            $result = $connection->fetchAll($query);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
 
-        $productList = $connection->fetchAll($query);
-
-        return $productList;
+        return $result;
     }
 
     /**
      * @param $id
-     * @return \Magento\Catalog\Model\Category
+     * @return Category
      */
-    public function getCategory($id)
+    public function getCategory($id): Category
     {
-        return $this->_categoryFactory->create()->load($id);
+        return $this->categoryFactory->create()->load($id);
     }
 
     /**
-     * @return \Magento\Store\Api\Data\StoreInterface[]
+     * @return StoreInterface[]
      */
-    public function getStores()
+    public function getStores(): array
     {
-        return $this->_storeRepository->getList();
+        return $this->storeRepository->getList();
     }
 
     /**
@@ -132,7 +148,7 @@ class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
      */
     public function getStoreLocale($id)
     {
-        return $this->_scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $id);
+        return $this->_scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $id);
     }
 
     /**
@@ -148,7 +164,11 @@ class AbstractCategoryReportBlock extends \Magento\Backend\Block\Template
      * @param $page
      * @return string
      */
-    public function getPage($page) {
-        return $this->getUrl('contentor/reports/productreport', [ 'page' => $page, 'key' => $this->_request->getParam('key') ]);
+    public function getPage($page): string
+    {
+        return $this->getUrl(
+            'contentor/reports/productreport',
+            ['page' => $page, 'key' => $this->_request->getParam('key')]
+        );
     }
 }

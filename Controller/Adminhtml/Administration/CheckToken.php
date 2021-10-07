@@ -1,15 +1,14 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
 use Contentor\LocalizationApi\Model\Service\TestConnection;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class CheckToken
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Administration
- */
 class CheckToken extends Action
 {
     /**
@@ -36,7 +35,7 @@ class CheckToken extends Action
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @return ResponseInterface|ResultInterface|void
      */
     public function execute()
     {

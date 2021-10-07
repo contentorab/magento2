@@ -1,13 +1,13 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\Category;
 
+use Contentor\LocalizationApi\Model\Category;
 use Contentor\LocalizationApi\Service\ConfigurationService;
+use Contentor\LocalizationApi\Service\GetAttributeConfigService;
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category as CatalogCategory;
 
-/**
- * Class AttributeProvider
- * @package Contentor\LocalizationApi\Model\Category
- */
 class AttributeProvider
 {
     /**
@@ -16,14 +16,9 @@ class AttributeProvider
     private $configurationService;
 
     /**
-     * @var CategoryInterface|\Magento\Catalog\Model\Category
+     * @var CategoryInterface|CatalogCategory
      */
     private $category;
-
-    /**
-     * @var array
-     */
-    private $extraFields;
 
     /**
      * @var int
@@ -31,7 +26,7 @@ class AttributeProvider
     private $syncType;
 
     /**
-     * @var \Contentor\LocalizationApi\Service\GetAttributeConfigService
+     * @var GetAttributeConfigService
      */
     private $getAttributeConfigService;
 
@@ -39,20 +34,17 @@ class AttributeProvider
      * AttributeProvider constructor.
      * @param ConfigurationService $configurationService
      * @param CategoryInterface $category
-     * @param \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService
-     * @param array $extraFields
+     * @param GetAttributeConfigService $getAttributeConfigService
      * @param null $syncType
      */
     public function __construct(
         ConfigurationService $configurationService,
         CategoryInterface $category,
-        \Contentor\LocalizationApi\Service\GetAttributeConfigService $getAttributeConfigService,
-        array $extraFields = [],
+        GetAttributeConfigService $getAttributeConfigService,
         $syncType = null
     ) {
         $this->configurationService = $configurationService;
         $this->category = $category;
-        $this->extraFields = $extraFields;
         $this->syncType = $syncType;
         $this->getAttributeConfigService = $getAttributeConfigService;
     }
@@ -62,13 +54,13 @@ class AttributeProvider
      *
      * @return array
      */
-    public function getList()
+    public function getList(): array
     {
-        if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Category::LOCALIZED_SYNC_TYPE  ) {
+        if ($this->syncType == Category::LOCALIZED_SYNC_TYPE) {
             $fieldArray = $this->configurationService->getCategoryFields();
         }
 
-        if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Category::CONTENT_CREATION_SYNC_TYPE  ) {
+        if ($this->syncType == Category::CONTENT_CREATION_SYNC_TYPE) {
             $fieldArray = $this->configurationService->getContentCreationCategoryFields();
         }
 
@@ -84,11 +76,11 @@ class AttributeProvider
         $fields = [];
 
         $fields[] = [
-                'id' => 'auto_category_id',
-                'type' => 'internal',
-                'data' => 'string',
-                'value' => (string) $categoryId
-            ];
+            'id' => 'auto_category_id',
+            'type' => 'internal',
+            'data' => 'string',
+            'value' => (string)$categoryId
+        ];
 
         $fields[] = [
             'id' => 'auto_category_name',
@@ -100,7 +92,6 @@ class AttributeProvider
         $n = [];
 
         foreach ($fieldArray as $field) {
-
             $attribute = $category->getResource()->getAttribute($field['attribute']);
 
             $value = $category->getResource()->getAttributeRawValue($categoryId, $field['attribute'], $field['store']);
@@ -113,14 +104,11 @@ class AttributeProvider
                 $n[$field['attribute']]++;
             }
 
-
             $id = $field['attribute'] . '_' . sprintf("%03d", $n[$field['attribute']]);
 
             //localizable feature
-            if ( $this->syncType == \Contentor\LocalizationApi\Model\Category::LOCALIZED_SYNC_TYPE ) {
-
-                if (! empty($value)) {
-
+            if ($this->syncType == Category::LOCALIZED_SYNC_TYPE) {
+                if (!empty($value)) {
                     $fields[] = [
                         'id' => $id,
                         'name' => $name,
@@ -128,7 +116,6 @@ class AttributeProvider
                         'data' => $field['data'],
                         'value' => $value
                     ];
-
                 } else {
                     if (isset($fields['required'])) {
                         $messages[] = 'Required field: [' . $field['attribute'] . '] empty';
@@ -137,7 +124,7 @@ class AttributeProvider
             }
 
             //content creation feature
-            if ( $this->syncType ==  \Contentor\LocalizationApi\Model\Category::CONTENT_CREATION_SYNC_TYPE  ) {
+            if ($this->syncType == Category::CONTENT_CREATION_SYNC_TYPE) {
                 //Value has to be null for creatable field
 
                 /**
@@ -145,8 +132,7 @@ class AttributeProvider
                  */
                 $configAttribute = $this->getAttributeConfigService->execute();
 
-                if (
-                    !empty($configAttribute)
+                if (!empty($configAttribute)
                     && array_key_exists($field['attribute'], $configAttribute)
                 ) {
                     $field['word_count'] = $configAttribute[$field['attribute']]['word_count'];
@@ -154,26 +140,25 @@ class AttributeProvider
 
                 $fieldType = $configAttribute[$field['attribute']]['field_type'];
 
-                if ( !empty($fieldType) ) {
+                if (!empty($fieldType)) {
                     $field['field_type'] = $fieldType;
                 }
 
-                if ( !empty($field['field_type']) ) {
+                if (!empty($field['field_type'])) {
 
                     /**
                      * Logic for context field
                      * Send if there has value only
                      * Otherwise skip this
                      */
-                    if ( $field['field_type'] == 'context' ) {
-
+                    if ($field['field_type'] == 'context') {
                         $contextValue = $configAttribute[$field['attribute']]['context_value'];
                         // If context Value is null, take the value from Magento's Attribute
-                        if ( empty($contextValue) ) {
+                        if (empty($contextValue)) {
                             $contextValue = $value;
                         }
 
-                        if( !empty($contextValue) ) {
+                        if (!empty($contextValue)) {
                             $fields[] = [
                                 'id' => $id,
                                 'name' => $name,
@@ -184,7 +169,6 @@ class AttributeProvider
                         } else {
                             return [];
                         }
-
                     } else {
                         $fields[] = [
                             'id' => $id,
@@ -193,20 +177,18 @@ class AttributeProvider
                             'data' => $field['data'],
                             'hints' => [
                                 [
-                                    'type'   => 'word-count',
-                                    'around' => (int) $field['word_count'],
+                                    'type' => 'word-count',
+                                    'around' => (int)$field['word_count'],
                                 ],
                             ]
                         ];
                     }
-
                 } else {
                     /**
                      * Skip this request due to missing configuration
                      */
                     return [];
                 }
-
             }
         }
 

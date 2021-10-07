@@ -1,12 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Api;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface;
+use Magento\Framework\DataObject;
 
-/**
- * Interface ProductRepositoryInterface
- * @package Contentor\LocalizationApi\Api
- */
 interface ProductRepositoryInterface
 {
     /**
@@ -14,13 +12,13 @@ interface ProductRepositoryInterface
      * @param string $targetLocale
      * @param string $sourceLocale
      * @param int $synchronizeType
-     * @return ProductInterface
+     * @return DataObject
      */
-    public function getLastUpdateByLocale($sku , $targetLocale, $sourceLocale, $synchronizeType);
+    public function getLastUpdateByLocale($sku, $targetLocale, $sourceLocale, $synchronizeType): DataObject;
 
     /**
      * @param ProductInterface $product
      * @return ProductInterface
      */
-    public function save(ProductInterface $product);
+    public function save(ProductInterface $product): ProductInterface;
 }

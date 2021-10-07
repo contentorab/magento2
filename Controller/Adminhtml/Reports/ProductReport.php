@@ -1,37 +1,41 @@
 <?php
+
 namespace Contentor\LocalizationApi\Controller\Adminhtml\Reports;
 
-/**
- * Class ProductReport
- * @package Contentor\LocalizationApi\Controller\Adminhtml\Reports
- */
-class ProductReport extends \Magento\Framework\App\Action\Action
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\View\Result\Page;
+use Magento\Framework\View\Result\PageFactory;
+
+class ProductReport extends Action
 {
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * @var PageFactory
      */
-    private $_pageFactory;
+    private $pageFactory;
 
     /**
      * ProductReport constructor.
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $pageFactory
+     * @param Context $context
+     * @param PageFactory $pageFactory
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $pageFactory
+        Context $context,
+        PageFactory $pageFactory
     ) {
-        $this->_pageFactory = $pageFactory;
+        $this->pageFactory = $pageFactory;
         parent::__construct($context);
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|\Magento\Framework\View\Result\Page
+     * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()
     {
         // Set template
-        $resultPage = $this->_pageFactory->create();
+        $resultPage = $this->pageFactory->create();
         $resultPage->setActiveMenu('Magento_Reports::report');
         $resultPage->getConfig()->getTitle()->prepend(__('Contentor Product Localization Report'));
         return $resultPage;

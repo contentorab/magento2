@@ -1,13 +1,10 @@
 <?php
+
 namespace Contentor\LocalizationApi\Model\ResourceModel;
 
 use Contentor\LocalizationApi\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
-/**
- * Class Product
- * @package Contentor\LocalizationApi\Model\ResourceModel
- */
 class Product extends AbstractDb
 {
     /**
@@ -17,7 +14,6 @@ class Product extends AbstractDb
 
     /**
      * @inheritdoc
-     * @void
      */
     public function _construct()
     {

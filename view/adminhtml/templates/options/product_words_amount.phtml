@@ -1,15 +1,18 @@
 <?php
 
-$isCategory = $block->getIsCategory();
+use Contentor\LocalizationApi\Service\ConfigurationService;
+use Magento\Framework\View\Element\Template;
 
-if ( $isCategory ) {
-    $path = \Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS;
+/** @var Template $block */
+$isCategory = $block->getData('isCategory');
+$dataViewModel = $block->getData('dataViewModel');
+if ($isCategory) {
+    $path = ConfigurationService::XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS;
 } else {
-    $path = \Contentor\LocalizationApi\Service\ConfigurationService::XML_PATH_CONTENT_CREATION_FIELDS;
+    $path = ConfigurationService::XML_PATH_CONTENT_CREATION_FIELDS;
 }
 
-$contentCreationAttributesConfig = $this->helper('Contentor\LocalizationApi\Helper\Data')
-    ->getConfig($path);
+$contentCreationAttributesConfig = $dataViewModel ? $dataViewModel->getConfig($path) : '';
 
 $contentCreationAttributesConfig = json_decode($contentCreationAttributesConfig, true);
 $id = time();
@@ -25,7 +28,7 @@ $id = time();
         </tr>
     </thead>
     <tbody id="configAttributesContentCreation">
-        <?php foreach ( $contentCreationAttributesConfig as $key => $config ): ?>
+        <?php foreach ($contentCreationAttributesConfig as $key => $config): ?>
             <tr id="_<?= $key ?>">
                 <td> <p><?= ucfirst($config['attribute']); ?></p> </td>
                 <td>
