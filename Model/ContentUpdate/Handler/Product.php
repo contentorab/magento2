@@ -151,13 +151,13 @@ class Product implements ContentUpdateHandlerInterface
                 //Handle localizable field
                 if ($field['type'] == 'localizable') {
                     $attribute = substr($field['id'], 0, -4);
-                    $product->setDataUsingMethod($attribute, $field['value']);
+                    $product->setData($attribute, $field['value']);
                 }
                 //Handle creatable field
                 if ($field['type'] == 'creatable') {
                     if (array_key_exists('value', $field)) {
                         $attribute = substr($field['id'], 0, -4);
-                        $product->setDataUsingMethod($attribute, $field['value']);
+                        $product->setData($attribute, $field['value']);
                     } else {
                         // TODO: Contentor doesn't have value key in testing env
                         return;
@@ -281,7 +281,7 @@ class Product implements ContentUpdateHandlerInterface
             if ($field['type'] == 'localizable') {
                 if (array_key_exists('intermediateValue', $field)) {
                     $attribute = substr($field['id'], 0, -4);
-                    $product->setDataUsingMethod($attribute, $field['intermediateValue']);
+                    $product->setData($attribute, $field['intermediateValue']);
                     $updated = true;
                 }
             }
