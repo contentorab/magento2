@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="contentor_config" resource="default" engine="innodb"
+           comment="Config Table">
+        <column xsi:type="varchar" length="16" name="key" nullable="false" comment="Key"/>
+        <column xsi:type="varchar" length="255" name="value" nullable="true" comment="Value"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="key"/>
+        </constraint>
+    </table>
+
+    <table name="contentor_category" resource="default" engine="innodb"
+           comment="Sync Category Contentor Table">
+        <column xsi:type="varchar" length="36" name="contentor_id" nullable="true" comment="Contentor ID"/>
+        <column xsi:type="int" padding="11" name="category_id" nullable="true" comment="Category Id"/>
+        <column xsi:type="varchar" length="16" name="source_locale" nullable="true" comment="Source Locale"/>
+        <column xsi:type="varchar" length="16" name="target_locale" nullable="true" comment="Target Locale"/>
+        <column xsi:type="int" padding="11" name="target_store" nullable="true" comment="Target Store"/>
+        <column xsi:type="datetime" name="sent_time" on_update="false" nullable="true" comment="Sent Time"/>
+        <column xsi:type="datetime" name="completed_time" on_update="false" nullable="true" comment="Completed Time"/>
+        <column xsi:type="datetime" name="deadline_time" on_update="false" nullable="true" comment="Deadline Time"/>
+        <column xsi:type="datetime" name="canceled_time" on_update="false" nullable="true" comment="Canceled Time"/>
+        <column xsi:type="varchar" length="16" name="state" nullable="true" comment="State"/>
+        <column xsi:type="varchar" length="16" name="type" nullable="true" comment="Type"/>
+        <column xsi:type="int" padding="11" name="synchronize_type" default="0" comment="Synchronize Type"/>
+        <column xsi:type="varchar" length="36" name="delivery_speed" nullable="true" comment="Delivery Speed"/>
+        <column xsi:type="varchar" length="36" name="machine_translation" nullable="true" comment="Machine Translation"/>
+        <column xsi:type="varchar" length="36" name="attribution" nullable="true" comment="Attribution for machine-translation"/>
+        <index referenceId="CONTENTOR_CATEGORY_CATEGORY_ID" indexType="btree">
+            <column name="category_id"/>
+        </index>
+        <index referenceId="CONTENTOR_CATEGORY_DELIVERY_SPEED" indexType="btree">
+            <column name="delivery_speed"/>
+        </index>
+        <index referenceId="CONTENTOR_CATEGORY_SYNCHRONIZE_TYPE" indexType="btree">
+            <column name="synchronize_type"/>
+        </index>
+    </table>
+
+    <table name="contentor_products" resource="default" engine="innodb"
+           comment="Type Table">
+        <column xsi:type="varchar" length="36" name="contentor_id" nullable="false" comment="Contentor ID"/>
+        <column xsi:type="varchar" length="32" name="sku" nullable="true" comment="Product SKU"/>
+        <column xsi:type="varchar" length="16" name="source_locale" nullable="true" comment="Source Locale"/>
+        <column xsi:type="varchar" length="16" name="target_locale" nullable="true" comment="Target Locale"/>
+        <column xsi:type="int" padding="11" name="target_store" nullable="true" comment="Target Store"/>
+        <column xsi:type="datetime" name="sent_time" on_update="false" nullable="true" comment="Sent Time"/>
+        <column xsi:type="datetime" name="completed_time" on_update="false" nullable="true" comment="Completed Time"/>
+        <column xsi:type="datetime" name="deadline_time" on_update="false" nullable="true" comment="Deadline Time"/>
+        <column xsi:type="datetime" name="canceled_time" on_update="false" nullable="true" comment="Canceled Time"/>
+        <column xsi:type="varchar" length="16" name="state" nullable="true" comment="State"/>
+        <column xsi:type="varchar" length="16" name="type" nullable="true" comment="Type"/>
+        <column xsi:type="int" padding="11" name="synchronize_type" nullable="false" default="0" comment="Synchronize Type"/>
+        <column xsi:type="varchar" length="36" name="delivery_speed" nullable="true" comment="Delivery Speed"/>
+        <column xsi:type="int" padding="10" name="m2_product_id" unsigned="true" default="0" comment="M2 Product Id"/>
+        <column xsi:type="text" name="machine_translation" comment="Machine Translation"/>
+        <column xsi:type="text" name="attribution" comment="Attribution for machine-translation"/>
+        <index referenceId="id_and_locales">
+            <column name="sku"/>
+            <column name="source_locale"/>
+            <column name="target_locale"/>
+        </index>
+        <index referenceId="on_synchronize_type" indexType="btree">
+            <column name="synchronize_type"/>
+        </index>
+        <index referenceId="on_delivery_speed" indexType="btree">
+            <column name="delivery_speed"/>
+        </index>
+        <index referenceId="on_m2_product_id" indexType="btree">
+            <column name="m2_product_id"/>
+        </index>
+    </table>
+
+    <table name="contentor_status" resource="default" engine="innodb"
+           comment="Status Table">
+        <column xsi:type="varchar" length="36" name="contentor_id" nullable="true" comment="Contentor ID"/>
+        <column xsi:type="datetime" name="status_time" on_update="false" nullable="true" comment="Status Time"/>
+        <column xsi:type="varchar" length="128" name="status" nullable="true" comment="Status"/>
+        <column xsi:type="int" padding="11" name="id" unsigned="true" nullable="false" identity="true" comment="Id of status message"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="on_id" indexType="btree">
+            <column name="contentor_id"/>
+        </index>
+    </table>
+
+    <table name="contentor_type" resource="default" engine="innodb"
+           comment="Type Table">
+        <column xsi:type="varchar" length="36" name="contentor_id" nullable="false" comment="Contentor ID"/>
+        <column xsi:type="varchar" length="16" name="type" nullable="true" comment="Type"/>
+    </table>
+</schema>

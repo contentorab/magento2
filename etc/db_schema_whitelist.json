@@ -1,0 +1,81 @@
+{
+    "contentor_config": {
+        "column": {
+            "key": true,
+            "value": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "contentor_category": {
+        "column": {
+            "contentor_id": true,
+            "category_id": true,
+            "source_locale": true,
+            "target_locale": true,
+            "target_store": true,
+            "sent_time": true,
+            "completed_time": true,
+            "deadline_time": true,
+            "canceled_time": true,
+            "state": true,
+            "type": true,
+            "synchronize_type": true,
+            "delivery_speed": true,
+            "machine_translation": true,
+            "attribution": true
+        },
+        "index": {
+            "CONTENTOR_CATEGORY_CATEGORY_ID": true,
+            "CONTENTOR_CATEGORY_DELIVERY_SPEED": true,
+            "CONTENTOR_CATEGORY_SYNCHRONIZE_TYPE": true
+        }
+    },
+    "contentor_products": {
+        "column": {
+            "contentor_id": true,
+            "sku": true,
+            "source_locale": true,
+            "target_locale": true,
+            "target_store": true,
+            "sent_time": true,
+            "completed_time": true,
+            "deadline_time": true,
+            "canceled_time": true,
+            "state": true,
+            "type": true,
+            "synchronize_type": true,
+            "delivery_speed": true,
+            "m2_product_id": true,
+            "machine_translation": true,
+            "attribution": true
+        },
+        "index": {
+            "CONTENTOR_PRODUCTS_SKU_SOURCE_LOCALE_TARGET_LOCALE": true,
+            "CONTENTOR_PRODUCTS_SYNCHRONIZE_TYPE": true,
+            "CONTENTOR_PRODUCTS_DELIVERY_SPEED": true,
+            "CONTENTOR_PRODUCTS_M2_PRODUCT_ID": true
+        }
+    },
+    "contentor_status": {
+        "column": {
+            "contentor_id": true,
+            "status_time": true,
+            "status": true,
+            "id": true
+        },
+        "index": {
+            "CONTENTOR_STATUS_CONTENTOR_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "contentor_type": {
+        "column": {
+            "contentor_id": true,
+            "type": true
+        }
+    }
+}
