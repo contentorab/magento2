@@ -56,7 +56,7 @@
         <column xsi:type="int" padding="10" name="m2_product_id" unsigned="true" default="0" comment="M2 Product Id"/>
         <column xsi:type="text" name="machine_translation" comment="Machine Translation"/>
         <column xsi:type="text" name="attribution" comment="Attribution for machine-translation"/>
-        <index referenceId="id_and_locales">
+        <index referenceId="id_and_locales" indexType="btree">
             <column name="sku"/>
             <column name="source_locale"/>
             <column name="target_locale"/>
