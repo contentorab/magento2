@@ -140,9 +140,9 @@ class ConfigurationService
      * Returns Main locale from magento config
      *
      * @param string|null $store
-     * @return string
+     * @return mixed
      */
-    public function getMainLocale($store = null): string
+    public function getMainLocale($store = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_MAIN_LOCALE,
@@ -196,9 +196,9 @@ class ConfigurationService
      * Returns token from config
      *
      * @param string|null $store
-     * @return string
+     * @return mixed
      */
-    public function getToken($store = null): string
+    public function getToken($store = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_TOKEN,
@@ -211,9 +211,9 @@ class ConfigurationService
      * Returns Contentor API url from magento config
      *
      * @param string|null $store
-     * @return string
+     * @return mixed
      */
-    public function getApiBaseUrl($store = null): string
+    public function getApiBaseUrl($store = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_API_BASE_URL,
@@ -247,9 +247,9 @@ class ConfigurationService
      * Returns Source locale from magento config
      *
      * @param string|null $store
-     * @return string
+     * @return mixed
      */
-    public function getSourceLocale($store = null): string
+    public function getSourceLocale($store = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_SOURCE_LOCALE,
@@ -339,9 +339,9 @@ class ConfigurationService
      * Returns Category Source locale from magento config
      *
      * @param string|null $store
-     * @return string
+     * @return mixed
      */
-    public function getCategorySourceLocale($store = null): string
+    public function getCategorySourceLocale($store = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_CATEGORY_SOURCE_LOCALE,

@@ -120,9 +120,9 @@ abstract class AbstractTabBlock extends Template
 
     /**
      * @param string $id
-     * @return string
+     * @return mixed
      */
-    public function getStoreLocale($id): string
+    public function getStoreLocale($id)
     {
         return $this->scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $id);
     }
