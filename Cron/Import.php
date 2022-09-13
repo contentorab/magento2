@@ -113,7 +113,7 @@ class Import
         if (empty($previous)) {
             $connection->insert($table, ['key' => $key, 'value' => $value]);
         } else {
-            $connection->update($table, ['value' => $value], ['value = ?' => $key]);
+            $connection->update($table, ['value' => $value], ['`key` = ?' => $key]);
         }
     }
 }
