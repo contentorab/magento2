@@ -5,8 +5,12 @@ use Contentor\LocalizationApi\Block\Adminhtml\Reports\ContentCreationCategoryRep
 
 /** @var CategoryReportBlock|ContentCreationCategoryReportBlock $block */
 
-$page = abs($block->getParameter('page'));
-$pagesize = abs($block->getParameter('pagesize'));
+if($block->getParameter('page')) {
+    $page = abs($block->getParameter('page'));
+}
+if($block->getParameter('pagesize')) {
+    $pagesize = abs($block->getParameter('pagesize'));
+}
 if (empty($page)) {
     $page = 1;
 }
@@ -94,29 +98,35 @@ if ($tot > 0) {
                     }
 
                     $sent = [];
-                    $sentStores = explode(",", $category['sent']);
-                    foreach ($sentStores as $sentStore) {
-                        if (!empty($sentStore)) {
-                            $sentinfo = explode(";", $sentStore);
-                            $sent[$sentinfo[0]] = $sentinfo[1];
+                    if($category['sent']){
+                        $sentStores = explode(",", $category['sent']);
+                        foreach ($sentStores as $sentStore) {
+                            if (!empty($sentStore)) {
+                                $sentinfo = explode(";", $sentStore);
+                                $sent[$sentinfo[0]] = $sentinfo[1];
+                            }
                         }
                     }
 
                     $completed = [];
-                    $completeStores = explode(",", $category['completed']);
-                    foreach ($completeStores as $completeStore) {
-                        if (!empty($completeStore)) {
-                            $completeinfo = explode(";", $completeStore);
-                            $completed[$completeinfo[0]] = $completeinfo[1];
+                    if($category['completed']){
+                        $completeStores = explode(",", $category['completed']);
+                        foreach ($completeStores as $completeStore) {
+                            if (!empty($completeStore)) {
+                                $completeinfo = explode(";", $completeStore);
+                                $completed[$completeinfo[0]] = $completeinfo[1];
+                            }
                         }
                     }
 
                     $state = [];
-                    $stateStores = explode(",", $category['state']);
-                    foreach ($stateStores as $stateStore) {
-                        if (!empty($stateStore)) {
-                            $stateinfo = explode(";", $stateStore);
-                            $state[$stateinfo[0]] = $stateinfo[1];
+                    if($category['state']){
+                        $stateStores = explode(",", $category['state']);
+                        foreach ($stateStores as $stateStore) {
+                            if (!empty($stateStore)) {
+                                $stateinfo = explode(";", $stateStore);
+                                $state[$stateinfo[0]] = $stateinfo[1];
+                            }
                         }
                     }
 

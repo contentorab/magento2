@@ -80,10 +80,21 @@ class ProcessUpdates
     {
         $result = [];
         try {
+            // get first 20 updates
             $updates = $this->getUpdatesGateway->execute($date);
+            $updates_data = $updates['data'];
             $lastStateChangeSeen = $date;
+
+             // pagination through updates if there are more than 1 page (or more than 20 updates)
+             if($updates['pagination']['pages'] > 1) {
+                 for($page = 2; $page <= $updates['pagination']['pages']; $page++) {
+                    $partial_updates = $this->getUpdatesGateway->execute($date, $page);                   
+                    $updates_data = array_merge($updates_data, $partial_updates['data']);
+                 }
+             }
+            
             $count = 0;
-            foreach ($updates as $update) {
+            foreach ($updates_data as $update) {
                 // Keep the last state change seen - no matter if the entity exists or not
                 $lastStateChangeSeen = $update['lastStateChange'];
 
@@ -117,7 +128,7 @@ class ProcessUpdates
 
             $result = [
                 'lastStateChange' => $lastStateChangeSeen,
-                'updates' => count($updates)
+                'updates' => count($updates_data)
             ];
         } catch (\Exception $e) {
             $this->psrLogger->error($e->getMessage());
