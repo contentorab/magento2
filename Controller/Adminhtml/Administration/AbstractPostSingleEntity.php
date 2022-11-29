@@ -42,7 +42,7 @@ class AbstractPostSingleEntity extends Action
      * use for localization
      * @var bool
      */
-    protected $shouldValidateTargetAndSource = true;
+    protected $shouldValidateTargetAndSource = false;
 
     /**
      * AbstractPostSingleEntity constructor.

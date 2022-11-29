@@ -79,16 +79,24 @@ class GetUpdates
      * @param string $date
      * @return array
      */
-    public function execute($date): array
+    public function execute($date, $page = null): array
     {
-        $result = $this->getUpdates($date);
-        $updates = [];
+        $result = $this->getUpdates($date, $page);
+        $updates_data = [];
         foreach ($result['requests'] as $request) {
-            $updates[] = $request;
+            $updates_data[] = $request;
         }
+        
 
         // Output some information to the log about how many updated requests where found
-        $this->logger->info('Found ' . count($updates) . ' updated requests since ' . $date);
+        $this->logger->info('Found ' . count($updates_data) . ' updated requests since ' . $date);
+
+        $updates["data"] = $updates_data;
+        $updates["pagination"] = [
+            'page' => $result["page"],
+            'pages' => $result["pages"],
+            'total' => $result["total"],
+        ];
 
         return $updates;
     }
@@ -108,7 +116,6 @@ class GetUpdates
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ];
-
             $transfer = $this->httpRequestTransferInterfaceFactory->create([
                 'headers' => $headers,
                 'params' => [],
