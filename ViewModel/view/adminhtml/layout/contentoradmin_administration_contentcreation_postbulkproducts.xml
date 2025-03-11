@@ -1,0 +1,24 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Contentor\LocalizationApi\Block\Adminhtml\Administration\ContentCreationBulkProducts"
+                   name="content_creation_bulk_block">
+                <arguments>
+                    <argument name="dataViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\DataViewModel</argument>
+                </arguments>
+                <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/delivery_speed.phtml"
+                       name="contentor.delivery-speed">
+                    <arguments>
+                        <argument name="deliveryExpressViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\DeliveryExpressViewModel</argument>
+                    </arguments>
+                </block>
+                <block class="Magento\Framework\View\Element\Template" template="Contentor_LocalizationApi::options/product_words_amount.phtml"
+                       name="contentor.config-words-amount-block">
+                    <arguments>
+                        <argument name="dataViewModel" xsi:type="object">Contentor\LocalizationApi\ViewModel\DataViewModel</argument>
+                    </arguments>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

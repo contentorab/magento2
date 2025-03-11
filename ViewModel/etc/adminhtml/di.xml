@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Localization Send Request Controller -->
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\SendBulkProducts">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\PostProduct">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\PostCategory">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\CategorySendContent</argument>
+        </arguments>
+    </type>
+    <!-- End Localization Send Request Controller -->
+
+    <!-- Content Creation Send Request Controller -->
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\PostProduct">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\SendBulkProducts">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationProductSendContent</argument>
+        </arguments>
+    </type>
+
+    <type name="Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentcreation\PostCategory">
+        <arguments>
+            <argument name="serviceSendContent" xsi:type="object">Contentor\LocalizationApi\Model\Service\ContentCreationCategorySendContent</argument>
+        </arguments>
+    </type>
+    <!-- End Content Creation Send Request Controller -->
+
+    <type name="Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab\ContentCreation">
+        <plugin name="category_content_creation_assign_child_blocks"
+                type="Contentor\LocalizationApi\Plugin\Block\Adminhtml\Catalog\Category\Edit\Tab\ContentCreationPlugin"/>
+    </type>
+    <type name="Contentor\LocalizationApi\Block\Adminhtml\Catalog\Category\Edit\Tab\Localization">
+        <plugin name="category_localization_assign_child_blocks"
+                type="Contentor\LocalizationApi\Plugin\Block\Adminhtml\Catalog\Category\Edit\Tab\LocalizationPlugin"/>
+    </type>
+    <type name="Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\ContentCreation">
+        <plugin name="product_content_creation_assign_child_blocks"
+                type="Contentor\LocalizationApi\Plugin\Block\Adminhtml\Catalog\Product\Edit\Tab\ContentCreationPlugin"/>
+    </type>
+    <type name="Contentor\LocalizationApi\Block\Adminhtml\Catalog\Product\Edit\Tab\Localization">
+        <plugin name="product_localization_assign_child_blocks"
+                type="Contentor\LocalizationApi\Plugin\Block\Adminhtml\Catalog\Product\Edit\Tab\LocalizationPlugin"/>
+    </type>
+</config>

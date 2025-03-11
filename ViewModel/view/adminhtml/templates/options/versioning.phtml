@@ -1,0 +1,22 @@
+<p>
+<h2>Versioning Enable</h2>
+<?php
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+$versioningViewModel = $block->getData('versioningViewModel');
+$versioningOptions = $versioningViewModel ? $versioningViewModel->getConfig() : '';
+?>
+<select name="versioning" id="versioning-select">
+    <?php
+    foreach ($versioningOptions as $option) {
+        print '<option value="' . $option['value'] . '"';
+        if ($option['value'] == 'normal') {
+            print ' SELECTED';
+        }
+        print '>' . $option['label'] . '</option>';
+    }
+    ?>
+</select>
+</p>

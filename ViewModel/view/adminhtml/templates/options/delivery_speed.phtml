@@ -1,0 +1,22 @@
+<p>
+<h2>Delivery Speed</h2>
+<?php
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+$deliveryExpressViewModel = $block->getData('deliveryExpressViewModel');
+$deliveryOptions = $deliveryExpressViewModel ? $deliveryExpressViewModel->getConfig() : '';
+?>
+<select name="deliverySpeed">
+    <?php
+    foreach ($deliveryOptions as $option) {
+        print '<option value="' . $option['value'] . '"';
+        if ($option['value'] == 'normal') {
+            print ' SELECTED';
+        }
+        print '>' . $option['label'] . '</option>';
+    }
+    ?>
+</select>
+</p>

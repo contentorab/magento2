@@ -1,0 +1,9 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
+    <broker topic="contentor.product_import" exchange="magento-db" type="db">
+        <queue name="contentor.product_import"
+            consumer="contentor.product_import"
+            consumerInstance="Magento\Framework\MessageQueue\Consumer"
+            handler="Contentor\LocalizationApi\Service\ProductImport\Consumer::process"
+            maxMessages="1"/>
+    </broker>
+</config>
