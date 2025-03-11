@@ -34,3 +34,13 @@ $ dev/setup.sh
 The admin interface should be available at `http://localhost:7000/admin`. Use
 `admin` with the password `magentoadmin1` to sign in.
 
+### When deploying
+
+Remember that you need to keep track of the parameter for the API URL, to ensure beta does not go live:
+
+File:
+* `/etc/config.xml`
+
+Setting:
+* Prod:  `api.contentor.com` 
+* Stage: `beta.contentor.com`
