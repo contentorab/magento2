@@ -4,8 +4,8 @@
         <contentor_options>
             <contentor_options>
                 <developer_mode>0</developer_mode>
-                <api_base_url>https://beta-dev.contentor.com/</api_base_url>
-                <version>1.0.8</version>
+                <api_base_url>https://api.contentor.com/</api_base_url>
+                <version>1.3.1</version>
             </contentor_options>
         </contentor_options>
     </default>
