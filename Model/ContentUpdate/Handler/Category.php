@@ -10,7 +10,7 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface as CatalogCategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -22,12 +22,12 @@ use Psr\Log\LoggerInterface;
  * Each Content Entity should have own handler with related to specific
  * Magento entity logic (Product,Category,Cms)
  */
-class Category implements ContentUpdateHandlerInterface
+class Category extends AbstractHandler implements ContentUpdateHandlerInterface
 {
     /**
-     * @var CategoryFactory
+     * @var CategoryCollectionFactory
      */
-    private $categoryFactory;
+    private $categoryCollectionFactory;
 
     /**
      * @var CategoryRepositoryInterface
@@ -61,7 +61,7 @@ class Category implements ContentUpdateHandlerInterface
 
     /**
      * Category constructor.
-     * @param CategoryFactory $categoryFactory
+     * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param CategoryRepositoryInterface $categoryRepository
      * @param StoreManagerInterface $storeManager
      * @param CatalogCategoryRepositoryInterface $catalogCategoryRepository
@@ -70,7 +70,7 @@ class Category implements ContentUpdateHandlerInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
-        CategoryFactory $categoryFactory,
+        CategoryCollectionFactory $categoryCollectionFactory,
         CategoryRepositoryInterface $categoryRepository,
         StoreManagerInterface $storeManager,
         CatalogCategoryRepositoryInterface $catalogCategoryRepository,
@@ -78,7 +78,7 @@ class Category implements ContentUpdateHandlerInterface
         StatusRepositoryInterface $statusRepository,
         LoggerInterface $logger
     ) {
-        $this->categoryFactory = $categoryFactory;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->categoryRepository = $categoryRepository;
         $this->storeManager = $storeManager;
         $this->catalogCategoryRepository = $catalogCategoryRepository;
@@ -125,7 +125,6 @@ class Category implements ContentUpdateHandlerInterface
     private function handleCompleted(ContentEntityInterface $entity, array $data): void
     {
         try {
-
             if ($entity->getState() == 'completed') {
                 // This product is already in a completed state - skip it
                 return;
@@ -134,12 +133,8 @@ class Category implements ContentUpdateHandlerInterface
             if (!$entity->getCategoryId()) {
                 return;
             }
-
             /** @var CategoryInterface $category */
-            $category = $this->categoryFactory->create()->setStoreId(
-                $entity->getTargetStore()
-            )->load($entity->getCategoryId());
-
+            $category = $this->loadCategory($entity, $this->getAttributeCodes($data['fields']));
             if ($category) {
 
                 // Copy back the fields from the completed request into the product
@@ -148,13 +143,13 @@ class Category implements ContentUpdateHandlerInterface
                 foreach ($data['fields'] as $field) {
                     //Handle localizable field
                     if ($field['type'] == 'localizable') {
-                        $attribute = substr($field['id'], 0, -4);
+                        $attribute = $this->getAttributeCode($field['id']);
                         $category->setData($attribute, $field['value']);
                     }
                     //Handle creatable field
                     if ($field['type'] == 'creatable') {
                         if (array_key_exists('value', $field)) {
-                            $attribute = substr($field['id'], 0, -4);
+                            $attribute = $this->getAttributeCode($field['id']);
                             $category->setData($attribute, $field['value']);
                         } else {
                             // TODO: Contentor doesn't have value key in testing env
@@ -264,7 +259,7 @@ class Category implements ContentUpdateHandlerInterface
     {
 
         /** @var CategoryInterface $category */
-        $category = $this->categoryFactory->create()->setStoreId(
+        $category = $this->categoryCollectionFactory->create()->setStoreId(
             $entity->getTargetStore()
         )->load($entity->getCategoryId());
 
@@ -274,7 +269,7 @@ class Category implements ContentUpdateHandlerInterface
         foreach ($data['fields'] as $field) {
             if ($field['type'] == 'localizable') {
                 if (array_key_exists('intermediateValue', $field)) {
-                    $attribute = substr($field['id'], 0, -4);
+                    $attribute = $this->getAttributeCode($field['id']);
                     $category->setData($attribute, $field['intermediateValue']);
                     $updated = true;
                 }
@@ -305,5 +300,15 @@ class Category implements ContentUpdateHandlerInterface
             $entity->getContentorId(),
             $status
         );
+    }
+
+    protected function loadCategory(ContentEntityInterface $entity, array $attributeCodes)
+    {
+        $collection = $this->categoryCollectionFactory->create()
+            ->setStoreId($entity->getTargetStore())
+            ->addAttributeToSelect($attributeCodes)
+            ->addAttributeToFilter('entity_id', $entity->getCategoryId());
+        $category = $collection->getFirstItem();
+        return $category;
     }
 }

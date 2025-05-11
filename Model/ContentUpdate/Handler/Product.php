@@ -9,7 +9,7 @@ use Contentor\LocalizationApi\Model\Spi\ContentEntityInterface;
 use Contentor\LocalizationApi\Model\Spi\ContentUpdateHandlerInterface;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Catalog\Api\ProductRepositoryInterface as CatalogProductRepositoryInterface;
-use Magento\Catalog\Model\ProductFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -21,12 +21,12 @@ use Psr\Log\LoggerInterface;
  * Each Content Entity should have own handler with related to specific
  * Magento entity logic (Product,Category,Cms)
  */
-class Product implements ContentUpdateHandlerInterface
+class Product extends AbstractHandler implements ContentUpdateHandlerInterface
 {
     /**
-     * @var ProductFactory
+     * @var ProductCollectionFactory
      */
-    private $productFactory;
+    private $productCollectionFactory;
 
     /**
      * @var ProductRepositoryInterface
@@ -60,7 +60,7 @@ class Product implements ContentUpdateHandlerInterface
 
     /**
      * Product constructor.
-     * @param ProductFactory $productFactory
+     * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductRepositoryInterface $productRepository
      * @param StoreManagerInterface $storeManager
      * @param CatalogProductRepositoryInterface $catalogProductRepository
@@ -69,7 +69,7 @@ class Product implements ContentUpdateHandlerInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ProductFactory $productFactory,
+        ProductCollectionFactory $productCollectionFactory,
         ProductRepositoryInterface $productRepository,
         StoreManagerInterface $storeManager,
         CatalogProductRepositoryInterface $catalogProductRepository,
@@ -77,7 +77,7 @@ class Product implements ContentUpdateHandlerInterface
         StatusRepositoryInterface $statusRepository,
         LoggerInterface $logger
     ) {
-        $this->productFactory = $productFactory;
+        $this->productCollectionFactory = $productCollectionFactory;
         $this->productRepository = $productRepository;
         $this->storeManager = $storeManager;
         $this->catalogProductRepository = $catalogProductRepository;
@@ -131,15 +131,7 @@ class Product implements ContentUpdateHandlerInterface
             }
             /** @var \Magento\Catalog\Api\Data\ProductInterface| \Magento\Catalog\Model\Product $product */
 
-            if (!empty($entity->getM2ProductId()) || $entity->getM2ProductId() != 0) {
-                $product = $this->productFactory->create()->setStoreId(
-                    $entity->getTargetStore()
-                )->loadByAttribute('entity_id', $entity->getM2ProductId());
-            } else {
-                $product = $this->productFactory->create()->setStoreId(
-                    $entity->getTargetStore()
-                )->loadByAttribute('sku', $entity->getSku());
-            }
+            $product = $this->loadProduct($entity, $this->getAttributeCodes($data['fields']));
 
             if ($product == null || !$product && !$product->getId()) {
                 return;
@@ -265,15 +257,7 @@ class Product implements ContentUpdateHandlerInterface
      */
     private function handlePending(ContentEntityInterface $entity, $data): void
     {
-        if (!empty($entity->getM2ProductId()) || $entity->getM2ProductId() != 0) {
-            $product = $this->productFactory->create()->setStoreId(
-                $entity->getTargetStore()
-            )->loadByAttribute('entity_id', $entity->getM2ProductId());
-        } else {
-            $product = $this->productFactory->create()->setStoreId(
-                $entity->getTargetStore()
-            )->loadByAttribute('sku', $entity->getSku());
-        }
+        $product = $this->loadProduct($entity, $this->getAttributeCodes($data['fields']));
         // Copy the intermediate_value from the request to the product.
         $updated = false;
         $this->storeManager->setCurrentStore($entity->getTargetStore());
@@ -314,5 +298,20 @@ class Product implements ContentUpdateHandlerInterface
             $entity->getContentorId(),
             $status
         );
+    }
+
+    protected function loadProduct(ContentEntityInterface $entity, array $attributeCodes)
+    {
+        $collection = $this->productCollectionFactory->create()
+            ->setStoreId($entity->getTargetStore())
+            ->addAttributeToSelect($attributeCodes)
+        ;
+        if (!empty($entity->getM2ProductId()) || $entity->getM2ProductId() != 0) {
+            $collection->addAttributeToFilter('entity_id', $entity->getM2ProductId());
+        } else {
+            $collection->addAttributeToFilter('sku', $entity->getSku());
+        }
+        $product = $collection->getFirstItem();
+        return $product;
     }
 }
