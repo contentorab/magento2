@@ -41,5 +41,3 @@ class ProcessUpdatesTest extends \PHPUnit\Framework\TestCase
     }
  
 }
-
-?>
