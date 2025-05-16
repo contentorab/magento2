@@ -36,8 +36,6 @@ class ProcessUpdatesTest extends \PHPUnit\Framework\TestCase
 
         // Should retunr 30 results, in our case
         $expected = 30;
-        echo "\n";
-        echo "Updates processed:" .$updates_count;
        
         $this->assertEquals($updates_count, $expected );
     }
