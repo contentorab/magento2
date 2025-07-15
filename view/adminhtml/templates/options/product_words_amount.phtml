@@ -29,21 +29,21 @@ $id = time();
     </thead>
     <tbody id="configAttributesContentCreation">
         <?php foreach ($contentCreationAttributesConfig as $key => $config): ?>
-            <tr id="_<?= $key ?>">
-                <td> <p><?= ucfirst($config['attribute']); ?></p> </td>
+            <tr id="_<?= $escaper->escapeHtmlAttr($key) ?>">
+                <td> <p><?= $escaper->escapeHtml(ucfirst($config['attribute'])); ?></p> </td>
                 <td>
-                    <input <?= $config['field_type'] == 'context' ? "style='display:none'" : '' ?> type="text" id="<?= $config['attribute'] ?>_word_count"
-                           name="attributesConfig[<?= $config['attribute'] ?>][word_count]" value="<?= $config['word_count']; ?>" class="required-entry">
+                    <input <?= $config['field_type'] == 'context' ? "style='display:none'" : '' ?> type="text" id="<?= $escaper->escapeHtmlAttr($config['attribute']) ?>_word_count"
+                           name="attributesConfig[<?= $escaper->escapeHtmlAttr($config['attribute']) ?>][word_count]" value="<?= $escaper->escapeHtmlAttr($config['word_count']); ?>" class="required-entry">
                 </td>
                 <td>
-                    <p><?= ucfirst($config['field_type']); ?></p>
-                    <input readonly="readonly"  type="hidden" id="<?= $config['attribute'] ?>_field_type"
-                          name="attributesConfig[<?= $config['attribute'] ?>][field_type]" class="required-entry"
-                          value="<?= $config['field_type'] ?>"
+                    <p><?= $escaper->escapeHtml(ucfirst($config['field_type'])); ?></p>
+                    <input readonly="readonly"  type="hidden" id="<?= $escaper->escapeHtmlAttr($config['attribute']) ?>_field_type"
+                          name="attributesConfig[<?= $escaper->escapeHtmlAttr($config['attribute']) ?>][field_type]" class="required-entry"
+                          value="<?= $escaper->escapeHtmlAttr($config['field_type']) ?>"
                 </td>
                 <td>
-                    <input <?= $config['field_type'] != 'context' ? "style='display:none'" :'' ?> type="textarea" id="<?= $config['attribute'] ?>_context_value"
-                           name="attributesConfig[<?= $config['attribute'] ?>][context_value]" value="">
+                    <input <?= $config['field_type'] != 'context' ? "style='display:none'" :'' ?> type="textarea" id="<?= $escaper->escapeHtmlAttr($config['attribute']) ?>_context_value"
+                           name="attributesConfig[<?= $escaper->escapeHtmlAttr($config['attribute']) ?>][context_value]" value="">
 
                 </td>
             </tr>

@@ -5,10 +5,10 @@ use Contentor\LocalizationApi\Block\Adminhtml\Reports\ContentCreationCategoryRep
 
 /** @var CategoryReportBlock|ContentCreationCategoryReportBlock $block */
 
-if($block->getParameter('page')) {
+if ($block->getParameter('page')) {
     $page = abs($block->getParameter('page'));
 }
-if($block->getParameter('pagesize')) {
+if ($block->getParameter('pagesize')) {
     $pagesize = abs($block->getParameter('pagesize'));
 }
 if (empty($page)) {
@@ -30,15 +30,15 @@ if ($tot > 0) {
         if ($i == $page) {
             print '<b>' . $i . '</b> ';
         } else {
-            print '<a href="' . $this->getPage($i) . '">' . $i . '</a> ';
+            print '<a href="' . $block->getPage($i) . '">' . $i . '</a> ';
         }
     }
     print ' | ';
     if ($page > 1) {
-        print '<a href="' . $this->getPage($page - 1) . '">Previous</a> ';
+        print '<a href="' . $block->getPage($page - 1) . '">Previous</a> ';
     }
     if ($page < $nPages) {
-        print ' <a href="' . $this->getPage($page + 1) . '">Next</a> ';
+        print ' <a href="' . $block->getPage($page + 1) . '">Next</a> ';
     }
 
     $offset = ($page - 1) * $pagesize;
@@ -90,7 +90,7 @@ if ($tot > 0) {
                         continue;
                     }
                     $categoryName = $details->getName();
-                    $url = $this->getUrl('catalog/category/edit', ['id' => $details->getId()]);
+                    $url = $block->getUrl('catalog/category/edit', ['id' => $details->getId()]);
                     if ($i % 2) {
                         $even = '#eee';
                     } else {
@@ -98,7 +98,7 @@ if ($tot > 0) {
                     }
 
                     $sent = [];
-                    if($category['sent']){
+                    if ($category['sent']) {
                         $sentStores = explode(",", $category['sent']);
                         foreach ($sentStores as $sentStore) {
                             if (!empty($sentStore)) {
@@ -109,7 +109,7 @@ if ($tot > 0) {
                     }
 
                     $completed = [];
-                    if($category['completed']){
+                    if ($category['completed']) {
                         $completeStores = explode(",", $category['completed']);
                         foreach ($completeStores as $completeStore) {
                             if (!empty($completeStore)) {
@@ -120,7 +120,7 @@ if ($tot > 0) {
                     }
 
                     $state = [];
-                    if($category['state']){
+                    if ($category['state']) {
                         $stateStores = explode(",", $category['state']);
                         foreach ($stateStores as $stateStore) {
                             if (!empty($stateStore)) {

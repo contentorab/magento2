@@ -4,10 +4,6 @@ namespace Contentor\LocalizationApi\Model\ContentUpdate;
 use Contentor\LocalizationApi\Model\Spi\ContentUpdateHandlerInterface;
 use Magento\Framework\ObjectManagerInterface;
 
-/**
- * Class HandlerFactory
- * @package Contentor\LocalizationApi\Model\ContentUpdate
- */
 class HandlerFactory
 {
     /**

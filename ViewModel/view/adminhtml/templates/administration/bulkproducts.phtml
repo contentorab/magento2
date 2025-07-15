@@ -5,7 +5,7 @@ use Contentor\LocalizationApi\Block\Adminhtml\Administration\ContentCreationBulk
 use Contentor\LocalizationApi\Model\Product;
 
 /** @var BulkProducts|ContentCreationBulkProducts $block */
-$data = $this->getRequest()->getParams();
+$data = $block->getRequest()->getParams();
 $sendURL = $block->getSendUrl();
 $dataViewModel = $block->getData('dataViewModel');
 $defaultStores = $dataViewModel
@@ -14,9 +14,9 @@ $defaultStores = $dataViewModel
 $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/source/sourcelocale') : '';
 ?>
 
-<?php if (!$block->isReady()) :?>
+<?php if (!$block->isReady()):?>
     <?php
-    $configUrl = $this->getUrl(
+    $configUrl = $block->getUrl(
         'adminhtml/system_config/edit/section/contentor_options'
     );
 
@@ -36,7 +36,7 @@ $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/s
 <form id="productform">
 <p>
     <?php
-    if ($products = $this->getProductsWithFilter()) {
+    if ($products = $block->getProductsWithFilter()) {
         $n = count($products);
         $prodList = implode(',', $products);
         print 'Submiting this form will send <b>' . $n . '</b> products';
@@ -50,7 +50,7 @@ $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/s
 <br><br>
 <p>
     <h3>Source locale</h3>
-    <?php $localeList = $this->getLocaleList(); ?>
+    <?php $localeList = $block->getLocaleList(); ?>
     <select name="source">
         <option value="">Choose source language</option>
         <?php
@@ -69,7 +69,7 @@ $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/s
 <p>
     <h3>Target store(s)</h3>
     <?php
-    $storesStructure = $this->getStoreViews();
+    $storesStructure = $block->getStoreViews();
 
     print '<select name="targets" class="select multiselect" size="10" multiple="multiple">';
 
@@ -80,7 +80,7 @@ $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/s
             foreach ($store['children'] as $storeview) {
                 $id = $storeview['value'];
                 $name = $storeview['label'];
-                $locale = $this->getStoreLocale($id);
+                $locale = $block->getStoreLocale($id);
                 if ($defaultStores && in_array($id, $defaultStores)) {
                     $checked = 'selected="selected"';
                 } else {
@@ -93,18 +93,18 @@ $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/s
     print '</select>';
     ?>
 </p>
-<?= $block->getChildHtml('contentor.delivery-speed'); ?><br>
+    <?= $block->getChildHtml('contentor.delivery-speed'); ?><br>
 
-<?= $block->getChildHtml('contentor.versioning'); ?><br>
+    <?= $block->getChildHtml('contentor.versioning'); ?><br>
 
-<?php if ($block->getSyncType() !== Product::CONTENT_CREATION_SYNC_TYPE):?>
-    <?= $block->getChildHtml('contentor.machine-translation'); ?><br>
-<?php endif;?>
+    <?php if ($block->getSyncType() !== Product::CONTENT_CREATION_SYNC_TYPE):?>
+        <?= $block->getChildHtml('contentor.machine-translation'); ?><br>
+    <?php endif;?>
 
-<?php if ($block->getSyncType() == Product::CONTENT_CREATION_SYNC_TYPE):?>
-    <?= $block->getChildHtml('contentor.config-words-amount-block'); ?>
+    <?php if ($block->getSyncType() == Product::CONTENT_CREATION_SYNC_TYPE):?>
+        <?= $block->getChildHtml('contentor.config-words-amount-block'); ?>
 <br>
-<?php endif;?>
+    <?php endif;?>
 
 </form>
 <br><br>

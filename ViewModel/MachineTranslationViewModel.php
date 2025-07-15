@@ -43,7 +43,7 @@ class MachineTranslationViewModel implements ArgumentInterface
     {
         return $this->machineTranslation;
     }
-    public function isVersioningEnabled() 
+    public function isVersioningEnabled()
     {
         if ($this->configurationService->isVersioningEnabled()) {
             return true;

@@ -8,28 +8,28 @@ $machineTranslationViewModel = $block->getData('machineTranslationViewModel');
 $isVersioningEnabled = $machineTranslationViewModel->isVersioningEnabled();
 $machineTranslationOptions = $machineTranslationViewModel ? $machineTranslationViewModel->getConfig() : '';
 
-$configUrl = $this->getUrl(
+$configUrl = $block->getUrl(
     'adminhtml/system_config/edit/section/contentor_options'
 );
 
 ?>
-<select name="machineTranslation" <?php if($isVersioningEnabled): ?>disabled<?php endif;?> id="machine-translation-section">
+<select name="machineTranslation" <?php if ($isVersioningEnabled): ?>disabled<?php endif;?> id="machine-translation-section">
     <?php
     foreach ($machineTranslationOptions as $option) {
-        print '<option value="' . $option['value'] . '"';
+        print '<option value="' . $escaper->escapeHtmlAttr($option['value']) . '"';
         if ($option['value'] == 'none') {
             print ' SELECTED';
         }
-        print '>' . $option['label'] . '</option>';
+        print '>' . $escaper->escapeHtml($option['label']) . '</option>';
     }
     ?>
 </select><br />
 
 
-<div id="machine-translation-text" <?php if($isVersioningEnabled): ?> style="display: block;"<?php else:?> style="display: none;" <?php endif;?>>
+<div id="machine-translation-text" <?php if ($isVersioningEnabled): ?> style="display: block;"<?php else:?> style="display: none;" <?php endif;?>>
     <br />
     Currently machine-translation orders are not possible when you have versioning enabled,
-    please disable versioning in the Contentor <a href="<?=$configUrl; ?>">configuration</a> to use machine-translation.
+    please disable versioning in the Contentor <a href="<?= $escaper->escapeUrl($configUrl); ?>">configuration</a> to use machine-translation.
     <br />
 </div>
 
@@ -45,7 +45,7 @@ $configUrl = $this->getUrl(
                 var selectedOption = $(this).val();
                 var machineTranslationSection = $('#machine-translation-section');
                 var machineTranslationText = $('#machine-translation-text');
-                var isVersioningEnabledConfig = <?php echo json_encode($isVersioningEnabled); ?>;
+                var isVersioningEnabledConfig = <?= json_encode($isVersioningEnabled); ?>;
                 var isVersioningEnabled = (selectedOption == 'yes');
 
                 // Check if Versioning is enabled in form and also configuration and show/hide the Machine Translation accordingly

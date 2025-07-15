@@ -11,11 +11,11 @@ $deliveryOptions = $deliveryExpressViewModel ? $deliveryExpressViewModel->getCon
 <select name="deliverySpeed">
     <?php
     foreach ($deliveryOptions as $option) {
-        print '<option value="' . $option['value'] . '"';
+        print '<option value="' . $escaper->escapeHtmlAttr($option['value']) . '"';
         if ($option['value'] == 'normal') {
             print ' SELECTED';
         }
-        print '>' . $option['label'] . '</option>';
+        print '>' . $escaper->escapeHtml($option['label']) . '</option>';
     }
     ?>
 </select>

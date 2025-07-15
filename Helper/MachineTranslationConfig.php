@@ -3,7 +3,6 @@ namespace Contentor\LocalizationApi\Helper;
 
 /**
  * Class DeliveryExpressConfig
- * @package Contentor\LocalizationApi\Helper
  */
 class MachineTranslationConfig extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -28,7 +27,8 @@ class MachineTranslationConfig extends \Magento\Framework\App\Helper\AbstractHel
     /**
      * @return array
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return $this->machineTranslation;
     }
 }

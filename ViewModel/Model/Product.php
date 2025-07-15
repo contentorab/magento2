@@ -317,8 +317,8 @@ class Product extends AbstractModel implements ProductInterface, ContentEntityIn
 
 
      /**
-     * @inheritdoc
-     */
+      * @inheritdoc
+      */
     public function getVersioning(): string
     {
         return $this->getData(self::VERSIONING);

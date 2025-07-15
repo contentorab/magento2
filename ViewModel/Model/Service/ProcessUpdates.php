@@ -86,12 +86,12 @@ class ProcessUpdates
             $lastStateChangeSeen = $date;
 
              // pagination through updates if there are more than 1 page (or more than 20 updates)
-             if($updates['pagination']['pages'] > 1) {
-                 for($page = 2; $page <= $updates['pagination']['pages']; $page++) {
-                    $partial_updates = $this->getUpdatesGateway->execute($date, $page);                   
+            if ($updates['pagination']['pages'] > 1) {
+                for ($page = 2; $page <= $updates['pagination']['pages']; $page++) {
+                    $partial_updates = $this->getUpdatesGateway->execute($date, $page);
                     $updates_data = array_merge($updates_data, $partial_updates['data']);
-                 }
-             }
+                }
+            }
             
             $count = 0;
             foreach ($updates_data as $update) {

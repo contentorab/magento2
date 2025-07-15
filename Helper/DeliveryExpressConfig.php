@@ -1,10 +1,6 @@
 <?php
 namespace Contentor\LocalizationApi\Helper;
 
-/**
- * Class DeliveryExpressConfig
- * @package Contentor\LocalizationApi\Helper
- */
 class DeliveryExpressConfig extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
@@ -24,7 +20,8 @@ class DeliveryExpressConfig extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return array
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return $this->deliverySpeed;
     }
 }

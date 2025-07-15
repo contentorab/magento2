@@ -1,11 +1,6 @@
 <?php
 namespace Contentor\LocalizationApi\Helper;
 
-/**
- * Class Data
- * @package Contentor\LocalizationApi\Helper
- * @deprecated
- */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     private $types = [
@@ -30,7 +25,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    public function getFieldTypes() {
+    public function getFieldTypes()
+    {
         return $this->types;
     }
 }

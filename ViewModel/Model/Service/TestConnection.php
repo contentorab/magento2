@@ -6,10 +6,6 @@ use Contentor\LocalizationApi\Model\Gateway\TestConnection as GatewayTestConnect
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class TestConnection
- * @package Contentor\LocalizationApi\Model\Service
- */
 class TestConnection
 {
 

@@ -8,10 +8,6 @@ use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class Import
- * @package Contentor\LocalizationApi\Cron
- */
 class Import
 {
     /**

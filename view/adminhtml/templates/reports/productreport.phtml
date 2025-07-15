@@ -5,10 +5,10 @@ use Contentor\LocalizationApi\Block\Adminhtml\Reports\ProductReportBlock;
 
 /** @var ProductReportBlock|ContentCreationProductReportBlock $block */
 
-if($block->getParameter('page')) {
+if ($block->getParameter('page')) {
     $page = abs($block->getParameter('page'));
 }
-if($block->getParameter('pagesize')) {
+if ($block->getParameter('pagesize')) {
     $pagesize = abs($block->getParameter('pagesize'));
 }
 if (empty($page)) {
@@ -24,21 +24,21 @@ if ($tot > 0) {
     if ($page > $nPages) {
         $page = $nPages;
     }
-    print 'Total ' . $tot . ' rows<br>';
+    print 'Total ' . $escaper->escapeHtml($tot) . ' rows<br>';
     print 'Page: ';
     for ($i = 1; $i <= $nPages; $i++) {
         if ($i == $page) {
-            print '<b>' . $i . '</b> ';
+            print '<b>' . $escaper->escapeHtml($i) . '</b> ';
         } else {
-            print '<a href="' . $this->getPage($i) . '">' . $i . '</a> ';
+            print '<a href="' . $escaper->escapeUrl($block->getPage($i)) . '">' . $escaper->escapeHtml($i) . '</a> ';
         }
     }
     print ' | ';
     if ($page > 1) {
-        print '<a href="' . $this->getPage($page - 1) . '">Previous</a> ';
+        print '<a href="' . $escaper->escapeUrl($block->getPage($page - 1)) . '">Previous</a> ';
     }
     if ($page < $nPages) {
-        print ' <a href="' . $this->getPage($page + 1) . '">Next</a> ';
+        print ' <a href="' . $escaper->escapeUrl($block->getPage($page + 1)) . '">Next</a> ';
     }
 
     $offset = ($page - 1) * $pagesize;
@@ -67,7 +67,7 @@ if ($tot > 0) {
                     <th>SKU</th>
                     <th>Name</th>
                     <th>Source</th>
-                    <th colspan=<?php print $numStores; ?>>Status</th>
+                    <th colspan=<?= $escaper->escapeHtmlAttr($numStores); ?>>Status</th>
                     <th>Delivery Speed</th>
                     <th>Machine Translation</th>
                     <th>Attributions</th>
@@ -79,7 +79,7 @@ if ($tot > 0) {
                     <th></th>
                     <?php
                     foreach ($storeInfo as $id => $store) {
-                        print '<th>' . $store . ' (' . $storeLocale[$id] . ')</th>';
+                        print '<th>' . $escaper->escapeHtml($store) . ' (' . $escaper->escapeHtml($storeLocale[$id]) . ')</th>';
                     } ?>
                 </tr>
                 </thead>
@@ -98,7 +98,7 @@ if ($tot > 0) {
 
                     $prodName = $details->getName();
 
-                    $url = $this->getUrl('catalog/product/edit', ['id' => $details->getId()]);
+                    $url = $block->getUrl('catalog/product/edit', ['id' => $details->getId()]);
                     if ($i % 2) {
                         $even = '#eee';
                     } else {
@@ -106,7 +106,7 @@ if ($tot > 0) {
                     }
 
                     $sent = [];
-                    if($prod['sent']){
+                    if ($prod['sent']) {
                         $sentStores = explode(",", $prod['sent']);
                         foreach ($sentStores as $sentStore) {
                             if (!empty($sentStore)) {
@@ -117,7 +117,7 @@ if ($tot > 0) {
                     }
 
                     $completed = [];
-                    if($prod['completed']){
+                    if ($prod['completed']) {
                         $completeStores = explode(",", $prod['completed']);
                         foreach ($completeStores as $completeStore) {
                             if (!empty($completeStore)) {
@@ -128,7 +128,7 @@ if ($tot > 0) {
                     }
 
                     $state = [];
-                    if($prod['state']){
+                    if ($prod['state']) {
                         $stateStores = explode(",", $prod['state']);
                         foreach ($stateStores as $stateStore) {
                             if (!empty($stateStore)) {
@@ -138,12 +138,12 @@ if ($tot > 0) {
                         }
                     }
 
-                    print '<tr title="' . $url . '" style="background-color:' . $even . '; border-bottom:1px solid #aaa;">';
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $prod['m2_product_id'] . '</a></td>';
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $url . '">' . $details->getSku() . '</a></td>';
+                    print '<tr title="' . $escaper->escapeHtmlAttr($url) . '" style="background-color:' . $escaper->escapeHtmlAttr($even) . '; border-bottom:1px solid #aaa;">';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $escaper->escapeUrl($url) . '">' . $escaper->escapeHtml($prod['m2_product_id']) . '</a></td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;"><a href="' . $escaper->escapeUrl($url) . '">' . $escaper->escapeHtml($details->getSku()) . '</a></td>';
 
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $prodName . '</td>';
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $prod['source'] . '</td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $escaper->escapeHtml($prodName) . '</td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $escaper->escapeHtml($prod['source']) . '</td>';
                     // Loop stores and print status for them
                     foreach ($storeInfo as $id => $name) {
                         // Check state
@@ -151,13 +151,13 @@ if ($tot > 0) {
                             // I have a state and I will use it!
                             if ($state[$id] == 'completed') {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#eff5ea;">';
-                                print 'Received: ' . $completed[$id];
+                                print 'Received: ' . $escaper->escapeHtml($completed[$id]);
                             } elseif ($state[$id] == 'confirmed') {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#fffbf0;">';
-                                print 'Confirmed (' . $sent[$id] . ')';
+                                print 'Confirmed (' . $escaper->escapeHtml($sent[$id]) . ')';
                             } elseif ($state[$id] == 'pending') {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#fffbf0;">';
-                                print 'Sent: ' . $sent[$id];
+                                print 'Sent: ' . $escaper->escapeHtml($sent[$id]);
                             } elseif ($state[$id] == 'canceled') {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#faebe7;">';
                                 print 'Canceled';
@@ -165,10 +165,10 @@ if ($tot > 0) {
                         } else {
                             if (isset($completed[$id])) {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#eff5ea;">';
-                                print 'Received: ' . $completed[$id];
+                                print 'Received: ' . $escaper->escapeHtml($completed[$id]);
                             } elseif (isset($sent[$id])) {
                                 print '<td style="padding: 5px; padding-right: 15px; background:#fffbf0;">';
-                                print 'Sent: ' . $sent[$id];
+                                print 'Sent: ' . $escaper->escapeHtml($sent[$id]);
                             } else {
                                 print '<td style="padding: 5px; padding-right: 15px;">';
                                 print 'Not sent';
@@ -176,9 +176,9 @@ if ($tot > 0) {
                         }
                         print '</td>';
                     }
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['deliverySpeed'] !== null ? ucwords($prod['deliverySpeed']) : 'Normal') . '</td>';
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['machineTranslation'] !== null ? ucwords($prod['machineTranslation']) : 'None') . '</td>';
-                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . ($prod['attribution'] !== null ? ucwords($prod['attribution']) : 'None') . '</td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $escaper->escapeHtml($prod['deliverySpeed'] !== null ? ucwords($prod['deliverySpeed']) : 'Normal') . '</td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $escaper->escapeHtml($prod['machineTranslation'] !== null ? ucwords($prod['machineTranslation']) : 'None') . '</td>';
+                    print '<td class=" " style="padding: 5px; padding-right: 15px;">' . $escaper->escapeHtml($prod['attribution'] !== null ? ucwords($prod['attribution']) : 'None') . '</td>';
                     print '</tr>';
 
                     $i++;

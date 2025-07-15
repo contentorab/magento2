@@ -1,7 +1,7 @@
 <?php
 
 /* Test for Model\Service\ProcessUpdates
-It checks if pagination works and if goes troug all the products sent. 
+It checks if pagination works and if goes troug all the products sent.
 Important: Before the test 30 updates should be sent for localization or content creation in admin.
 */
 
@@ -14,7 +14,7 @@ use \Contentor\LocalizationApi\Model\Service\ProcessUpdates;
 class ProcessUpdatesTest extends \PHPUnit\Framework\TestCase
 {
 
-    protected $processUpdates; 
+    protected $processUpdates;
    
     public function setUp(): void
     {
@@ -37,7 +37,6 @@ class ProcessUpdatesTest extends \PHPUnit\Framework\TestCase
         // Should retunr 30 results, in our case
         $expected = 30;
        
-        $this->assertEquals($updates_count, $expected );
+        $this->assertEquals($updates_count, $expected);
     }
- 
 }

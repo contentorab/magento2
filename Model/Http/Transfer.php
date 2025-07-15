@@ -92,5 +92,4 @@ class Transfer implements HttpRequestTransferInterface
     {
         return $this->uri;
     }
-
 }
