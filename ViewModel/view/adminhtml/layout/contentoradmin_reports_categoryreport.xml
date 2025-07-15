@@ -1,8 +1,0 @@
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <referenceContainer name="content">
-            <block class="Contentor\LocalizationApi\Block\Adminhtml\Reports\CategoryReportBlock"
-                   name="localized_report_block" template="Contentor_LocalizationApi::reports/categoryreport.phtml"/>
-        </referenceContainer>
-    </body>
-</page>
