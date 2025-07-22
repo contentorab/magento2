@@ -12,12 +12,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\System\Store;
 use Magento\Ui\Component\MassAction\Filter;
 
-/**
- * Abstract block for bulk products operations
- *
- * Base class for bulk product operations in admin interface,
- * providing common functionality for localization and content creation.
- */
 abstract class AbstractBulkProducts extends Template
 {
     /**
@@ -31,7 +25,7 @@ abstract class AbstractBulkProducts extends Template
     protected $_template = 'administration/bulkproducts.phtml';
 
     /**
-     * @var string
+     * @var
      */
     protected $btnSubmitLabel;
 
@@ -39,17 +33,14 @@ abstract class AbstractBulkProducts extends Template
      * @var ListsInterface
      */
     protected $localeList;
-
     /**
      * @var Store
      */
     protected $systemStores;
-
     /**
      * @var Filter
      */
     protected $filter;
-
     /**
      * @var CollectionFactory
      */
@@ -62,7 +53,6 @@ abstract class AbstractBulkProducts extends Template
 
     /**
      * AbstractBulkProducts constructor.
-     *
      * @param Context $context
      * @param ListsInterface $localeList
      * @param Store $systemStores
@@ -89,8 +79,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get available locale list
-     *
      * @return array
      */
     public function getLocaleList(): array
@@ -99,8 +87,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get store views structure
-     *
      * @return array
      */
     public function getStoreViews(): array
@@ -109,9 +95,7 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get store locale by ID
-     *
-     * @param int $id
+     * @param $id
      * @return mixed
      */
     public function getStoreLocale($id)
@@ -120,8 +104,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get products with applied filter
-     *
      * @return array
      * @throws LocalizedException
      */
@@ -132,8 +114,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get submit button label
-     *
      * @return string
      */
     public function getLabelSubmitButton(): string
@@ -142,8 +122,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get sync type
-     *
      * @return int
      */
     public function getSyncType(): int
@@ -152,8 +130,6 @@ abstract class AbstractBulkProducts extends Template
     }
 
     /**
-     * Get send URL for bulk operation
-     *
      * @return string
      */
     abstract public function getSendUrl(): string;

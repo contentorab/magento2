@@ -4,12 +4,6 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 
 use Contentor\LocalizationApi\Model\Product;
 
-/**
- * Block for bulk products localization operations
- *
- * Handles the admin interface for bulk product localization
- * operations via Contentor platform.
- */
 class BulkProducts extends AbstractBulkProducts
 {
     /**
@@ -23,8 +17,6 @@ class BulkProducts extends AbstractBulkProducts
     protected $btnSubmitLabel = 'Send for localization';
 
     /**
-     * Get send URL for bulk products localization
-     *
      * @return string
      */
     public function getSendUrl(): string
@@ -33,8 +25,6 @@ class BulkProducts extends AbstractBulkProducts
     }
 
     /**
-     * Get validation messages for configuration
-     *
      * @return array
      */
     public function getValidationMessages(): array
@@ -44,8 +34,6 @@ class BulkProducts extends AbstractBulkProducts
     }
 
     /**
-     * Check if configuration is ready
-     *
      * @return bool
      */
     public function isReady(): bool

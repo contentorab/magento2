@@ -9,31 +9,21 @@ use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
 
-/**
- * Abstract controller for posting single entities to Contentor
- *
- * Handles the sending of individual entities (products, categories) to Contentor
- * platform for localization or content creation services.
- */
 class AbstractPostSingleEntity extends Action
 {
-    /**
-     * @var string
-     */
     protected $entityName;
-
     /**
-     * @var string
+     * @var
      */
     protected $routeRedirect;
 
     /**
-     * @var string
+     * @var
      */
     protected $paramRequestId;
 
     /**
-     * @var string
+     * @var
      */
     protected $modelFactory;
 
@@ -56,7 +46,6 @@ class AbstractPostSingleEntity extends Action
 
     /**
      * AbstractPostSingleEntity constructor.
-     *
      * @param Context $context
      * @param Http $request
      * @param array $serviceSendContent
@@ -72,8 +61,7 @@ class AbstractPostSingleEntity extends Action
     }
 
     /**
-     * Execute single entity posting to Contentor platform
-     *
+     * @inheritdoc
      * @return ResponseInterface|ResultInterface|void
      */
     public function execute()

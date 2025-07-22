@@ -6,16 +6,14 @@ use Contentor\LocalizationApi\Api\Data\TypeInterface;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
- * Interface TypeRepositoryInterface
- * Repository interface for managing content type data
+ * Interface ProductRepositoryInterface
  * @api
  */
 interface TypeRepositoryInterface
 {
     /**
-     * Save Product content Type
-     *
-     * @param int $contentorId
+     * Save Product content Type.
+     * @param $contentorId
      * @param string $typeCode
      * @return TypeInterface
      */
@@ -25,7 +23,7 @@ interface TypeRepositoryInterface
      * Returns content type code by contentorID
      *
      * @param string $contentorId
-     * @return string
+     * @return string string
      * @throws LocalizedException
      */
     public function getByContentorId($contentorId): string;

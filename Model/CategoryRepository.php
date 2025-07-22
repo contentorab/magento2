@@ -13,10 +13,6 @@ use Contentor\LocalizationApi\Model\Spi\ContentEntityLoaderInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\AlreadyExistsException;
 
-/**
- * Class CategoryRepository
- * Repository for category localization data
- */
 class CategoryRepository implements CategoryRepositoryInterface, ContentEntityLoaderInterface
 {
     /**
@@ -34,13 +30,6 @@ class CategoryRepository implements CategoryRepositoryInterface, ContentEntityLo
      */
     private $categoryFactory;
 
-    /**
-     * Constructor
-     *
-     * @param CollectionFactory $collectionFactory
-     * @param CategoryResource $categoryResource
-     * @param CategoryFactory $categoryFactory
-     */
     public function __construct(
         CollectionFactory $collectionFactory,
         CategoryResource $categoryResource,

@@ -14,9 +14,7 @@ use Magento\Framework\Model\AbstractModel;
 class Type extends AbstractModel implements TypeInterface
 {
     /**
-     * Initialize model
-     *
-     * @return void
+     * @inheritdoc
      */
     public function _construct()
     {

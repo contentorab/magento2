@@ -12,12 +12,6 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Abstract controller for sending bulk products to Contentor
- *
- * Handles the bulk processing of products for sending to Contentor platform
- * with support for localization and content creation services.
- */
 class AbstractSendBulkProducts extends Action
 {
     /**
@@ -54,7 +48,6 @@ class AbstractSendBulkProducts extends Action
 
     /**
      * AbstractSendBulkProducts constructor.
-     *
      * @param Context $context
      * @param Http $request
      * @param ProductFactory $productFactory
@@ -79,8 +72,6 @@ class AbstractSendBulkProducts extends Action
     }
 
     /**
-     * Execute bulk product sending to Contentor platform
-     *
      * @return ResponseInterface|ResultInterface|void
      */
     public function execute()

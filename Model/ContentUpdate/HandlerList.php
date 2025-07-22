@@ -16,8 +16,6 @@ use Magento\Framework\Exception\LocalizedException;
 class HandlerList
 {
     /**
-     * Available handlers
-     *
      * @var array
      */
     private $handlers = [];
@@ -39,7 +37,6 @@ class HandlerList
 
     /**
      * Returns related handler by code see di.xml for available handlers
-     *
      * @param string $code
      * @param array $arguments
      * @return ContentUpdateHandlerInterface

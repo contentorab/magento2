@@ -4,44 +4,29 @@ namespace Contentor\LocalizationApi\Model\Http;
 
 use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 
-/**
- * Class Transfer
- *
- * HTTP request transfer implementation
- */
 class Transfer implements HttpRequestTransferInterface
 {
     /**
-     * Request headers
-     *
      * @var array
      */
     private $headers;
 
     /**
-     * HTTP method
-     *
      * @var string
      */
     private $method;
 
     /**
-     * Request parameters
-     *
      * @var array
      */
     private $params;
 
     /**
-     * Request body
-     *
      * @var array|string
      */
     private $body;
 
     /**
-     * Request URI
-     *
      * @var string
      */
     private $uri;
@@ -69,8 +54,6 @@ class Transfer implements HttpRequestTransferInterface
     }
 
     /**
-     * Get HTTP method
-     *
      * @return string|int
      */
     public function getMethod()
@@ -79,8 +62,6 @@ class Transfer implements HttpRequestTransferInterface
     }
 
     /**
-     * Get request headers
-     *
      * @return array
      */
     public function getHeaders(): array
@@ -89,8 +70,6 @@ class Transfer implements HttpRequestTransferInterface
     }
 
     /**
-     * Get request body
-     *
      * @return array|string
      */
     public function getBody()
@@ -99,8 +78,6 @@ class Transfer implements HttpRequestTransferInterface
     }
 
     /**
-     * Get request parameters
-     *
      * @return array
      */
     public function getParams(): array
@@ -109,8 +86,6 @@ class Transfer implements HttpRequestTransferInterface
     }
 
     /**
-     * Get request URI
-     *
      * @return string
      */
     public function getUri(): string

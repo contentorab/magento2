@@ -9,12 +9,6 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Controller for Category Content Creation Report page
- *
- * Displays the admin interface for viewing category content creation reports
- * from Contentor platform.
- */
 class CategoryReport extends Action
 {
     /**
@@ -23,8 +17,7 @@ class CategoryReport extends Action
     private $pageFactory;
 
     /**
-     * CategoryReport constructor.
-     *
+     * ProductReport constructor.
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -37,8 +30,6 @@ class CategoryReport extends Action
     }
 
     /**
-     * Display the category content creation report page
-     *
      * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()

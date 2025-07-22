@@ -4,12 +4,6 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
 use Magento\Catalog\Model\ProductFactory;
 
-/**
- * Controller for posting products for localization
- *
- * Handles the sending of individual products to Contentor platform
- * for localization services.
- */
 class PostProduct extends AbstractPostSingleEntity
 {
     /**

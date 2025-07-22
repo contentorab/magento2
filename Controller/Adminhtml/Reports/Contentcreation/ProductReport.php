@@ -9,12 +9,6 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
-/**
- * Controller for Product Content Creation Report page
- *
- * Displays the admin interface for viewing product content creation reports
- * from Contentor platform.
- */
 class ProductReport extends Action
 {
     /**
@@ -24,7 +18,6 @@ class ProductReport extends Action
 
     /**
      * ProductReport constructor.
-     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -37,8 +30,6 @@ class ProductReport extends Action
     }
 
     /**
-     * Display the product content creation report page
-     *
      * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()

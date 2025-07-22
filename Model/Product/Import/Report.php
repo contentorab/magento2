@@ -22,11 +22,11 @@ use Contentor\LocalizationApi\Model\ResourceModel\Product\Import\Report as Resou
  */
 class Report extends AbstractModel
 {
-    public const STATUS_PENDING = 0;
+    const STATUS_PENDING = 0;
 
-    public const STATUS_SUCCESS = 1;
+    const STATUS_SUCCESS = 1;
 
-    public const STATUS_ERROR = 2;
+    const STATUS_ERROR = 2;
 
     protected function _construct()
     {

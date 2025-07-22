@@ -9,19 +9,12 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Controller for testing API token connection to Contentor platform
- *
- * Validates the API token by attempting to connect to the Contentor service
- * and returns a success/failure message to the admin interface.
- */
 class CheckToken extends Action
 {
     /**
      * @var Context
      */
     private $context;
-
     /**
      * @var TestConnection
      */
@@ -29,7 +22,6 @@ class CheckToken extends Action
 
     /**
      * CheckToken constructor.
-     *
      * @param Context $context
      * @param TestConnection $testConnection
      */
@@ -43,8 +35,6 @@ class CheckToken extends Action
     }
 
     /**
-     * Test the API token connection to Contentor platform
-     *
      * @return ResponseInterface|ResultInterface|void
      */
     public function execute()

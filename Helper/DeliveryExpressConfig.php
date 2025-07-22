@@ -1,16 +1,9 @@
 <?php
 namespace Contentor\LocalizationApi\Helper;
 
-/**
- * Class DeliveryExpressConfig
- *
- * Helper for delivery express configuration options
- */
 class DeliveryExpressConfig extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Available delivery speed options
-     *
      * @var array
      */
     private $deliverySpeed = [
@@ -25,8 +18,6 @@ class DeliveryExpressConfig extends \Magento\Framework\App\Helper\AbstractHelper
     ];
 
     /**
-     * Get delivery speed configuration options
-     *
      * @return array
      */
     public function getConfig()

@@ -26,7 +26,7 @@ use Magento\Framework\Exception\LocalizedException;
  */
 class Consumer
 {
-    public const REQUEST_BATCH_SIZE = 1000;
+    const REQUEST_BATCH_SIZE = 1000;
 
     private ProductImportSelection $productImportSelection;
 

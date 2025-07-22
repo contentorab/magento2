@@ -10,37 +10,30 @@ use Magento\Framework\Exception\LocalizedException;
 /**
  * Class TestConnection
  *
- * Gateway command for URL [ContentorBaseUrl]/auth:GET
- * Responsibility: Check if API ready
- * Used check api state before sending any requests
- * TODO: API endpoint not available [15.05.2019]
+ * Gateway command for URL [ContentorBaseUrl]/auth:GET.
+ * Responsibility : Check if API ready.
+ * Used check api state before sending any requests.
+ * TODO : API endpoint not available [15.05.2019]
  */
 class TestConnection
 {
     /**
-     * HTTP client for API communication
-     *
      * @var HttpClientInterface
      */
     private $httpClient;
 
     /**
-     * HTTP request transfer factory
-     *
      * @var HttpRequestTransferInterfaceFactory
      */
     private $httpRequestTransferInterfaceFactory;
 
     /**
-     * JSON to array converter
-     *
      * @var JsonToArray
      */
     private $jsonToArrayConverter;
 
     /**
-     * Constructor
-     *
+     * TestConnection constructor.
      * @param HttpRequestTransferInterfaceFactory $httpRequestTransferInterfaceFactory
      * @param HttpClientInterface $httpClient
      * @param JsonToArray $jsonToArrayConverter
@@ -56,8 +49,6 @@ class TestConnection
     }
 
     /**
-     * Execute connection test
-     *
      * @return bool
      * @throws LocalizedException
      */

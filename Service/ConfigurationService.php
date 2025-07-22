@@ -16,43 +16,37 @@ class ConfigurationService
 {
     /**
      * Admin config XML Path constants
-     *
      * @var string
      */
-    public const XML_PATH_STATUS = 'contentor_options/status/enable';
-    public const XML_PATH_TOKEN = 'contentor_options/token/apitoken';
-    public const XML_PATH_AUTOMATION_ENABLE = 'contentor_options/automation/import';
-    public const XML_PATH_SOURCE_LOCALE = 'contentor_options/source/sourcelocale';
-    public const XML_PATH_TARGET_STORE_VIEWS = 'contentor_options/targets/targetviews';
-    public const XML_PATH_PRODUCT_FIELDS = 'contentor_options/fieldDetails/productFieldDetails';
-    public const XML_PATH_DEVELOPER_MODE = 'contentor_options/fieldDetails/developer_mode';
-    public const XML_PATH_API_BASE_URL = 'contentor_options/contentor_options/api_base_url';
-    public const XML_PATH_MODULE_VERSION = 'contentor_options/contentor_options/version';
-    public const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
-    public const XML_PATH_MAIN_LOCALE = 'general/locale/code';
-    public const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
+    const XML_PATH_STATUS = 'contentor_options/status/enable';
+    const XML_PATH_TOKEN = 'contentor_options/token/apitoken';
+    const XML_PATH_AUTOMATION_ENABLE = 'contentor_options/automation/import';
+    const XML_PATH_SOURCE_LOCALE = 'contentor_options/source/sourcelocale';
+    const XML_PATH_TARGET_STORE_VIEWS = 'contentor_options/targets/targetviews';
+    const XML_PATH_PRODUCT_FIELDS = 'contentor_options/fieldDetails/productFieldDetails';
+    const XML_PATH_DEVELOPER_MODE = 'contentor_options/fieldDetails/developer_mode';
+    const XML_PATH_API_BASE_URL = 'contentor_options/contentor_options/api_base_url';
+    const XML_PATH_MODULE_VERSION = 'contentor_options/contentor_options/version';
+    const XML_PATH_VERSIONING_ENABLED = 'contentor_options/versioning/versioning_enable';
+    const XML_PATH_MAIN_LOCALE = 'general/locale/code';
+    const XML_PATH_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/fieldDetails';
 
     /**
      * Category config XML Path constants
-     *
      * @var string
      */
-    public const XML_PATH_CATEGORY_AUTOMATION_ENABLE = 'contentor_options/automation/category_import';
-    public const XML_PATH_CATEGORY_SOURCE_LOCALE = 'contentor_options/source/category_sourcelocale';
-    public const XML_PATH_CATEGORY_TARGET_STORE_VIEWS = 'contentor_options/targets/category_targetviews';
-    public const XML_PATH_CATEGORY_FIELDS = 'contentor_options/fieldDetails/categoryFieldDetails';
-    public const XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/categoryFieldDetails';
+    const XML_PATH_CATEGORY_AUTOMATION_ENABLE = 'contentor_options/automation/category_import';
+    const XML_PATH_CATEGORY_SOURCE_LOCALE = 'contentor_options/source/category_sourcelocale';
+    const XML_PATH_CATEGORY_TARGET_STORE_VIEWS = 'contentor_options/targets/category_targetviews';
+    const XML_PATH_CATEGORY_FIELDS = 'contentor_options/fieldDetails/categoryFieldDetails';
+    const XML_PATH_CATEGORY_CONTENT_CREATION_FIELDS = 'contentor_options/contentCreation/categoryFieldDetails';
 
     /**
-     * Scope configuration interface
-     *
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
     /**
-     * JSON serializer
-     *
      * @var Json
      */
     private $serializer;
@@ -71,8 +65,6 @@ class ConfigurationService
     }
 
     /**
-     * Get module version
-     *
      * @param null $store
      * @return mixed
      */

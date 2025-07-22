@@ -4,12 +4,6 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration;
 
 use Magento\Catalog\Model\CategoryFactory;
 
-/**
- * Controller for posting categories for localization
- *
- * Handles the sending of individual categories to Contentor platform
- * for localization services.
- */
 class PostCategory extends AbstractPostSingleEntity
 {
     /**

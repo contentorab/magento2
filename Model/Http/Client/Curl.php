@@ -8,30 +8,19 @@ use Contentor\LocalizationApi\Model\Spi\HttpRequestTransferInterface;
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\HTTP\Adapter\Curl as CurlAdapter;
 
-/**
- * Class Curl
- *
- * HTTP client implementation using cURL adapter
- */
 class Curl implements HttpClientInterface
 {
     /**
-     * Configuration service
-     *
      * @var ConfigurationService
      */
     private $configurationService;
 
     /**
-     * cURL adapter instance
-     *
      * @var CurlAdapter
      */
     private $curl;
 
     /**
-     * Logger instance
-     *
      * @var Logger
      */
     private $logger;
@@ -53,8 +42,6 @@ class Curl implements HttpClientInterface
     }
 
     /**
-     * Send HTTP request
-     *
      * @param HttpRequestTransferInterface $transfer
      * @return array
      */

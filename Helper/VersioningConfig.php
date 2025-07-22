@@ -1,16 +1,9 @@
 <?php
 namespace Contentor\LocalizationApi\Helper;
 
-/**
- * Class VersioningConfig
- *
- * Helper for versioning configuration options
- */
 class VersioningConfig extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Available versioning options
-     *
      * @var array
      */
     private $versioning= [
@@ -29,8 +22,6 @@ class VersioningConfig extends \Magento\Framework\App\Helper\AbstractHelper
     ];
 
     /**
-     * Get versioning configuration options
-     *
      * @return array
      */
     public function getConfig()
