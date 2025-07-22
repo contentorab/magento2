@@ -14,54 +14,79 @@ use Magento\Framework\View\Element\Template;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\System\Store;
 
+/**
+ * Class AbstractTabBlock
+ *
+ * Abstract base class for category edit tab blocks
+ */
 abstract class AbstractTabBlock extends Template
 {
     /**
+     * Template file path
+     *
      * @var string
      */
     protected $_template = 'category/edit/contentor_tab.phtml';
 
     /**
+     * Sync type
+     *
      * @var int
      */
     protected $syncType;
 
     /**
+     * Submit button label
+     *
      * @var string
      */
     protected $submitLabelBtn;
 
     /**
+     * Core registry
+     *
      * @var Registry
      */
     protected $coreRegistry;
 
     /**
-     * @var
+     * Resolver instance
+     *
+     * @var mixed
      */
     protected $resolver;
 
     /**
+     * System store model
+     *
      * @var Store
      */
     protected $systemStores;
 
     /**
+     * Scope configuration
+     *
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
+     * Resource connection
+     *
      * @var ResourceConnection
      */
     protected $resource;
 
     /**
+     * Locale list interface
+     *
      * @var ListsInterface
      */
     protected $localeList;
 
     /**
+     * Configuration service
+     *
      * @var ConfigurationService
      */
     protected $configurationService;
@@ -105,6 +130,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get available locales
+     *
      * @return array
      */
     public function getLocales(): array
@@ -113,6 +140,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get store views
+     *
      * @return array
      */
     public function getStoreViews(): array
@@ -121,6 +150,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get store locale by ID
+     *
      * @param string $id
      * @return string
      */
@@ -134,6 +165,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get request status by ID
+     *
      * @param string $id
      * @return array
      */
@@ -173,6 +206,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get validation messages
+     *
      * @return array
      */
     public function getValidationMessages(): array
@@ -182,6 +217,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Check if ready for submission
+     *
      * @return bool
      */
     public function isReady(): bool
@@ -191,6 +228,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get submit button label
+     *
      * @return string
      */
     public function getLabelSubmitButton(): string
@@ -199,6 +238,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get sync type
+     *
      * @return int
      */
     public function getSyncType()
@@ -207,6 +248,8 @@ abstract class AbstractTabBlock extends Template
     }
 
     /**
+     * Get submit URL
+     *
      * @return string
      */
     abstract public function getSubmitUrl(): string;

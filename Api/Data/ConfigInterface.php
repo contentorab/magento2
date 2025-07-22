@@ -1,9 +1,10 @@
 <?php
 namespace Contentor\LocalizationApi\Api\Data;
 
-//todo :do we need this?
 /**
  * Interface ConfigInterface
+ * Configuration data interface for localization settings
+ * @api
  */
 interface ConfigInterface
 {
@@ -11,6 +12,6 @@ interface ConfigInterface
      * Column names
      * @var string
      */
-    const ROW_ID = 'row_id';
+    public const ROW_ID = 'row_id';
     /**#@-*/
 }

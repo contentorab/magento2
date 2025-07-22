@@ -23,7 +23,8 @@ use Magento\Framework\ObjectManagerInterface;
 class EntityResolver
 {
     /**
-     * Static repository map.
+     * Static repository map
+     *
      * @var array
      */
     private $repositoriesMap = [
@@ -32,11 +33,15 @@ class EntityResolver
     ];
 
     /**
+     * Object manager instance
+     *
      * @var ObjectManagerInterface
      */
     private $objectManager;
 
     /**
+     * Type repository instance
+     *
      * @var TypeRepositoryInterface
      */
     private $typeRepository;
@@ -55,7 +60,9 @@ class EntityResolver
     }
 
     /**
-     * @param $contentorId
+     * Find entity by Contentor ID
+     *
+     * @param int $contentorId
      * @return ContentEntityInterface|null
      * @throws LocalizedException
      */

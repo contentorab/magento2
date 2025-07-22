@@ -1,8 +1,15 @@
 <?php
 namespace Contentor\LocalizationApi\Helper;
 
+/**
+ * Class Data
+ * Helper for localization data and configuration
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    /**
+     * @var array
+     */
     private $types = [
         [
             'label'   => 'Creatable',
@@ -13,8 +20,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'value'   => 'context'
         ],
     ];
+
     /**
-     * @param $configPath
+     * Get configuration value
+     *
+     * @param string $configPath
      * @return mixed
      */
     public function getConfig($configPath)
@@ -25,6 +35,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get field types
+     *
+     * @return array
+     */
     public function getFieldTypes()
     {
         return $this->types;

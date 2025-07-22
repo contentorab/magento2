@@ -9,7 +9,7 @@ use Magento\Backend\Block\Widget\Button;
 
 class ProductImportActions extends Field
 {
-    const PRODUCT_IMPORT_PATH = 'contentor/administration/productimport';
+    public const PRODUCT_IMPORT_PATH = 'contentor/administration/productimport';
 
     /**
      * @var string

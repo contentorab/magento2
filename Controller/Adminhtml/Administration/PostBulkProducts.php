@@ -6,6 +6,12 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Controller for bulk products posting page
+ *
+ * Displays the admin interface for posting multiple products to Contentor
+ * for localization services.
+ */
 class PostBulkProducts extends Action
 {
     /**
@@ -15,6 +21,7 @@ class PostBulkProducts extends Action
 
     /**
      * PostBulkProducts constructor.
+     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -26,6 +33,11 @@ class PostBulkProducts extends Action
         $this->pageFactory = $pageFactory;
     }
 
+    /**
+     * Display the bulk products posting interface
+     *
+     * @return \Magento\Framework\View\Result\Page
+     */
     public function execute()
     {
         // Set template

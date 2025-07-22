@@ -13,12 +13,19 @@ use Magento\Framework\Controller\ResultFactory;
  */
 class ProductImport extends Action
 {
-    const QUEUE_NAME = 'contentor.product_import';
+    public const QUEUE_NAME = 'contentor.product_import';
 
     private PublisherInterface $publisher;
 
     private Json $serializer;
 
+    /**
+     * ProductImport constructor.
+     *
+     * @param PublisherInterface $publisher
+     * @param Json $serializer
+     * @param Context $context
+     */
     public function __construct(
         PublisherInterface $publisher,
         Json $serializer,
@@ -30,7 +37,9 @@ class ProductImport extends Action
     }
 
     /**
-     * @inheritdoc
+     * Queue product import operation
+     *
+     * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute(): \Magento\Framework\Controller\ResultInterface
     {

@@ -10,22 +10,25 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Class Product
  *
- * Product model. Represent data from `contentor_products` table
+ * Product model representing data from contentor_products table
  */
 class Product extends AbstractModel implements ProductInterface, ContentEntityInterface
 {
     /**
-     * Column names
-     * @var string
+     * Column names and constants
+     *
+     * @var int
      */
-    const LOCALIZED_SYNC_TYPE = 0;
+    public const LOCALIZED_SYNC_TYPE = 0;
 
-    const CONTENT_CREATION_SYNC_TYPE = 1;
+    public const CONTENT_CREATION_SYNC_TYPE = 1;
 
-    const IMPORT_SYNC_TYPE = 2;
+    public const IMPORT_SYNC_TYPE = 2;
 
     /**
-     * @inheritdoc
+     * Initialize model
+     *
+     * @return void
      */
     public function _construct()
     {

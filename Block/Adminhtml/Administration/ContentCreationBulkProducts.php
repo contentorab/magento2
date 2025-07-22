@@ -4,6 +4,12 @@ namespace Contentor\LocalizationApi\Block\Adminhtml\Administration;
 
 use Contentor\LocalizationApi\Model\Product;
 
+/**
+ * Block for bulk products content creation operations
+ *
+ * Handles the admin interface for bulk product content creation
+ * operations via Contentor platform.
+ */
 class ContentCreationBulkProducts extends AbstractBulkProducts
 {
 
@@ -18,6 +24,8 @@ class ContentCreationBulkProducts extends AbstractBulkProducts
     protected $btnSubmitLabel = 'Send for content creation';
 
     /**
+     * Get send URL for bulk products content creation
+     *
      * @return string
      */
     public function getSendUrl(): string
@@ -26,7 +34,8 @@ class ContentCreationBulkProducts extends AbstractBulkProducts
     }
 
     /**
-     * Validate content creation configuration
+     * Get validation messages for content creation configuration
+     *
      * @return array
      */
     public function getValidationMessages(): array
@@ -36,7 +45,8 @@ class ContentCreationBulkProducts extends AbstractBulkProducts
     }
 
     /**
-     * Check if isReady to show send request button
+     * Check if content creation configuration is ready
+     *
      * @return bool
      */
     public function isReady(): bool

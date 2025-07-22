@@ -9,24 +9,37 @@ use Contentor\LocalizationApi\ViewModel\MachineTranslationViewModel;
 use Magento\Framework\View\Element\Template;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class ContentCreationPlugin
+ *
+ * Plugin for category content creation tab
+ */
 class ContentCreationPlugin
 {
     /**
+     * Data view model
+     *
      * @var DataViewModel
      */
     private $dataViewModel;
 
     /**
+     * Delivery express view model
+     *
      * @var DeliveryExpressViewModel
      */
     private $deliveryExpress;
 
     /**
+     * Machine translation view model
+     *
      * @var MachineTranslationViewModel
      */
     private $machineTranslation;
 
     /**
+     * Logger interface
+     *
      * @var LoggerInterface
      */
     private $logger;
@@ -51,6 +64,8 @@ class ContentCreationPlugin
     }
 
     /**
+     * Before to HTML method
+     *
      * @param ContentCreation $subject
      * @return void
      */

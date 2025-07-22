@@ -9,6 +9,12 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Controller for Category Localization Report page
+ *
+ * Displays the admin interface for viewing category localization reports
+ * from Contentor platform.
+ */
 class CategoryReport extends Action
 {
     /**
@@ -17,7 +23,8 @@ class CategoryReport extends Action
     private $pageFactory;
 
     /**
-     * ProductReport constructor.
+     * CategoryReport constructor.
+     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -30,6 +37,8 @@ class CategoryReport extends Action
     }
 
     /**
+     * Display the category localization report page
+     *
      * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()

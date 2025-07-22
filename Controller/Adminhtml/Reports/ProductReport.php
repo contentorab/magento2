@@ -9,6 +9,12 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Controller for Product Localization Report page
+ *
+ * Displays the admin interface for viewing product localization reports
+ * from Contentor platform.
+ */
 class ProductReport extends Action
 {
     /**
@@ -18,6 +24,7 @@ class ProductReport extends Action
 
     /**
      * ProductReport constructor.
+     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -30,6 +37,8 @@ class ProductReport extends Action
     }
 
     /**
+     * Display the product localization report page
+     *
      * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()

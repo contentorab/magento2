@@ -13,6 +13,8 @@ use Magento\Backend\Model\View\Result\Page;
 class ProductImportReport extends Action
 {
     /**
+     * Display the product import report page
+     *
      * @return ResultInterface
      */
     public function execute()

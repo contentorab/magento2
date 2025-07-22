@@ -9,6 +9,12 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Controller for Content Creation bulk products posting page
+ *
+ * Displays the admin interface for posting multiple products to Contentor
+ * for content creation services.
+ */
 class PostBulkProducts extends Action
 {
     /**
@@ -18,6 +24,7 @@ class PostBulkProducts extends Action
 
     /**
      * PostBulkProducts constructor.
+     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */
@@ -30,6 +37,8 @@ class PostBulkProducts extends Action
     }
 
     /**
+     * Display the content creation bulk products posting interface
+     *
      * @return ResponseInterface|ResultInterface|Page
      */
     public function execute()

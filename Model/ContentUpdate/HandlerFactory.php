@@ -4,14 +4,23 @@ namespace Contentor\LocalizationApi\Model\ContentUpdate;
 use Contentor\LocalizationApi\Model\Spi\ContentUpdateHandlerInterface;
 use Magento\Framework\ObjectManagerInterface;
 
+/**
+ * Class HandlerFactory
+ *
+ * Factory for creating content update handlers
+ */
 class HandlerFactory
 {
     /**
+     * Object manager instance
+     *
      * @var ObjectManagerInterface
      */
     private $objectManager;
 
     /**
+     * Constructor
+     *
      * @param ObjectManagerInterface $objectManager
      */
     public function __construct(

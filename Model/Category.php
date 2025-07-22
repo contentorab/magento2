@@ -7,18 +7,26 @@ use Contentor\LocalizationApi\Model\ResourceModel\Category as CategoryResource;
 use Contentor\LocalizationApi\Model\Spi\ContentEntityInterface;
 use Magento\Framework\Model\AbstractModel;
 
+/**
+ * Class Category
+ *
+ * Model for category localization data
+ */
 class Category extends AbstractModel implements CategoryInterface, ContentEntityInterface
 {
     /**
-     * Column names
-     * @var string
+     * Column names and constants
+     *
+     * @var int
      */
-    const LOCALIZED_SYNC_TYPE = 0;
+    public const LOCALIZED_SYNC_TYPE = 0;
 
-    const CONTENT_CREATION_SYNC_TYPE = 1;
+    public const CONTENT_CREATION_SYNC_TYPE = 1;
 
     /**
-     * @inheritdoc
+     * Initialize model
+     *
+     * @return void
      */
     public function _construct()
     {

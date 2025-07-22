@@ -11,36 +11,49 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class ProcessUpdates
+ *
  * Contentor 'getUpdates' api endpoint service
  */
 class ProcessUpdates
 {
     /**
+     * Logger instance
+     *
      * @var Logger
      */
     private $logger;
 
     /**
+     * Content update handler list
+     *
      * @var HandlerList
      */
     private $handlerList;
 
     /**
+     * Get updates gateway
+     *
      * @var GetUpdates
      */
     private $getUpdatesGateway;
 
     /**
+     * Entity resolver
+     *
      * @var EntityResolver
      */
     private $entityResolver;
 
     /**
+     * Set import state gateway
+     *
      * @var SetImportState
      */
     private $setImportStateGateway;
 
     /**
+     * PSR logger interface
+     *
      * @var LoggerInterface
      */
     private $psrLogger;
@@ -71,9 +84,9 @@ class ProcessUpdates
     }
 
     /**
-     * Get and process a chunk of updates, returning the last state change
-     * seen.
-     * @param $date
+     * Get and process a chunk of updates, returning the last state change seen
+     *
+     * @param string $date
      * @return array
      */
     public function execute($date): array

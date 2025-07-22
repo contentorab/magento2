@@ -5,6 +5,12 @@ namespace Contentor\LocalizationApi\Controller\Adminhtml\Administration\Contentc
 use Contentor\LocalizationApi\Controller\Adminhtml\Administration\AbstractPostSingleEntity;
 use Magento\Catalog\Model\CategoryFactory;
 
+/**
+ * Controller for posting categories for content creation
+ *
+ * Handles the sending of individual categories to Contentor platform
+ * for content creation services.
+ */
 class PostCategory extends AbstractPostSingleEntity
 {
     /**

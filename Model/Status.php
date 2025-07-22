@@ -14,7 +14,9 @@ use Magento\Framework\Model\AbstractModel;
 class Status extends AbstractModel implements StatusInterface
 {
     /**
-     * @inheritdoc
+     * Initialize model
+     *
+     * @return void
      */
     public function _construct()
     {

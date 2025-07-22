@@ -6,6 +6,10 @@ use Contentor\LocalizationApi\Model\Gateway\TestConnection as GatewayTestConnect
 use Contentor\LocalizationApi\Service\ConfigurationService;
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Class TestConnection
+ * Service for testing API connection
+ */
 class TestConnection
 {
 
@@ -20,7 +24,8 @@ class TestConnection
     private $configurationService;
 
     /**
-     * TestConnection constructor.
+     * Constructor
+     *
      * @param GatewayTestConnection $testConnection
      * @param ConfigurationService $configurationService
      */
@@ -36,6 +41,7 @@ class TestConnection
      * Validate contentor api state
      * Do test call to check if everything ready
      *
+     * @return void
      * @throws LocalizedException
      */
     public function execute()
