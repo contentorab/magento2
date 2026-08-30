@@ -8,9 +8,10 @@ use Contentor\LocalizationApi\Model\Product;
 $data = $block->getRequest()->getParams();
 $sendURL = $block->getSendUrl();
 $dataViewModel = $block->getData('dataViewModel');
-$defaultStores = $dataViewModel
-    ? explode(',', $dataViewModel->getConfig('contentor_options/targets/targetviews'))
+$targetViews = $dataViewModel
+    ? (string)$dataViewModel->getConfig('contentor_options/targets/targetviews')
     : '';
+$defaultStores = $targetViews === '' ? [] : explode(',', $targetViews);
 $defaultSource = $dataViewModel ? $dataViewModel->getConfig('contentor_options/source/sourcelocale') : '';
 ?>
 
