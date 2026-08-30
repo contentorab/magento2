@@ -3,8 +3,8 @@
     <default>
         <contentor_options>
             <contentor_options>
-                <developer_mode>1</developer_mode>
-                <api_base_url>https://beta-dev.contentor.com/</api_base_url>
+                <developer_mode>0</developer_mode>
+                <api_base_url>https://api.contentor.com/</api_base_url>
                 <version>1.3.3</version>
             </contentor_options>
         </contentor_options>
